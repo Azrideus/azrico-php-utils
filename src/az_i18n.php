@@ -1,22 +1,24 @@
 <?php
 class az_i18n
 {
+	static $current_domain = '';
 	static $pending_domains = [];
 	public static function init(string $plugin_text_domain, string $plugin_root_dir)
 	{
-
 		$lang_dir = $plugin_root_dir . '/languages/';
-		assert(is_string($plugin_text_domain) && strlen($plugin_text_domain) > 0, "Invalid plugin text domain: $name");
+
+		assert(is_string($plugin_text_domain)
+			&& strlen($plugin_text_domain) > 0, "Invalid plugin text domain: $plugin_text_domain");
 		assert(is_dir($lang_dir), "Language directory not found: $lang_dir");
 
 
 		self::$pending_domains[] = [$plugin_text_domain, $lang_dir];
-		$callback = array(self::class, 'azutils_load_plugin_textdomain');
+		$callback = array(self::class, 'load_textdomain');
 		if (!has_action('init', $callback)) {
 			add_action('init', $callback);
 		}
 	}
-	public static function azpcb_load_plugin_textdomain()
+	public static function load_textdomain()
 	{
 		foreach (self::$pending_domains as $pln) {
 			$name = $pln[0];
@@ -32,10 +34,10 @@ class az_i18n
 
 	public static function translate(string $str, ...$params)
 	{
-		return sprintf(__($str, 'az-pcb'), ...$params);
+		return sprintf(__($str, static::$current_domain), ...$params);
 	}
 	public static function etranslate(string $str)
 	{
-		echo self::translate($str);
+		echo static::translate($str);
 	}
 }
