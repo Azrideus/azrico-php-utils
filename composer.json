@@ -1,0 +1,17 @@
+{
+    "name": "azrideus/php-utils",
+    "description": "Utility php functions made by azrideus",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Azrideus\\PhpUtils\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Azrideus",
+            "email": "22293394+Azrideus@users.noreply.github.com"
+        }
+    ],
+    "require": {}
+}
