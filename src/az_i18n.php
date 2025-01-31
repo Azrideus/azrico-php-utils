@@ -1,6 +1,6 @@
 <?php
 
-namespace AzUtils\i18n;
+namespace AzUtils\az_i18n;
 
 
 class az_i18n

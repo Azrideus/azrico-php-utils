@@ -1,6 +1,6 @@
 <?php
 
-namespace AzUtils\cache;
+namespace AzUtils\az_cache;
 
 class az_cache
 {

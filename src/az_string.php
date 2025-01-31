@@ -1,6 +1,6 @@
 <?php
 
-namespace AzUtils\string;
+namespace AzUtils\az_string;
 
 
 class az_string
