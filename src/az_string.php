@@ -1,11 +1,9 @@
 <?php
 
-namespace AzUtils\az_string;
-
-use AzUtils;
+namespace AzUtils;
 
 
-class az_string extends AzUtils\AzUtilsCore
+class az_string
 {
 
 	/**

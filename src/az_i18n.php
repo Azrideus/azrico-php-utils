@@ -1,10 +1,9 @@
 <?php
 
-namespace AzUtils\az_i18n;
+namespace AzUtils;
 
-use AzUtils;
 
-class az_i18n extends AzUtils\AzUtilsCore
+class az_i18n
 {
 	static $current_domain = '';
 	static $pending_domains = [];

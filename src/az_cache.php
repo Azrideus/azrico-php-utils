@@ -1,10 +1,9 @@
 <?php
 
-namespace AzUtils\az_cache;
+namespace AzUtils;
 
-use AzUtils;
 
-class az_cache extends AzUtils\AzUtilsCore
+class az_cache
 {
 	static $cache = [];
 	static $cache_group = 'azcache';
