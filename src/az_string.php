@@ -5,14 +5,14 @@ class az_string
 	/**
 	 * check if two string are not empty and equal ignorecase 
 	 */
-	static function str_eq($s1, $s2): bool
+	static function eq($s1, $s2): bool
 	{
 		if (empty($s1) || empty($s2)) return false;
 		return (bool)(0 == strcasecmp($s1, $s2));
 	}
-	static function str_eq_loose($s1, $s2): bool
+	static function eq_loose($s1, $s2): bool
 	{
-		return (bool)self::str_eq(trim(strval($s1)), trim(strval($s2)));
+		return (bool)self::eq(trim(strval($s1)), trim(strval($s2)));
 	}
 	/**
 	 * converts string to lower and replaces white spaces with - 
@@ -24,9 +24,9 @@ class az_string
 	/**
 	 * after using `sanitize_search_string` will check if s1 contains s2 or s2 contains s2 
 	 */
-	static function str_loose_match($s1, $s2): bool
+	static function loose_match($s1, $s2): bool
 	{
-		if (self::str_eq($s1, $s2)) return true;
+		if (self::eq($s1, $s2)) return true;
 		$s1 = self::sanitize_search_string($s1);
 		$s2 = self::sanitize_search_string($s2);
 		return  str_contains($s1, $s2) || str_contains($s2, $s1);
@@ -34,7 +34,7 @@ class az_string
 	/**
 	 * split s1 and s2 by - and check if any part of them match
 	 */
-	static function str_split_match($s1, $s2): bool
+	static function split_match($s1, $s2): bool
 	{
 		$s1 = explode('-', self::sanitize_search_string($s1));
 		$s2 = explode('-', self::sanitize_search_string($s2));
