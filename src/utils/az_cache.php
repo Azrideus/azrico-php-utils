@@ -2,7 +2,9 @@
 
 namespace AzUtils\az_cache;
 
-class az_cache
+use AzUtils;
+
+class az_cache extends AzUtils\AzUtilsCore
 {
 	static $cache = [];
 	static $cache_group = 'azcache';

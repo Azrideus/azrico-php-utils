@@ -2,8 +2,10 @@
 
 namespace AzUtils\az_string;
 
+use AzUtils;
 
-class az_string
+
+class az_string extends AzUtils\AzUtilsCore
 {
 
 	/**
