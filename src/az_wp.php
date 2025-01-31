@@ -4,7 +4,7 @@ namespace AzUtils;
 
 class az_wp
 {
-	private static $cached_name = null;
+	private static $cached_dir = null;
 	static function getUrl($params = [])
 	{
 		return (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
@@ -16,7 +16,7 @@ class az_wp
 		/**
 		 * each plugin has its own instance of this class so we can cache the result directly
 		 */
-		if (null != self::$cached_name) return self::$cached_name;
+		if (null != self::$cached_dir) return self::$cached_dir;
 
 		$path = str_replace('/', '\\', plugin_dir_path(__FILE__));
 		$plugin_dir_parts = explode("\\", str_replace('/', '\\', WP_PLUGIN_DIR));
@@ -27,7 +27,11 @@ class az_wp
 
 		$plugin_name = explode("\\", $relative_plugin_dir)[0];
 
-		self::$cached_name = WP_PLUGIN_DIR . '\\' . $plugin_name . '\\';
-		return self::$cached_name;
+		$temp_dir
+			= WP_PLUGIN_DIR . '\\' . $plugin_name . '\\';
+		assert(file_exists($temp_dir), 'failed to get plugin dir');
+
+		self::$cached_dir =	$temp_dir;
+		return self::$cached_dir;
 	}
 }

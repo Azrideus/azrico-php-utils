@@ -14,7 +14,7 @@ class az_i18n
 
 		assert(is_string($plugin_text_domain)
 			&& strlen($plugin_text_domain) > 0, "Invalid plugin text domain: $plugin_text_domain");
-		assert(is_dir($lang_dir), "Language directory not found: $lang_dir");
+		assert(file_exists($lang_dir), "Language directory not found: $lang_dir");
 
 
 		self::$pending_domains[] = [$plugin_text_domain, $lang_dir];
