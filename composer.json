@@ -9,7 +9,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Azrideus\\PhpUtils\\": "src/"
+			"Azrideus\\AzUtils\\": "src/"
 		}
 	},
 	"authors": [
