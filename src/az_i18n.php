@@ -1,4 +1,8 @@
 <?php
+
+namespace AzUtils\i18n;
+
+
 class az_i18n
 {
 	static $current_domain = '';

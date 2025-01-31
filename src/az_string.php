@@ -1,4 +1,8 @@
 <?php
+
+namespace AzUtils\string;
+
+
 class az_string
 {
 

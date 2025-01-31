@@ -1,4 +1,7 @@
 <?php
+
+namespace AzUtils\cache;
+
 class az_cache
 {
 	static $cache = [];
