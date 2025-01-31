@@ -7,8 +7,9 @@ class az_i18n
 {
 	static $current_domain = '';
 	static $pending_domains = [];
-	public static function init(string $plugin_text_domain, string $plugin_root_dir)
+	public static function init(string $plugin_text_domain)
 	{
+		$plugin_root_dir = az_wp::getPluginDir();
 		$lang_dir = $plugin_root_dir . '/languages/';
 
 		assert(is_string($plugin_text_domain)
@@ -17,10 +18,7 @@ class az_i18n
 
 
 		self::$pending_domains[] = [$plugin_text_domain, $lang_dir];
-		$callback = array(self::class, 'load_textdomain');
-		if (!has_action('init', $callback)) {
-			add_action('init', $callback);
-		}
+		add_action('init', array(self::class, 'load_textdomain'));
 	}
 	public static function load_textdomain()
 	{

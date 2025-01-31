@@ -5,6 +5,12 @@ namespace AzUtils;
 class az_wp
 {
 	private static $cached_name = null;
+	static function getUrl($params = [])
+	{
+		return (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+	}
+
+
 	public static function getPluginDir()
 	{
 		/**
