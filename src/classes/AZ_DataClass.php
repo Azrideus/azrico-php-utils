@@ -41,8 +41,9 @@ class AZ_DataClass
 
 	/**
 	 * get a property (or Meta if its in valid meta list) 
+	 * if value is not set use the setter function to set the value 
 	 */
-	function get(string $key)
+	function get(string $key, null|callable $setter = null)
 	{
 		if (isset($this->__data[$key]))
 			return $this->__data[$key];
@@ -50,8 +51,12 @@ class AZ_DataClass
 			$this->__data[$key] = $this->getMeta($key);
 			return $this->__data[$key];
 		}
+		if (is_callable($setter)) {
+			return $this->set($key, $setter());
+		}
 		return null;
 	}
+
 
 	function getBool($key): bool
 	{
@@ -79,17 +84,7 @@ class AZ_DataClass
 		return $value;
 	}
 
-	/**
-	 * tries to get a value, if value is not set use the setter function to set the value 
-	 */
-	function getWithSetter(string $key, callable $setter)
-	{
-		$val = $this->get($key);
-		if (empty($val)) {
-			$val = $this->set($key, $setter());
-		}
-		return $val;
-	}
+
 
 	function getMeta(string $key)
 	{
