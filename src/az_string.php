@@ -2,10 +2,11 @@
 
 namespace AzUtils;
 
+use AzUtils\string\az_string_path;
 
 class az_string
 {
-
+	use az_string_path;
 	/**
 	 * check if two string are not empty and equal ignorecase 
 	 */
@@ -110,12 +111,11 @@ class az_string
 		return trim(self::findUpto($title, $slug));
 	}
 
-	static function fix_path($p)
+	static function truncate($string, $length, $dots = "...")
 	{
-		$p = str_replace('/', DIRECTORY_SEPARATOR, $p);
-		$p = str_replace('\\', DIRECTORY_SEPARATOR, $p);
-		return $p;
+		return (strlen($string) > $length) ? substr($string, 0, $length - strlen($dots)) . $dots : $string;
 	}
+
 	/**
 	 * return haysack's string part up until the needle
 	 *
