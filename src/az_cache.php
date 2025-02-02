@@ -3,25 +3,29 @@
 namespace AzUtils;
 
 
-class az_cache
+abstract class az_cache
 {
 	static $cache = [];
-	static $cache_group = 'azcache';
 
-	public static function init($cache_group = 'azcache')
+	/**
+	 * name of the cache group
+	 */
+	abstract public static function getCacheGroup();
+
+	public static function init()
 	{
+		assert(!empty(static::getCacheGroup()), 'getCacheGroup() is not implemented correctly');
 		if (function_exists('add_action')) {
-			add_action('litespeed_purged_all_object', [self::class, 'clear']);
-			add_action('litespeed_purged_all', [self::class, 'clear']);
+			add_action('litespeed_purged_all_object', [static::class, 'clear']);
+			add_action('litespeed_purged_all', [static::class, 'clear']);
 		}
-		static::$cache_group = $cache_group;
 	}
 
 	static function set($key, $value, $wpcache = false)
 	{
 		static::$cache[$key] = $value;
 		if ($wpcache && function_exists('wp_cache_set')) {
-			wp_cache_set($key, $value, static::$cache_group, 3600);
+			wp_cache_set($key, $value, static::getCacheGroup(), 3600);
 		}
 		return $value;
 	}
@@ -30,7 +34,7 @@ class az_cache
 		if (isset(static::$cache[$key])) return static::$cache[$key];
 
 		if ($wpcache && function_exists('wp_cache_get')) {
-			$cached_val = wp_cache_get($key, static::$cache_group, true);
+			$cached_val = wp_cache_get($key, static::getCacheGroup(), true);
 			if (!empty($cached_val)) return $cached_val;
 		}
 		if (null != $callback && is_callable($callback)) {
@@ -42,7 +46,7 @@ class az_cache
 	{
 		unset(static::$cache[$key]);
 		if ($wpcache && function_exists('wp_cache_delete')) {
-			wp_cache_delete($key,  static::$cache_group);
+			wp_cache_delete($key,  static::getCacheGroup());
 		}
 		return true;
 	}
@@ -53,7 +57,7 @@ class az_cache
 			static::delete($ck, false);
 		}
 		if (function_exists('wp_cache_supports') && wp_cache_supports('flush_group')) {
-			return wp_cache_flush_group(static::$cache_group);
+			return wp_cache_flush_group(static::getCacheGroup());
 		}
 		return true;
 	}
