@@ -7,6 +7,16 @@ class az_cache
 {
 	static $cache = [];
 	static $cache_group = 'azcache';
+
+	public static function init($cache_group = 'azcache')
+	{
+		if (function_exists('add_action')) {
+			add_action('litespeed_purged_all_object', [self::class, 'clear']);
+			add_action('litespeed_purged_all', [self::class, 'clear']);
+		}
+		static::$cache_group = $cache_group;
+	}
+
 	static function set($key, $value, $wpcache = false)
 	{
 		static::$cache[$key] = $value;
