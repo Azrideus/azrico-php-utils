@@ -2,6 +2,8 @@
 
 namespace AzUtils\classes;
 
+use AzUtils\az_wp;
+
 class AZ_DataClass
 {
 	static $check_meta = [];
@@ -107,61 +109,18 @@ class AZ_DataClass
 
 	static function getMetaListOf($search, array $key_list): array
 	{
-		if (is_a($search, 'WP_Post')) $search = $search->ID;
-		$res = [];
-		foreach ($key_list as $key) {
-			$res[$key] = self::getMetaOf($search, $key);
-		}
-		return $res;
+		return az_wp::getMetaListOf($search, $key_list);
 	}
 	static function getMetaOf($search, string $key)
 	{
-		if (
-			is_object($search)
-			&& property_exists($search, 'field')
-			&& is_a($search->field, 'WP_Post')
-		) {
-			$search = $search->field;
-		}
-
-		if (is_a($search, 'WC_Order_Item'))
-			return $search->get_meta($key);
-
-		if (
-			is_a($search, 'WP_Post')
-			|| (is_object($search)
-				&& property_exists($search, 'ID'))
-		) {
-			$search = $search->ID;
-		}
-
-		assert(!is_int($search), 'could not load the post id to get its meta');
-		assert(function_exists('get_post_meta'), 'get_post_meta function is not defined. are you in a wordpress environment?');
-		return get_post_meta(
-			$search,
-			$key,
-			true
-		);
+		return az_wp::getMetaOf($search, $key);
 	}
 	static function getMetaBoolOf($search, string $key): bool
 	{
-		$meta_value = self::getMetaOf(
-			$search,
-			$key
-		);
-		if (empty($meta_value)) return false;
-		return filter_var(
-			$meta_value,
-			FILTER_VALIDATE_BOOL
-		);
+		return az_wp::getMetaBoolOf($search, $key);
 	}
 	static function getMetaNumericOf($search, string $key, int $default = -1): int
 	{
-		$meta_value = self::getMetaOf(
-			$search,
-			$key
-		);
-		if (is_numeric($meta_value)) return intval($meta_value);
-		return $default;
+		return az_wp::getMetaNumericOf($search, $key, $default);
 	}
 }

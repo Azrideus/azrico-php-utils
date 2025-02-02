@@ -18,7 +18,11 @@ class az_i18n
 
 
 		static::$pending_domains[] = [$plugin_text_domain, $lang_dir];
-		add_action('init', array(static::class, 'load_textdomain'));
+
+		$action
+			= array(static::class, 'load_textdomain');
+		if (!has_action('init', $action))
+			add_action('init', $action);
 	}
 	public static function load_textdomain()
 	{

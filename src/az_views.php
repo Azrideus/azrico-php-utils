@@ -14,7 +14,10 @@ class az_views
 			ob_start();
 			include $dir;
 			return ob_get_clean();
-		} else error_log('File not found: ' . $dir);
+		} else {
+			error_log('az_views: file not found ! ');
+			error_log($dir);
+		}
 		return '';
 	}
 	static function frontend($dir, $model = null)
