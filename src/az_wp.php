@@ -14,9 +14,9 @@ class az_wp
 	}
 
 
-	public static function getPluginDir()
+	public static function getPluginDir($cache_dir = '')
 	{
-		$cache_name = __FILE__;
+		$cache_name = empty($cache_dir) ? __FILE__ : $cache_dir;
 		/**
 		 * if we cached the result for the current file we can use it.
 		 */

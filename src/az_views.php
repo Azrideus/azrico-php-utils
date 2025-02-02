@@ -8,15 +8,15 @@ class az_views
 {
 	private static function view($dir, $model = null)
 	{
-		$root_dir = az_wp::getPluginDir();
+		$root_dir = az_wp::getPluginDir(__FILE__);
 		$dir = untrailingslashit($root_dir . 'src/views/' . $dir . '.php');
 		if (file_exists($dir)) {
 			ob_start();
 			include $dir;
 			return ob_get_clean();
 		} else {
-			error_log('az_views: file not found ! ');
-			error_log($dir);
+			error_log('az_views: file not found: ' . $dir);
+			error_log('was requested by ' . __FILE__);
 		}
 		return '';
 	}
