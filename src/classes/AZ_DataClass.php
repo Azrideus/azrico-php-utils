@@ -4,9 +4,16 @@ namespace AzUtils\classes;
 
 class AZ_DataClass
 {
+	static $check_meta = [];
+
 	private $__data = [];
 	private $__options = [];
 	protected   int|null $ID;
+
+	static function init(array $check_meta)
+	{
+		static::$check_meta = $check_meta;
+	}
 
 	public function __construct(int|null $field_id = null)
 	{
@@ -32,11 +39,14 @@ class AZ_DataClass
 		return $value;
 	}
 
+	/**
+	 * get a property (or Meta if its in valid meta list) 
+	 */
 	function get(string $key)
 	{
 		if (isset($this->__data[$key]))
 			return $this->__data[$key];
-		if (in_array($key, pcb_postutils::$check_meta)) {
+		if (in_array($key, static::$check_meta)) {
 			$this->__data[$key] = $this->getMeta($key);
 			return $this->__data[$key];
 		}
