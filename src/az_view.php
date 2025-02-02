@@ -12,26 +12,34 @@ abstract class az_view
 	 */
 	abstract public static function getPath();
 
-	private final static function view($dir, $model = null)
+	private final static function view($view_name, $model = null)
 	{
-		//get root path of current plugin
+		/**
+		 * get a reference to any path in the current plugin
+		 * this is needed so we know where to load view files from 
+		 */
 		$plugin_path = static::getPath();
 		assert(!empty($plugin_path), 'getPath() is not implemented correctly');
 		assert(file_exists($plugin_path), 'plugin_path does not exist');
 
+		/**
+		 * get root path of the plugin,
+		 * this is where the src/views folder is located
+		 */
 		$rootpath = az_wp::getPluginDir($plugin_path);
-
 		assert(file_exists($rootpath), 'rootpath does not exist');
 
+		$rootpath = $rootpath . 'src/views/';
+		assert(file_exists($rootpath), 'rootpath does not have the src/views folder');
 
 		//load the file
-		$dir = untrailingslashit($rootpath . 'src/views/' . $dir . '.php');
-		if (file_exists($dir)) {
+		$view_full_path = untrailingslashit($rootpath . $view_name . '.php');
+		if (file_exists($view_full_path)) {
 			ob_start();
-			include $dir;
+			include $view_full_path;
 			return ob_get_clean();
 		} else {
-			error_log('az_views: file not found: ' . $dir);
+			error_log('az_views: file not found: ' . $view_full_path);
 		}
 		return '';
 	}
