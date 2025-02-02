@@ -109,6 +109,13 @@ class az_string
 		if (empty($title) || empty($slug)) return $title;
 		return trim(self::findUpto($title, $slug));
 	}
+
+	static function fix_path($p)
+	{
+		if (DIRECTORY_SEPARATOR != '/') $p = str_replace('/', DIRECTORY_SEPARATOR, $p);
+		else $p = str_replace('\\', DIRECTORY_SEPARATOR, $p);
+		return $p;
+	}
 	/**
 	 * return haysack's string part up until the needle
 	 *

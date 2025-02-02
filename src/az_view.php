@@ -17,7 +17,12 @@ abstract class az_view
 		//get root path of current plugin
 		$plugin_path = static::getPath();
 		assert(!empty($plugin_path), 'getPath() is not implemented correctly');
+		assert(file_exists($plugin_path), 'plugin_path does not exist');
+
 		$rootpath = az_wp::getPluginDir($plugin_path);
+
+		assert(file_exists($rootpath), 'rootpath does not exist');
+
 
 		//load the file
 		$dir = untrailingslashit($rootpath . 'src/views/' . $dir . '.php');

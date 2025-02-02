@@ -33,18 +33,17 @@ class az_wp
 			return self::$cached_dirs[$cache_name];
 		}
 
-		$path = str_replace('/', '\\', plugin_dir_path($file_path));
-		$plugin_dir_parts = explode("\\", str_replace('/', '\\', WP_PLUGIN_DIR));
+		$path = az_string::fix_path(plugin_dir_path($file_path));
+		$plugin_dir_parts = explode(DIRECTORY_SEPARATOR, az_string::fix_path(WP_PLUGIN_DIR));
+
 		$last_part = end($plugin_dir_parts);
 
 		$two_parts_of_path = explode($last_part, $path);
-		$relative_plugin_dir = trim(end($two_parts_of_path), '\\');
+		$relative_plugin_dir = trim(end($two_parts_of_path), DIRECTORY_SEPARATOR);
 
-		$plugin_name = explode("\\", $relative_plugin_dir)[0];
+		$plugin_name = explode(DIRECTORY_SEPARATOR, $relative_plugin_dir)[0];
 
-		$temp_dir
-			= WP_PLUGIN_DIR . '\\' . $plugin_name . '\\';
-
+		$temp_dir = az_string::fix_path(WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . $plugin_name . DIRECTORY_SEPARATOR);
 		assert(file_exists($temp_dir), 'failed to get plugin dir');
 
 
