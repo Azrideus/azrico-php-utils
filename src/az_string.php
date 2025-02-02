@@ -90,4 +90,46 @@ class az_string
 
 		return false;
 	}
+
+	/**
+	 * get the short name of a post by comparing its title and slug
+	 */
+	public static function getPostShortName(array|object $input): string
+	{
+		if (is_a($input, 'WC_Product')) {
+			$title = $input->get_title();
+			$slug = $input->get_slug();
+		} else if (is_object($input)) {
+			$title = $input->post_title;
+			$slug = $input->post_name;
+		} else if (is_array($input)) {
+			$title = $input['post_title'];
+			$slug = $input['post_name'];
+		}
+		if (empty($title) || empty($slug)) return $title;
+		return trim(self::findUpto($title, $slug));
+	}
+	/**
+	 * return haysack's string part up until the needle
+	 *
+	 * @param string $haysack
+	 * @param string $needle
+	 * @return string
+	 */
+	static function findUpto(string $haysack, string $needle): string
+	{
+		$haysack_lower = strtolower($haysack);
+		$needle_lower = strtolower($needle);
+		/**
+		 * if the name contains the slug, short name is the name part up until the slug
+		 */
+		if (str_contains($haysack_lower, $needle_lower)) {
+			$endpos = strpos($haysack_lower, $needle_lower) + strlen($needle_lower);
+			return substr($haysack, 0, $endpos);
+		}
+		if (str_contains($needle, '-')) {
+			return self::findUpto($haysack, str_replace("-", "", $needle));
+		}
+		return $haysack;
+	}
 }
