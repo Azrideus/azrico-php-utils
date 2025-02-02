@@ -4,7 +4,7 @@ namespace AzUtils;
 
 use AzUtils\az_wp;
 
-abstract class az_views
+abstract class az_view
 {
 	/**
 	 * a reference to any path in the current plugin
@@ -12,9 +12,14 @@ abstract class az_views
 	 */
 	abstract public static function getPath();
 
-	private static function view($dir, $model = null)
+	private final static function view($dir, $model = null)
 	{
-		$rootpath = az_wp::getPluginDir(static::getPath());
+		//get root path of current plugin
+		$plugin_path = static::getPath();
+		assert(!empty($plugin_path), 'getPath() is not implemented correctly');
+		$rootpath = az_wp::getPluginDir($plugin_path);
+
+		//load the file
 		$dir = untrailingslashit($rootpath . 'src/views/' . $dir . '.php');
 		if (file_exists($dir)) {
 			ob_start();
@@ -26,15 +31,15 @@ abstract class az_views
 		return '';
 	}
 
-	static function frontend($dir, $model = null)
+	final static function frontend($dir, $model = null)
 	{
 		return static::view("frontend/" . $dir, $model);
 	}
-	static function backend($dir, $model = null)
+	final static function backend($dir, $model = null)
 	{
 		return static::view("backend/" . $dir, $model);
 	}
-	static function shared($dir, $model = null)
+	final static function shared($dir, $model = null)
 	{
 		return static::view("shared/" . $dir, $model);
 	}
