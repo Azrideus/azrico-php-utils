@@ -2,6 +2,8 @@
 
 namespace AzUtils;
 
+use AzUtils\classes\AZ_DataClass;
+
 class az_wp
 {
 	private static $cached_dir = null;
@@ -33,5 +35,22 @@ class az_wp
 
 		self::$cached_dir =	$temp_dir;
 		return self::$cached_dir;
+	}
+
+	static function getMetaListOf($search, array $key_list): array
+	{
+		return AZ_DataClass::getMetaListOf($search, $key_list);
+	}
+	static function getMetaOf($search, string $key)
+	{
+		return AZ_DataClass::getMetaOf($search, $key);
+	}
+	static function getMetaBoolOf($search, string $key): bool
+	{
+		return AZ_DataClass::getMetaBoolOf($search, $key);
+	}
+	static function getMetaNumericOf($search, string $key, int $default = -1): int
+	{
+		return AZ_DataClass::getMetaNumericOf($search, $key, $default);
 	}
 }
