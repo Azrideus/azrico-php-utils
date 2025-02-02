@@ -36,7 +36,7 @@ class az_views
 	/**
 	 * make an element with given attributes 
 	 */
-	public static function elem(string $tag, callable|string $content = '',  ...$rest_attr)
+	public static function element(string $tag, callable|string $content = '',  ...$rest_attr)
 	{
 		$attr = static::attr(...$rest_attr);
 		if (\is_callable($content)) $content = $content();
