@@ -29,8 +29,10 @@ abstract class az_view
 		$rootpath = az_wp::getPluginDir($plugin_path);
 		assert(file_exists($rootpath), 'rootpath does not exist');
 
-		$rootpath = $rootpath . 'src/views/';
+		$rootpath = $rootpath . 'src' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
 		assert(file_exists($rootpath), 'rootpath does not have the src/views folder');
+
+		$view_name = az_string::fix_path($view_name);
 
 		//load the file
 		$view_full_path = untrailingslashit($rootpath . $view_name . '.php');
@@ -39,7 +41,8 @@ abstract class az_view
 			include $view_full_path;
 			return ob_get_clean();
 		} else {
-			error_log('az_views: file not found: ' . $view_full_path);
+			error_log('directory exists but file was not found: ');
+			error_log($view_full_path);
 		}
 		return '';
 	}

@@ -112,8 +112,8 @@ class az_string
 
 	static function fix_path($p)
 	{
-		if (DIRECTORY_SEPARATOR != '/') $p = str_replace('/', DIRECTORY_SEPARATOR, $p);
-		else $p = str_replace('\\', DIRECTORY_SEPARATOR, $p);
+		$p = str_replace('/', DIRECTORY_SEPARATOR, $p);
+		$p = str_replace('\\', DIRECTORY_SEPARATOR, $p);
 		return $p;
 	}
 	/**
