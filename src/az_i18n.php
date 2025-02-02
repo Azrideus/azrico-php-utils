@@ -2,7 +2,6 @@
 
 namespace AzUtils;
 
-use WP_Post;
 
 class az_i18n
 {
@@ -18,12 +17,12 @@ class az_i18n
 		assert(file_exists($lang_dir), "Language directory not found: $lang_dir");
 
 
-		self::$pending_domains[] = [$plugin_text_domain, $lang_dir];
-		add_action('init', array(self::class, 'load_textdomain'));
+		static::$pending_domains[] = [$plugin_text_domain, $lang_dir];
+		add_action('init', array(static::class, 'load_textdomain'));
 	}
 	public static function load_textdomain()
 	{
-		foreach (self::$pending_domains as $pln) {
+		foreach (static::$pending_domains as $pln) {
 			$name = $pln[0];
 			$path = $pln[1];
 			load_plugin_textdomain(
@@ -32,7 +31,7 @@ class az_i18n
 				$path
 			);
 		}
-		self::$pending_domains = [];
+		static::$pending_domains = [];
 	}
 
 	public static function translate(string $str, ...$params)
@@ -98,6 +97,6 @@ class az_i18n
 	}
 	public static function translatePostType(object $item): string
 	{
-		return self::translate(self::getPostType($item));
+		return static::translate(static::getPostType($item));
 	}
 }
