@@ -3,24 +3,27 @@
 namespace AzUtils;
 
 
-class az_i18n
+abstract class az_i18n
 {
-	static $current_domain = '';
+	/**
+	 * name of the cache group
+	 */
+	abstract public static function getDomain();
+
 	static $pending_domains = [];
-	public static function init(string $plugin_text_domain)
+	public static function init()
 	{
 		$plugin_root_dir = az_wp::getPluginDir(__FILE__);
 		$lang_dir = $plugin_root_dir . '/languages/';
 
-		assert(is_string($plugin_text_domain)
-			&& strlen($plugin_text_domain) > 0, "Invalid plugin text domain: $plugin_text_domain");
+		assert(is_string(static::getDomain()), "Invalid plugin text domain");
 		assert(file_exists($lang_dir), "Language directory not found: $lang_dir");
 
 
-		static::$pending_domains[] = [$plugin_text_domain, $lang_dir];
+		static::$pending_domains[] = [static::getDomain(), $lang_dir];
 
 		$action
-			= array(static::class, 'load_textdomain');
+			= [static::class, 'load_textdomain'];
 		if (!has_action('init', $action))
 			add_action('init', $action);
 	}
@@ -40,7 +43,7 @@ class az_i18n
 
 	public static function translate(string $str, ...$params)
 	{
-		return sprintf(__($str, static::$current_domain), ...$params);
+		return sprintf(__($str, static::getDomain()), ...$params);
 	}
 	public static function etranslate(string $str)
 	{
