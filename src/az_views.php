@@ -32,4 +32,59 @@ class az_views
 	{
 		return static::view("shared/" . $dir, $model);
 	}
+
+	/**
+	 * make an element with given attributes 
+	 */
+	public static function elem(string $tag, callable|string $content = '',  ...$rest_attr)
+	{
+		$attr = static::attr(...$rest_attr);
+		if (\is_callable($content)) $content = $content();
+		return "<$tag $attr> $content </$tag>";
+	}
+	static function attr(...$params)
+	{
+
+		$attr_str = '';
+		$final_list = [];
+
+		foreach ($params as $key => $check_item) {
+			if (is_string($check_item)) {
+				/* --------------------- attribute is given as a string --------------------- */
+				array_push($final_list[], $check_item);
+			} else {
+				/* --------------------------- attr given as array -------------------------- */
+				foreach ($check_item as $sub_key => $value) {
+					$fixed_value = $value;
+
+					if (is_bool($fixed_value)) {
+						if (false == $fixed_value) continue; //dont add false values
+						$fixed_value =  "true";
+					} else if (is_int($fixed_value)) {
+						//add int values as string 
+						$fixed_value =  strval($fixed_value);
+					}
+
+					if (empty($fixed_value)) {
+						continue; //dont add empty values
+					}
+
+					if (empty($final_list[$sub_key])) $final_list[$sub_key] = [];
+					array_push($final_list[$sub_key], $fixed_value);
+				}
+			}
+		}
+
+		foreach ($final_list as $sub_key => $value) {
+			if (is_numeric($sub_key) && is_string($value)) {
+				$attr_str .= ' ' . $value;
+			} else {
+				$attr_str .= ' ' . $sub_key;
+				$attr_str .= "='";
+				$attr_str .= trim(join(" ", array_unique($value)));
+				$attr_str .= "'";
+			}
+		}
+		return trim($attr_str);
+	}
 }
