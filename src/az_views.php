@@ -4,12 +4,18 @@ namespace AzUtils;
 
 use AzUtils\az_wp;
 
-class az_views
+abstract class az_views
 {
+	/**
+	 * a reference to any path in the current plugin
+	 * this is needed so we know where to load view files from 
+	 */
+	abstract public static function getPath();
+
 	private static function view($dir, $model = null)
 	{
-		$root = az_wp::getPluginDir(__FILE__);
-		$dir = untrailingslashit($root . 'src/views/' . $dir . '.php');
+		$rootpath = az_wp::getPluginDir(static::getPath());
+		$dir = untrailingslashit($rootpath . 'src/views/' . $dir . '.php');
 		if (file_exists($dir)) {
 			ob_start();
 			include $dir;
