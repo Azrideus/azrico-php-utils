@@ -116,12 +116,27 @@ class AZ_DataClass
 	}
 	static function getMetaOf($search, string $key)
 	{
-		if (is_a($search, 'PCB_RequestField'))
+		if (
+			is_object($search)
+			&& property_exists($search, 'field')
+			&& is_a($search->field, 'WP_Post')
+		) {
 			$search = $search->field;
+		}
+
 		if (is_a($search, 'WC_Order_Item'))
 			return $search->get_meta($key);
-		if (is_a($search, 'WP_Post')) $search = $search->ID;
-		if (is_object($search)) $search = $search->ID;
+
+		if (
+			is_a($search, 'WP_Post')
+			|| (is_object($search)
+				&& property_exists($search, 'ID'))
+		) {
+			$search = $search->ID;
+		}
+
+		assert(!is_int($search), 'could not load the post id to get its meta');
+		assert(function_exists('get_post_meta'), 'get_post_meta function is not defined. are you in a wordpress environment?');
 		return get_post_meta(
 			$search,
 			$key,
