@@ -3,6 +3,7 @@
 namespace AzUtils;
 
 use AzUtils\classes\AZ_DataClass;
+use AzUtils\wp\az_wp_external_post;
 use AzUtils\wp\az_wp_post_meta;
 use AzUtils\wp\az_wp_post;
 
@@ -10,6 +11,7 @@ class az_wp
 {
 	use az_wp_post_meta;
 	use az_wp_post;
+	use az_wp_external_post;
 	private static $cached_dirs = [];
 
 	static function getUrl($params = [])

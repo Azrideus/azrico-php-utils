@@ -12,7 +12,7 @@ abstract class az_cache
 	 */
 	abstract public static function getCacheGroup();
 
-	public static function init()
+	static function init()
 	{
 		assert(!empty(static::getCacheGroup()), 'getCacheGroup() is not implemented correctly');
 		if (function_exists('add_action')) {
@@ -42,7 +42,7 @@ abstract class az_cache
 		}
 		return null;
 	}
-	public static function delete(string $key, $wpcache = false)
+	static function delete(string $key, $wpcache = false)
 	{
 		unset(static::$cache[$key]);
 		if ($wpcache && function_exists('wp_cache_delete')) {
@@ -50,7 +50,7 @@ abstract class az_cache
 		}
 		return true;
 	}
-	public static function clear()
+	static function clear()
 	{
 		$cache_keys = array_keys(static::$cache);
 		foreach ($cache_keys as $ck) {
