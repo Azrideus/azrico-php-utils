@@ -9,7 +9,7 @@ class az_i18n
 	static $pending_domains = [];
 	public static function init(string $plugin_text_domain)
 	{
-		$plugin_root_dir = az_wp::getPluginDir();
+		$plugin_root_dir = az_wp::getPluginDir(__FILE__);
 		$lang_dir = $plugin_root_dir . '/languages/';
 
 		assert(is_string($plugin_text_domain)

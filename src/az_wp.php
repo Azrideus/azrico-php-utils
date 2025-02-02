@@ -14,16 +14,20 @@ class az_wp
 	}
 
 
-	public static function getPluginDir($cache_dir = '')
+	/**
+	 * get plugin dir path based on a given file path of the plugin 
+	 */
+	public static function getPluginDir(string $file_path = '')
 	{
-		$cache_name = empty($cache_dir) ? __FILE__ : $cache_dir;
+		$cache_name = empty($file_path) ? __FILE__ : $file_path;
 		/**
 		 * if we cached the result for the current file we can use it.
 		 */
-		if (isset(self::$cached_dirs[$cache_name]))
+		if (isset(self::$cached_dirs[$cache_name])) {
 			return self::$cached_dirs[$cache_name];
+		}
 
-		$path = str_replace('/', '\\', plugin_dir_path(__FILE__));
+		$path = str_replace('/', '\\', plugin_dir_path($file_path));
 		$plugin_dir_parts = explode("\\", str_replace('/', '\\', WP_PLUGIN_DIR));
 		$last_part = end($plugin_dir_parts);
 
@@ -36,6 +40,7 @@ class az_wp
 			= WP_PLUGIN_DIR . '\\' . $plugin_name . '\\';
 
 		assert(file_exists($temp_dir), 'failed to get plugin dir');
+
 
 		self::$cached_dirs[$cache_name] =	$temp_dir;
 		return $temp_dir;
@@ -70,7 +75,8 @@ class az_wp
 			$search = $search->ID;
 		}
 
-		assert(!is_int($search), 'could not load the post id to get its meta');
+		assert(is_numeric($search), 'could not load the post id to get its meta! got: ' . strval($search));
+		assert(is_string($key) && strlen($key) > 0, 'invalid key for meta! got: ' . strval($key));
 		assert(function_exists('get_post_meta'), 'get_post_meta function is not defined. are you in a wordpress environment?');
 		return get_post_meta(
 			$search,
