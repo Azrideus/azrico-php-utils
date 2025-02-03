@@ -20,7 +20,7 @@ class az_wp
 	}
 
 	/**
-	 * get plugin dir path based on a given file path of the plugin 
+	 * get plugin base url path based on a given file path
 	 */
 	public static function getPluginUrl(string $file_path = '', string $join_url = '')
 	{
