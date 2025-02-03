@@ -12,7 +12,7 @@ abstract class az_view
 	 */
 	abstract public static function getPath();
 
-	private final static function view($view_name, $model = null)
+	private static function view($view_name, $model = null)
 	{
 		/**
 		 * get a reference to any path in the current plugin
