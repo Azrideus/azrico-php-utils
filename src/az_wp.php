@@ -25,12 +25,14 @@ class az_wp
 	public static function getPluginUrl(string $file_path = '', string $join_url = '')
 	{
 		$cache_name = "url__" . (empty($file_path) ? __FILE__ : $file_path);
-		/**
-		 * if we cached the result for the current file we can use it.
-		 */
+
 		if (!isset(self::$cached_dirs[$cache_name])) {
-			self::$cached_dirs[$cache_name] =
-				plugin_dir_url(self::getPluginDir($file_path));
+			/**
+			 * plugin_dir_url() expects a file in the plugin to get the plugin url
+			 * so we cant directly give output of getPluginDir() to it
+			 */
+			$file_in_plugin = self::getPluginDir($file_path) . '\\index.php';
+			self::$cached_dirs[$cache_name] = plugin_dir_url($file_in_plugin);
 		}
 		return az_string::join_url(self::$cached_dirs[$cache_name], $join_url);
 	}
