@@ -5,10 +5,11 @@ namespace AzUtils\string;
 trait az_string_path
 {
 
-	static function fix_path($p)
+	static function fix_path($p, $sep = '')
 	{
-		$p = str_replace('/', DIRECTORY_SEPARATOR, $p);
-		$p = str_replace('\\', DIRECTORY_SEPARATOR, $p);
+		if (empty($sep)) $sep = DIRECTORY_SEPARATOR;
+		$p = str_replace('/', $sep, $p);
+		$p = str_replace('\\', $sep, $p);
 		return $p;
 	}
 	static function join_paths()
@@ -30,7 +31,7 @@ trait az_string_path
 				$paths[] = $arg;
 			}
 		}
-		$joined = self::fix_path(join("/", $paths));
-		return preg_replace('#' . "/" . '+#', "/", $joined);
+		$joined = self::fix_path(join("/", $paths), '/');
+		return preg_replace('#/+#', "/", $joined);
 	}
 }

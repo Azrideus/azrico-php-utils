@@ -6,9 +6,9 @@ namespace AzUtils;
 abstract class az_assets
 {
 
-	public static function get_asset_path(string $file, string $name)
+	public static function get_url(string $file, string $name)
 	{
-		$root_dir = az_wp::getPluginDir($file);
-		return az_string::join_paths($root_dir, 'assets', $name);
+		$root_dir = az_wp::getPluginUrl($file);
+		return az_string::join_url($root_dir, 'assets', $name);
 	}
 }
