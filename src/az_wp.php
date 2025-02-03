@@ -19,6 +19,22 @@ class az_wp
 		return (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 	}
 
+	/**
+	 * get plugin dir path based on a given file path of the plugin 
+	 */
+	public static function getPluginUrl(string $file_path = '')
+	{
+		$cache_name = "url__" . (empty($file_path) ? __FILE__ : $file_path);
+		/**
+		 * if we cached the result for the current file we can use it.
+		 */
+		if (isset(self::$cached_dirs[$cache_name])) {
+			return self::$cached_dirs[$cache_name];
+		}
+		$temp_dir = plugin_dir_url(self::getPluginDir($file_path));
+		self::$cached_dirs[$cache_name] = $temp_dir;
+		return $temp_dir;
+	}
 
 	/**
 	 * get plugin dir path based on a given file path of the plugin 
@@ -43,10 +59,8 @@ class az_wp
 
 		$plugin_name = explode(DIRECTORY_SEPARATOR, $relative_plugin_dir)[0];
 
-		$temp_dir = az_string::fix_path(WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . $plugin_name . DIRECTORY_SEPARATOR);
+		$temp_dir = az_string::join_paths(WP_PLUGIN_DIR, $plugin_name);
 		assert(file_exists($temp_dir), 'failed to get plugin dir');
-
-
 		self::$cached_dirs[$cache_name] =	$temp_dir;
 		return $temp_dir;
 	}
