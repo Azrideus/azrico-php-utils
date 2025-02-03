@@ -12,26 +12,34 @@ trait az_string_path
 		$p = str_replace('\\', $sep, $p);
 		return $p;
 	}
+	private static function join_trim(array $parts, $sep = '')
+	{
+		$joined = self::fix_path(join($sep, $parts), $sep);
+
+		//remove duplicate seperators
+		$joined = preg_replace('#' . $sep . '+#', $sep, $joined);
+
+		//remove trailing seperators
+		$joined = \rtrim($joined, $sep);
+
+		return $joined;
+	}
 	static function join_paths()
 	{
 		$paths = array();
 		foreach (func_get_args() as $arg) {
-			if ($arg !== '') {
+			if ($arg !== '')
 				$paths[] = $arg;
-			}
 		}
-		$joined = self::fix_path(join(DIRECTORY_SEPARATOR, $paths));
-		return preg_replace('#' . DIRECTORY_SEPARATOR . '+#', DIRECTORY_SEPARATOR, $joined);
+		return self::join_trim($paths, DIRECTORY_SEPARATOR);
 	}
 	static function join_url()
 	{
 		$paths = array();
 		foreach (func_get_args() as $arg) {
-			if ($arg !== '') {
+			if ($arg !== '')
 				$paths[] = $arg;
-			}
 		}
-		$joined = self::fix_path(join("/", $paths), '/');
-		return preg_replace('#/+#', "/", $joined);
+		return self::join_trim($paths, "/");
 	}
 }
