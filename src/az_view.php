@@ -59,6 +59,14 @@ abstract class az_view
 		return static::view("shared/" . $dir, $model);
 	}
 
+
+	/**
+	 * render an element with given attributes 
+	 */
+	public static function render(string $tag, callable|string $content = '',  ...$rest_attr)
+	{
+		echo static::element($tag, $content, ...$rest_attr);
+	}
 	/**
 	 * make an element with given attributes 
 	 */

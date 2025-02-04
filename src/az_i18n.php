@@ -45,9 +45,9 @@ abstract class az_i18n
 	{
 		return sprintf(__($str, static::getDomain()), ...$params);
 	}
-	public static function etranslate(string $str)
+	public static function etranslate(string $str, ...$params)
 	{
-		echo static::translate($str);
+		echo static::translate($str, ...$params);
 	}
 
 
