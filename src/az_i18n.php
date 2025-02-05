@@ -19,13 +19,13 @@ abstract class az_i18n
 	public static function init($debug = false)
 	{
 		$plugin_root_dir = az_wp::getPluginDir(static::getPath());
-		$lang_dir = $plugin_root_dir . '/languages/';
-
 
 		$domain = static::getDomain();
+		$lang_dir = plugin_basename($plugin_root_dir) . '/languages/';
+		$lang_dir_full = $plugin_root_dir . '/languages/';
 		assert(is_string($domain), "Invalid plugin text domain");
-		assert(file_exists($lang_dir), "Language directory not found: $lang_dir");
-
+		assert(file_exists($plugin_root_dir), "plugin directory not found: $plugin_root_dir");
+		assert(file_exists($lang_dir_full), "Language directory not found: $lang_dir_full");
 
 		add_action(
 			'init',
@@ -36,10 +36,11 @@ abstract class az_i18n
 					$lang_dir
 				);
 			},
-			2000
+			8000
 		);
-		add_action('wp_loaded', function () use ($domain, $lang_dir, $debug) {
-			if ($debug) {
+		if ($debug) {
+			add_action('wp_loaded', function () use ($domain, $lang_dir, $debug) {
+
 				if (is_textdomain_loaded($domain)) \error_log($domain . ' domain is loaded');
 				else \error_log($domain . ' domain is NOT loaded');
 
@@ -48,8 +49,8 @@ abstract class az_i18n
 					error_log("Original :" . $entry->singular);
 					error_log("Translated :" . $entry->translations[0]);
 				}
-			}
-		}, 8000);
+			}, 8000);
+		}
 	}
 
 	public static function translate(string $str, ...$params)
