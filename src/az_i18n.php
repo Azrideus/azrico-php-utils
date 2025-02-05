@@ -10,35 +10,31 @@ abstract class az_i18n
 	 */
 	abstract public static function getDomain();
 
-	static $pending_domains = [];
-	public static function init()
+	public static function init($debug = false)
 	{
 		$plugin_root_dir = az_wp::getPluginDir(__FILE__);
 		$lang_dir = $plugin_root_dir . '/languages/';
 
-		assert(is_string(static::getDomain()), "Invalid plugin text domain");
+
+		$domain = static::getDomain();
+		assert(is_string($domain), "Invalid plugin text domain");
 		assert(file_exists($lang_dir), "Language directory not found: $lang_dir");
 
 
-		static::$pending_domains[] = [static::getDomain(), $lang_dir];
-
-		$action
-			= [static::class, 'load_textdomain'];
-		if (!has_action('init', $action))
-			add_action('init', $action);
-	}
-	public static function load_textdomain()
-	{
-		foreach (static::$pending_domains as $pln) {
-			$name = $pln[0];
-			$path = $pln[1];
+		add_action('init', function () use ($domain, $lang_dir, $debug) {
 			load_plugin_textdomain(
-				$name,
+				$domain,
 				false,
-				$path
+				$lang_dir
 			);
-		}
-		static::$pending_domains = [];
+			if ($debug) {
+				$data = get_translations_for_domain($domain);
+				foreach ($data->entries as $entry) {
+					error_log("Original :" . $entry->singular);
+					error_log("Translated :" . $entry->translations[0]);
+				}
+			}
+		});
 	}
 
 	public static function translate(string $str, ...$params)
