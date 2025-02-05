@@ -10,9 +10,15 @@ abstract class az_i18n
 	 */
 	abstract public static function getDomain();
 
+	/**
+	 * a reference to any path in the current plugin
+	 * this is needed so we know where to load language files from 
+	 */
+	abstract public static function getPath();
+
 	public static function init($debug = false)
 	{
-		$plugin_root_dir = az_wp::getPluginDir(__FILE__);
+		$plugin_root_dir = az_wp::getPluginDir(self::getPath());
 		$lang_dir = $plugin_root_dir . '/languages/';
 
 
@@ -21,20 +27,29 @@ abstract class az_i18n
 		assert(file_exists($lang_dir), "Language directory not found: $lang_dir");
 
 
-		add_action('init', function () use ($domain, $lang_dir, $debug) {
-			load_plugin_textdomain(
-				$domain,
-				false,
-				$lang_dir
-			);
+		add_action(
+			'init',
+			function () use ($domain, $lang_dir, $debug) {
+				load_plugin_textdomain(
+					$domain,
+					false,
+					$lang_dir
+				);
+			},
+			2000
+		);
+		add_action('wp_loaded', function () use ($domain, $lang_dir, $debug) {
 			if ($debug) {
+				if (is_textdomain_loaded($domain)) \error_log($domain . ' domain is loaded');
+				else \error_log($domain . ' domain is NOT loaded');
+
 				$data = get_translations_for_domain($domain);
 				foreach ($data->entries as $entry) {
 					error_log("Original :" . $entry->singular);
 					error_log("Translated :" . $entry->translations[0]);
 				}
 			}
-		});
+		}, 8000);
 	}
 
 	public static function translate(string $str, ...$params)
