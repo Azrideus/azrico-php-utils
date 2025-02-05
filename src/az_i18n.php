@@ -18,7 +18,7 @@ abstract class az_i18n
 
 	public static function init($debug = false)
 	{
-		$plugin_root_dir = az_wp::getPluginDir(self::getPath());
+		$plugin_root_dir = az_wp::getPluginDir(static::getPath());
 		$lang_dir = $plugin_root_dir . '/languages/';
 
 
