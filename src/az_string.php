@@ -63,6 +63,8 @@ class az_string
 	 */
 	static function isYes($str): bool
 	{
+		if (empty($str)) return false;
+		$str = \strval($str);
 		return in_array(strtolower($str), ['درست', 'دارد', 'بله', 'on', 'true', 'yes', '1']);
 	}
 	/**
@@ -70,6 +72,7 @@ class az_string
 	 */
 	static function isNo($str): bool
 	{
+		$str = \strval($str);
 		return in_array(strtolower($str), ['غلط', 'ندارد', 'نه', 'خیر', 'none', 'default', 'no', '0']);
 	}
 	/**
