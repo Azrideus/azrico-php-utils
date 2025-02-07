@@ -119,7 +119,7 @@ class AZ_DataClass
 	{
 		return az_wp::getMetaBoolOf($search, $key);
 	}
-	static function getMetaNumericOf($search, string $key, int $default = -1): int
+	static function getMetaNumericOf($search, string $key, int $default = -1): int|float
 	{
 		return az_wp::getMetaNumericOf($search, $key, $default);
 	}

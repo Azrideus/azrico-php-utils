@@ -71,12 +71,14 @@ trait az_wp_post_meta
 			FILTER_VALIDATE_BOOL
 		);
 	}
-	static function getMetaNumericOf($search, string $key, int $default = -1): int
+	static function getMetaNumericOf($search, string $key, int $default = -1): int|float
 	{
 		$meta_value = self::getMetaOf(
 			$search,
 			$key
 		);
+		if (is_int($meta_value)) return intval($meta_value);
+		if (is_float($meta_value)) return floatval($meta_value);
 		if (is_numeric($meta_value)) return intval($meta_value);
 		return $default;
 	}
