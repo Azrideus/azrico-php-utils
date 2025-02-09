@@ -17,7 +17,7 @@ trait az_string_path
 		$joined = self::fix_path(join($sep, $parts), $sep);
 
 		//remove duplicate seperator 
-		$joined = preg_replace('#' . $sep . '+#', $sep, $joined);
+		$joined = preg_replace($sep . '+', $sep, $joined);
 
 		if ($sep == '/') {
 			// fix https://
