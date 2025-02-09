@@ -34,6 +34,5 @@ trait az_wp_styles
 				$version
 			);
 		}
-		error_log($file_path);
 	}
 }
