@@ -98,7 +98,7 @@ class az_string
 	/**
 	 * get the short name of a post by comparing its title and slug
 	 */
-	public static function getPostShortName(array|object $input): string
+	public static function get_post_shortname(array|object $input): string
 	{
 		if (is_a($input, 'WC_Product')) {
 			$title = $input->get_title();
@@ -110,8 +110,14 @@ class az_string
 			$title = $input['post_title'];
 			$slug = $input['post_name'];
 		}
-		if (empty($title) || empty($slug)) return $title;
-		return trim(self::findUpto($title, $slug));
+		if (!empty($title) && !empty($slug)) {
+			$title = self::findUpto($title, $slug);;
+		}
+		return self::trim_postname($title);
+	}
+	public static function trim_postname(string $title): string
+	{
+		return trim(trim($title, '*_- '));
 	}
 
 	static function truncate($string, $length, $dots = "...")
