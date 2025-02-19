@@ -7,6 +7,7 @@ use AzUtils\wp\az_wp_external_post;
 use AzUtils\wp\az_wp_post_meta;
 use AzUtils\wp\az_wp_post;
 use AzUtils\wp\az_wp_styles;
+use AzUtils\wp\az_wp_category;
 
 class az_wp
 {
@@ -14,6 +15,8 @@ class az_wp
 	use az_wp_post;
 	use az_wp_external_post;
 	use az_wp_styles;
+	use az_wp_category;
+
 	private static $cached_dirs = [];
 
 	static function getUrl($params = [])

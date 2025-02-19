@@ -6,7 +6,20 @@ use WP_Post;
 
 trait az_wp_post
 {
-
+	public static function get_category_taxonomy_of_post_type(
+		string|WP_Post|null $postType = null
+	): string {
+		if (empty($postType)) $postType = get_post_type();
+		$taxlist = get_object_taxonomies($postType);
+		$category_taxonomy = 'category';
+		foreach ($taxlist as $tax) {
+			if (str_contains($tax, 'category') || str_ends_with($tax, '_cat')) {
+				$category_taxonomy = $tax;
+				break;
+			}
+		}
+		return strval($category_taxonomy);
+	}
 
 	/**
 	 * check if we are in a blog based page 
