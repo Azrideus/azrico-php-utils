@@ -144,4 +144,19 @@ abstract class az_view
 	{
 		echo static::attr(...$params);
 	}
+
+	static function clsx(...$params)
+	{
+		$final_class = [];
+		foreach ($params as $key => $check_item) {
+			if (empty($check_item) || false == $check_item) continue;
+			if (is_array($check_item)) {
+				array_push($final_class, static::clsx(...$check_item));
+			} else if (is_string($check_item)) {
+				/* --------------------- attribute is given as a string --------------------- */
+				array_push($final_class, $check_item);
+			}
+		}
+		return join(' ', array_filter($final_class));
+	}
 }
