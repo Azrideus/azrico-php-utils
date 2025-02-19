@@ -50,13 +50,27 @@ abstract class az_view
 	{
 		return static::view("frontend/" . $dir, $model);
 	}
+	final static function echo_frontend($dir, $model = null)
+	{
+		echo static::frontend($dir, $model);
+	}
+
 	final static function backend($dir, $model = null)
 	{
 		return static::view("backend/" . $dir, $model);
 	}
+	final static function echo_backend($dir, $model = null)
+	{
+		echo static::backend($dir, $model);
+	}
+
 	final static function shared($dir, $model = null)
 	{
 		return static::view("shared/" . $dir, $model);
+	}
+	final static function echo_shared($dir, $model = null)
+	{
+		echo static::shared($dir, $model);
 	}
 
 
@@ -76,6 +90,11 @@ abstract class az_view
 		if (\is_callable($content)) $content = $content();
 		return "<$tag $attr> $content </$tag>";
 	}
+	public static function echo_element(string $tag, callable|string $content = '',  ...$rest_attr)
+	{
+		echo static::element($tag, $content, ...$rest_attr);
+	}
+
 	static function attr(...$params)
 	{
 
@@ -120,5 +139,9 @@ abstract class az_view
 			}
 		}
 		return trim($attr_str);
+	}
+	static function echo_attr(...$params)
+	{
+		echo static::attr(...$params);
 	}
 }

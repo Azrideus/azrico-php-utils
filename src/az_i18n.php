@@ -61,6 +61,10 @@ abstract class az_i18n
 	{
 		echo static::translate($str, ...$params);
 	}
+	public static function echo_translate(string $str, ...$params)
+	{
+		echo static::translate($str, ...$params);
+	}
 
 
 	private static function get_post_type(object $item)
