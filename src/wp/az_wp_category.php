@@ -34,7 +34,7 @@ trait az_wp_category
 		if (is_a($search, 'WP_Term')) {
 			if ($search->taxonomy == $tax)
 				return $search;
-			else $search = $search->name;
+			else $search = $search->slug;
 		}
 
 		if (is_numeric($search)) {
