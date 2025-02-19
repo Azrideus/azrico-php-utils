@@ -7,7 +7,22 @@ use WP_Post;
 
 trait az_wp_category
 {
-
+	/** 
+	 * get subcategories of a given category 
+	 */
+	public static function get_sub_categories(\WP_Term $category, $fields = 'ids')
+	{
+		return get_terms(
+			$category->taxonomy,
+			[
+				'parent' => $category->term_id,
+				'hide_empty' => false,
+				'fields' => $fields,
+				'orderby' => 'name',
+				'nopaging' => true
+			]
+		);
+	}
 	/**  
 	 * get a single category of a given taxonomy
 	 * @return \WP_Term
