@@ -8,17 +8,15 @@ abstract class az_date
 
 	static function short_date($v)
 	{
-		$now = time();
-		$your_date = (int) $v;
+		$now = time(); // or your date as well
+		$your_date =  strtotime($v);
 		$datediff = $now - $your_date;
 		// Convert difference to full days
-		$diff_days = (int) round($datediff / (60 * 60 * 24));
+		$diff_days = ceil(($datediff) / 86400);
 
 		if ($diff_days < 1) {
-			// Less than one day difference
 			return 'today';
-		} elseif ($diff_days === 1) {
-			// Exactly one day difference
+		} elseif ($diff_days <= 1) {
 			return 'yesterday';
 		} elseif ($diff_days < 7) {
 			// Under a week ago
