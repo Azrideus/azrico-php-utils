@@ -119,6 +119,13 @@ class az_string
 	{
 		return trim(trim($title, '*_- '));
 	}
+	/**
+	 * Trim the number index prefix from given string 
+	 */
+	public static function trim_number_prefix(string $title): string
+	{
+		return \preg_replace('/^\d+\.?/', '', trim($title));
+	}
 
 	static function truncate($string, $length, $dots = "...")
 	{
