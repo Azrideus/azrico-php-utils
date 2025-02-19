@@ -10,14 +10,14 @@ class az_string
 	/**
 	 * check if two string are not empty and equal ignorecase 
 	 */
-	static function eq($s1, $s2): bool
+	static function eq($s1, $s2, $not_empty = true): bool
 	{
-		if (empty($s1) || empty($s2)) return false;
+		if ($not_empty && (empty($s1) || empty($s2))) return false;
 		return (bool)(0 == strcasecmp($s1, $s2));
 	}
-	static function eq_loose($s1, $s2): bool
+	static function eq_loose($s1, $s2, $not_empty = true): bool
 	{
-		return (bool)self::eq(trim(strval($s1)), trim(strval($s2)));
+		return (bool)self::eq(trim(strval($s1)), trim(strval($s2)), $not_empty);
 	}
 	/**
 	 * converts string to lower and replaces white spaces with - 
@@ -111,11 +111,11 @@ class az_string
 			$slug = $input['post_name'];
 		}
 		if (!empty($title) && !empty($slug)) {
-			$title = self::findUpto($title, $slug);;
+			$title = self::find_upto($title, $slug);;
 		}
-		return self::trim_postname($title);
+		return self::trim_post_name($title);
 	}
-	public static function trim_postname(string $title): string
+	public static function trim_post_name(string $title): string
 	{
 		return trim(trim($title, '*_- '));
 	}
@@ -132,7 +132,7 @@ class az_string
 	 * @param string $needle
 	 * @return string
 	 */
-	static function findUpto(string $haysack, string $needle): string
+	static function find_upto(string $haysack, string $needle): string
 	{
 		$haysack_lower = strtolower($haysack);
 		$needle_lower = strtolower($needle);
@@ -144,7 +144,7 @@ class az_string
 			return substr($haysack, 0, $endpos);
 		}
 		if (str_contains($needle, '-')) {
-			return self::findUpto($haysack, str_replace("-", "", $needle));
+			return self::find_upto($haysack, str_replace("-", "", $needle));
 		}
 		return $haysack;
 	}
