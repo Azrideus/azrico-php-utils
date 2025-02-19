@@ -2,6 +2,8 @@
 
 namespace AzUtils\wp;
 
+use WP_Post;
+
 trait az_wp_post
 {
 
@@ -32,6 +34,13 @@ trait az_wp_post
 		if (is_a($input, 'WP_Post')) return $input->ID;
 		if (is_a($input, 'WC_Product')) return $input->get_id();
 		return null;
+	}
+
+	static function get_post($input): WP_Post|int|null
+	{
+		if (is_a($input, 'WP_Post')) return $input;
+		$post_id = static::getId($input);
+		return get_post($post_id);
 	}
 
 	/**
