@@ -10,7 +10,7 @@ trait az_wp_category
 
 	/**  
 	 * get a single category of a given taxonomy
-	 * @return WP_Term
+	 * @return \WP_Term
 	 */
 	public static function get_category(
 		string|int|object $search,
@@ -34,7 +34,7 @@ trait az_wp_category
 
 		if (empty($post)) {
 			$err = "findCategoriesOfPost failed because post is empty, searched for: " . json_encode($search);
-			return new WP_Error($err);
+			return new \WP_Error($err);
 		}
 		$ptype = az_wp::get_category_taxonomy_of_post_type(get_post_type($post));
 		$result_cats = wp_get_object_terms(az_wp::getId($post), $ptype, ['fields' => 'all']);

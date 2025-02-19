@@ -49,7 +49,7 @@ trait az_wp_post
 		return null;
 	}
 
-	static function get_post($input): WP_Post|int|null
+	static function get_post($input): \WP_Post|int|null
 	{
 		if (is_a($input, 'WP_Post')) return $input;
 		$post_id = static::getId($input);
