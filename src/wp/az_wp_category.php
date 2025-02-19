@@ -45,7 +45,7 @@ trait az_wp_category
 		bool $add_parent_cats = false
 	) {
 		if (empty($search)) $post = self::findPost(get_the_ID());
-		else $post = self::findPost($search, 'any');
+		else $post = az_wp::get_post($search, 'any');
 
 		if (empty($post)) {
 			$err = "findCategoriesOfPost failed because post is empty, searched for: " . json_encode($search);
