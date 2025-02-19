@@ -31,7 +31,12 @@ trait az_wp_category
 		string|int|object $search,
 		$tax = 'product_cat'
 	) {
-		if (is_a($search, 'WP_Term')) return $search;
+		if (is_a($search, 'WP_Term')) {
+			if ($search->taxonomy == $tax)
+				return $search;
+			else $search = $search->name;
+		}
+
 		if (is_numeric($search)) {
 			$search = intval($search);
 			return get_term_by('id', $search, $tax);
