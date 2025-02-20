@@ -24,29 +24,7 @@ trait az_wp_category
 			]
 		);
 	}
-	/**
-	 * get primary category of a given post
-	 * @param [] $search
-	 * @param [bool] $getFirst use the first category if no primary category is set
-	 * @return null|\WP_Term
-	 */
-	public static function get_primary_category(
-		string|int|object $search,
-		bool $getFirst = false
-	) {
-		$categories = static::get_categories_of($search);
-		$primary_category_id = az_wp::getMetaOf($search, '_yoast_wpseo_primary_category');
 
-		if (!empty($primary_category_id) && !is_wp_error($categories)) {
-			foreach ($categories as $cat) {
-				if ($primary_category_id == $cat->term_id)
-					return $cat;
-			}
-		}
-		if (true == $getFirst)
-			return reset($categories);
-		return null;
-	}
 
 
 	/**  
@@ -115,5 +93,28 @@ trait az_wp_category
 			}
 			return $result_cats;
 		});
+	}
+	/**
+	 * get primary category of a given post
+	 * @param [] $search
+	 * @param [bool] $getFirst use the first category if no primary category is set
+	 * @return null|\WP_Term
+	 */
+	public static function get_primary_category_of(
+		string|int|object $search,
+		bool $getFirst = false
+	) {
+		$categories = static::get_categories_of($search);
+		$primary_category_id = az_wp::getMetaOf($search, '_yoast_wpseo_primary_category');
+
+		if (!empty($primary_category_id) && !is_wp_error($categories)) {
+			foreach ($categories as $cat) {
+				if ($primary_category_id == $cat->term_id)
+					return $cat;
+			}
+		}
+		if (true == $getFirst)
+			return reset($categories);
+		return null;
 	}
 }
