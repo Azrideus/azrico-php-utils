@@ -28,6 +28,10 @@ trait az_wp_styles
 		);
 		$plugin_name = az_wp::getPluginName($plugin_file);
 		/* -------------------------------------------------------------------------- */
+		if (!file_exists($cache_folder)) {
+			mkdir($cache_folder, 0777, true);
+		}
+		/* -------------------------------------------------------------------------- */
 		$compressed_name = '__' . $plugin_name . '_' . $folder . '_' . $version . '.css';
 		$compressed_file = az_string::join_paths($cache_folder, $compressed_name);
 		if (!\file_exists($compressed_file)) {
