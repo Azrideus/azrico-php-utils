@@ -49,9 +49,13 @@ trait az_wp_category
 			}
 		}
 
-		if (\is_int($search)) {
+		if (\is_numeric($search)) {
 			$search = intval($search);
-			return get_term_by('id', $search, $tax);
+			$found_term = get_term_by('id', $search, '');
+			if (!empty($tax) && $found_term->taxonomy != $tax) {
+				\error_log('when using get_category with id. the $tax parameter did not match taxonomy of the given id');
+			}
+			return $found_term;
 		}
 		$search = strval($search);
 		return get_term_by('slug', ($search), $tax);
