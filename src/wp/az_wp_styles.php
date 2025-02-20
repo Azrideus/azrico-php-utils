@@ -29,7 +29,7 @@ trait az_wp_styles
 			mkdir($cache_folder, 0777, true);
 		}
 		/* -------------------------------------------------------------------------- */
-		$compressed_name = '__styles_' . $plugin_name . '_' . $folder . '_' . $version . '.css';
+		$compressed_name = '__' . $plugin_name . '_' . $folder . '_' . $version . '.css';
 		$compressed_file = az_string::join_paths($cache_folder, $compressed_name);
 		if (!\file_exists($compressed_file)) {
 			$css_files = scandir($file_path);
@@ -61,14 +61,19 @@ trait az_wp_styles
 		// Remove space after colons
 		$input = str_replace(': ', ':', $input);
 
+
+		$input = str_replace(["\r", "\n", "\t"], '', $input);
+
 		// input whitespace
-		$input = str_replace(array(
-			"\n",
-			"\t",
-			'  ',
-			'    ',
-			'    '
-		), '', $input);
+		$input = str_replace(
+			array(
+				'  ',
+				'    ',
+				'    '
+			),
+			'',
+			$input
+		);
 
 
 		return $input;
