@@ -51,11 +51,7 @@ trait az_wp_category
 
 		if (\is_numeric($search)) {
 			$search = intval($search);
-			$found_term = get_term_by('term_taxonomy_id', $search);
-			if (!empty($tax) && $found_term->taxonomy != $tax) {
-				\error_log('when using get_category with id. the $tax parameter did not match taxonomy of the given id');
-			}
-			return $found_term;
+			return get_term_by('term_id', $search, $tax);
 		}
 		$search = strval($search);
 		return get_term_by('slug', ($search), $tax);
