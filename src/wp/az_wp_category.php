@@ -28,7 +28,7 @@ trait az_wp_category
 	 * get primary category of a given post
 	 * @param [] $search
 	 * @param [bool] $getFirst use the first category if no primary category is set
-	 * @return null|WP_Term
+	 * @return null|\WP_Term
 	 */
 	public static function get_primary_category(
 		string|int|object $search,
@@ -78,7 +78,9 @@ trait az_wp_category
 		$search = strval($search);
 		return get_term_by('slug', ($search), $tax);
 	}
-
+	/**  
+	 * @return  \WP_Error|\WP_Term[]
+	 */
 	static function get_categories_of(
 		object $search,
 		bool $add_parent_cats = false
