@@ -55,7 +55,7 @@ trait az_wp_post_meta
 	}
 
 
-	static function get_meta_bool_of($search, string $key): int|float
+	static function get_meta_bool_of($search, string $key): bool
 	{
 		$meta_value = static::get_meta_of(
 			$search,
@@ -79,7 +79,7 @@ trait az_wp_post_meta
 		return $default;
 	}
 
-	static function get_meta_of($search, string $key, int $default = -1): int|float
+	static function get_meta_of($search, string $key)
 	{
 		assert(is_string($key) && strlen($key) > 0, 'invalid key for meta! got: ' . strval($key));
 		assert(function_exists('get_post_meta'), 'get_post_meta function is not defined. are you in a wordpress environment?');
