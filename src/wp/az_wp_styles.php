@@ -23,12 +23,15 @@ trait az_wp_styles
 			'src/styles/',
 			$folder
 		);
+		$plugin_name = az_wp::getPluginName($plugin_file);
+
 		$css_files = scandir($file_path);
 
 		foreach ($css_files as $file) {
 			if (!\str_ends_with($file, '.css')) continue;
+			$style_name = 'az_style__' . $plugin_name . '__' . $file;
 			wp_enqueue_style(
-				'azpcb-' . $file,
+				$style_name,
 				az_string::join_url($url_path, $file),
 				$deps,
 				$version

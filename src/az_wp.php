@@ -69,4 +69,14 @@ class az_wp
 
 		return self::$cached_dirs[$cache_name];
 	}
+	/**
+	 * get plugin dir path based on a given file path of the plugin 
+	 */
+	public static function getPluginName(string $file_path = '')
+	{
+		$path = self::getPluginDir($file_path);
+		$plugin_name = explode(DIRECTORY_SEPARATOR, $path);
+		$plugin_name = end($plugin_name);
+		return $plugin_name;
+	}
 }
