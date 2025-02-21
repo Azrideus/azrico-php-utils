@@ -2,6 +2,7 @@
 
 namespace AzUtils\wp;
 
+use AzUtils\az_object;
 use WP_Post;
 
 trait az_wp_post
@@ -49,11 +50,28 @@ trait az_wp_post
 		return null;
 	}
 
-	static function get_post($input): \WP_Post|int|null
+	static function get_post($input, string|array $post_type = ''): \WP_Post|int|null
 	{
-		if (is_a($input, 'WP_Post')) return $input;
-		$post_id = static::getId($input);
-		return get_post($post_id);
+		if (is_a($input, 'WP_Post')) {
+			$result = $input;
+		} else {
+			$post_id = static::getId($input);
+
+			if ($post_id < 0) return null;
+
+			$result = get_post($post_id);
+		}
+
+		/**
+		 * check if post type matches
+		 */
+		if (
+			!empty($post_type)
+			&& !empty($result)
+			&& !in_array($result->post_type, az_object::wrap_array($post_type))
+		) return null;
+
+		return $result;
 	}
 
 	/**

@@ -18,6 +18,15 @@ class az_object
 	{
 		return self::getRequestData($name);
 	}
+	/**
+	 * wrap given input in array 
+	 */
+	static function wrap_array($data)
+	{
+		if (is_array($data)) return $data;
+		if (empty($data)) return [];
+		return [$data];
+	}
 	static function get_from(object|array $arr, ...$keys)
 	{
 		if (is_object($arr)) $arr = (array)$arr;
