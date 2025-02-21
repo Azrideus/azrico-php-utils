@@ -56,9 +56,13 @@ trait az_wp_post
 	 */
 	static function get_post($input, string|array $post_type = ''): \WP_Post|null
 	{
+		if (empty($input)) return null;
+
 		if (is_a($input, 'WP_Post')) {
+			/* ------------------------------ post is given ----------------------------- */
 			$result = $input;
 		} else {
+			/* -------------------------------- get by id ------------------------------- */
 			$post_id = static::getId($input);
 
 			if ($post_id < 0) return null;
@@ -73,11 +77,15 @@ trait az_wp_post
 		}
 
 		/**
+		 * nothing found
+		 */
+		if (false == $result || empty($result)) return null;
+
+		/**
 		 * check if post type matches
 		 */
 		if (
 			!empty($post_type)
-			&& !empty($result)
 			&& !in_array($result->post_type, az_object::wrap_array($post_type))
 		) return null;
 
