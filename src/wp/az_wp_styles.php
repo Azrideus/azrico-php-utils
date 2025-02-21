@@ -38,6 +38,8 @@ trait az_wp_styles
 			'src/styles/',
 			$folder
 		);
+		$plugin_name = az_wp::getPluginName($plugin_file);
+		$style_prefix = "$plugin_name-$folder";
 		if ($use_cahce) {
 			/* -------------------------------------------------------------------------- */
 			/*                                  use cache                                 */
@@ -45,11 +47,10 @@ trait az_wp_styles
 			$cache_folder = az_string::join_paths($pdir, 'cache');
 			$cache_folder_url = az_string::join_paths(az_wp::getPluginUrl($plugin_file), 'cache');
 
-			$plugin_name = az_wp::getPluginName($plugin_file);
 			if (!file_exists($cache_folder)) {
 				mkdir($cache_folder, 0777, true);
 			}
-			$compressed_name = '__' . $plugin_name . '_' . $folder . '_' . $version . '.css';
+			$compressed_name = $style_prefix . '_' . $version . '.css';
 			$compressed_file = az_string::join_paths($cache_folder, $compressed_name);
 			if (!\file_exists($compressed_file)) {
 				$css_files = self::get_style_files($file_path);
@@ -80,9 +81,10 @@ trait az_wp_styles
 			$loaded_styles = [];
 			foreach ($css_files as $file) {
 				$file_name = basename($file);
-				$loaded_styles[] = $file_name;
+				$style_name = "$style_prefix-$file_name";
+				$loaded_styles[] = $style_name;
 				wp_enqueue_style(
-					$file_name,
+					$style_name,
 					az_string::join_url($file_url, $file_name),
 					$deps,
 					$version
