@@ -63,11 +63,12 @@ trait az_wp_post
 
 			if ($post_id < 0) return null;
 
-			$result = get_posts([
-				'post_type' => $post_type,
+			$sq = [
 				'post__in' => [$post_id],
 				'limit' => 1,
-			]);
+			];
+			if (!empty($post_type)) $sq['post_type'] = $post_type;
+			$result = get_posts($sq);
 			$result = end($result);
 		}
 
