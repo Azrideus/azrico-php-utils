@@ -71,13 +71,16 @@ trait az_wp_styles
 				$deps,
 				$version
 			);
+			return $compressed_name;
 		} else {
 			/* -------------------------------------------------------------------------- */
 			/*                           default mode. no cache                           */
 			/* -------------------------------------------------------------------------- */
 			$css_files = self::get_style_files($file_path);
+			$loaded_styles = [];
 			foreach ($css_files as $file) {
 				$file_name = basename($file);
+				$loaded_styles[] = $file_name;
 				wp_enqueue_style(
 					$file_name,
 					az_string::join_url($file_url, $file_name),
@@ -85,10 +88,8 @@ trait az_wp_styles
 					$version
 				);
 			}
+			return $loaded_styles;
 		}
-
-
-		return $compressed_name;
 	}
 	static function compress_css($input)
 	{
