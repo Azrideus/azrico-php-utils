@@ -50,7 +50,11 @@ trait az_wp_post
 		return null;
 	}
 
-	static function get_post($input, string|array $post_type = ''): \WP_Post|int|null
+
+	/**
+	 * get a post of given type 
+	 */
+	static function get_post($input, string|array $post_type = ''): \WP_Post|null
 	{
 		if (is_a($input, 'WP_Post')) {
 			$result = $input;
@@ -59,7 +63,12 @@ trait az_wp_post
 
 			if ($post_id < 0) return null;
 
-			$result = get_post($post_id);
+			$result = get_posts([
+				'post_type' => $post_type,
+				'post__in' => [$post_id],
+				'limit' => 1,
+			]);
+			$result = end($result);
 		}
 
 		/**
