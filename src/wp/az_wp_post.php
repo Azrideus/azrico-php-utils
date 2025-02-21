@@ -73,11 +73,17 @@ trait az_wp_post
 			$post_id = intval($input);
 			if ($post_id < 0) return null;
 
+			/**
+			 * if no $post_type is given use all post types to avoid exclude from search
+			 * https://stackoverflow.com/questions/30554730/get-all-post-types-in-wordpress-in-query-posts
+			 * https://wordpress.stackexchange.com/questions/13029/getting-only-a-specific-post-type-with-get-post
+			 */
+			if (empty($post_type)) $post_type =  get_post_types();
 			$sq = [
 				'post__in' => [$post_id],
 				'limit' => 1,
+				'post_type' => $post_type
 			];
-			if (!empty($post_type)) $sq['post_type'] = $post_type;
 			$result = get_posts($sq);
 			$result = end($result);
 		}
