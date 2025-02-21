@@ -61,10 +61,16 @@ trait az_wp_post
 		if (is_a($input, 'WP_Post')) {
 			/* ------------------------------ post is given ----------------------------- */
 			$result = $input;
-		} else {
-			/* -------------------------------- get by id ------------------------------- */
-			$post_id = static::getId($input);
+			unset($input);
+		} else if (is_a($input, 'WC_Product')) {
+			/* ------------------------------ post is given ----------------------------- */
+			$input = $input->get_id();
+		}
 
+
+		if (!empty($input) && \is_numeric($input)) {
+			/* -------------------------------- get by id ------------------------------- */
+			$post_id = intval($input);
 			if ($post_id < 0) return null;
 
 			$sq = [
@@ -79,7 +85,7 @@ trait az_wp_post
 		/**
 		 * nothing found
 		 */
-		if (false == $result || empty($result)) return null;
+		if (empty($result) || false == $result) return null;
 
 		/**
 		 * check if post type matches
