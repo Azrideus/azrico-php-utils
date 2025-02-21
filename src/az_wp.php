@@ -79,4 +79,9 @@ class az_wp
 		$plugin_name = end($plugin_name);
 		return $plugin_name;
 	}
+	public static function is_localhost($whitelist = ['127.0.0.1', '::1'])
+	{
+		return $_SERVER['HTTP_HOST'] == 'localhost' ||
+			in_array($_SERVER['REMOTE_ADDR'], $whitelist);
+	}
 }
