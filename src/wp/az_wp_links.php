@@ -14,12 +14,17 @@ trait az_wp_links
 		$res = (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 		return $res . static::build_parameters($params);
 	}
-	static function build_parameters($params = [])
+	static function build_parameters($params = [], $add_qmark = true)
 	{
 		$targetLink = '';
 		foreach ($params as $key => $value) {
-			$targetLink .= '&' . $key . '=' . $value;
+			$targetLink .= "&$key=$value";
 		}
+		$targetLink = trim($targetLink, '&');
+		/**
+		 * add question mark if needed
+		 */
+		if ($add_qmark && !empty($targetLink)) $targetLink = '?' . $targetLink;
 		return $targetLink;
 	}
 	static function ajaxlink($params = [])
@@ -29,9 +34,8 @@ trait az_wp_links
 	static function actionlink($action, $params = [])
 	{
 		$redirect_to = static::get_current_url();
-		$targetLink = admin_url('admin-post.php?action=' . $action) . static::build_parameters($params);
-		$targetLink .= '&backto' . '=' . urlencode($redirect_to);
-
+		$targetLink = admin_url('admin-post.php?action=' . $action)
+			. static::build_parameters([...$params, 'backto' => urlencode($redirect_to)]);
 		return wp_nonce_url($targetLink, $action);
 	}
 	static function url_add_params(string $url, array $params = [])
