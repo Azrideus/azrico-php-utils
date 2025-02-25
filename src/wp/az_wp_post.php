@@ -39,19 +39,32 @@ trait az_wp_post
 
 	/**
 	 * get id of given WP_Post or WC_Product
-	 *
+	 * @deprecated use get_id instead
 	 * @param [type] $input
 	 * @return integer|null
 	 */
 	static function getId($input): int|null
 	{
+		return self::get_id($input);
+	}
+	/**
+	 * get id of given WP_Post or WC_Product 
+	 * @param [type] $input
+	 * @return integer|null
+	 */
+	static function get_id($input): int|null
+	{
 		if (empty($input)) return null;
 		if ($input instanceof WP_Post) return $input->ID;
 		if ($input instanceof WC_Product) return $input->get_id();
 		if ($input instanceof WC_Order_Item_Product) return $input->get_product_id();
-		if (\is_array($input)) {
-			if (isset($input['id'])) return $input['id'];
+
+		if (\is_object($input)) {
+			if (property_exists($input, 'ID')) return $input->ID;
+			if (property_exists($input, 'id')) return $input->id;
+		} else if (\is_array($input)) {
 			if (isset($input['ID'])) return $input['ID'];
+			if (isset($input['id'])) return $input['id'];
 		}
 		return null;
 	}
@@ -71,7 +84,7 @@ trait az_wp_post
 			return $input->get_product();
 
 		/* ------------------------------- find the id ------------------------------ */
-		$pr_id = static::getId($input);
+		$pr_id = static::get_id($input);
 		if (empty($pr_id)) return null;
 		return wc_get_product($pr_id);
 	}

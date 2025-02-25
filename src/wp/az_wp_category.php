@@ -71,7 +71,7 @@ trait az_wp_category
 			return new \WP_Error($err);
 		}
 
-		$post_id = az_wp::getId($post);
+		$post_id = az_wp::get_id($post);
 		$cache_key = 'cats_' . $post_id . ($add_parent_cats ? "_p" : "_n");
 		return az_cache::get($cache_key, function () use ($post_id, $add_parent_cats) {
 
