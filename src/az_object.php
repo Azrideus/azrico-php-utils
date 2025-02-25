@@ -4,11 +4,13 @@ namespace AzUtils;
 
 class az_object
 {
+	static $local_cache = [];
 	/**
-	 * get data in either _POST or _GET
+	 * get data in either $_REQUEST, $_GET or $_GET
 	 */
-	static function getRequestData($name)
+	static function getRequestData(array|string|int $name)
 	{
+		if (\is_array($name)) $name = join('', $name);
 		if (isset($_REQUEST[$name])) return $_REQUEST[$name];
 		if (isset($_GET[$name])) return $_GET[$name];
 		if (isset($_POST[$name])) return $_POST[$name];
@@ -17,6 +19,16 @@ class az_object
 	static function get($name)
 	{
 		return self::getRequestData($name);
+	}
+	static function setGlobal($name, $value, $clear = false)
+	{
+		az_object::$local_cache[$name] = $value;
+		if ($clear) unset(az_object::$local_cache[$name]);
+	}
+	static function getGlobal($name)
+	{
+		if (isset(az_object::$local_cache[$name])) return az_object::$local_cache[$name];
+		return null;
 	}
 	static function get_from(object|array $arr, ...$keys)
 	{
