@@ -65,6 +65,9 @@ trait az_wp_post
 		if ($input instanceof WC_Order_Item_Product)
 			return $input->get_product();
 
+		if (is_numeric($input) && intval($input) > 0)
+			return wc_get_product(intval($input));
+
 		$pr_id = static::getId($input);
 		if (empty($pr_id)) return null;
 		return wc_get_product($pr_id);
