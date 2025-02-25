@@ -59,15 +59,18 @@ trait az_wp_post
 	static function get_product($input): \WC_Product|null
 	{
 		if (empty($input)) return null;
+
+		/* ------------------------------- id is given ------------------------------ */
+		if (is_int($input) || (is_numeric($input) && intval($input) > 0))
+			return wc_get_product(intval($input));
+
+		/* ------------------------- product object is given ------------------------ */
 		if ($input instanceof WC_Product)
 			return $input;
-
 		if ($input instanceof WC_Order_Item_Product)
 			return $input->get_product();
 
-		if (is_numeric($input) && intval($input) > 0)
-			return wc_get_product(intval($input));
-
+		/* ------------------------------- find the id ------------------------------ */
 		$pr_id = static::getId($input);
 		if (empty($pr_id)) return null;
 		return wc_get_product($pr_id);
