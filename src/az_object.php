@@ -53,4 +53,21 @@ class az_object
 		$arr[$key][] = $val;
 		return $arr[$key];
 	}
+	static function comma_array($val): array
+	{
+		if (is_string($val)) {
+			$val = trim(trim($val), ",");
+			return array_filter(explode(",", $val));
+		} else if (is_array($val)) {
+			return $val;
+		}
+		return [strval($val)];
+	}
+	static function singular($a)
+	{
+		if (is_array($a) && sizeof($a) === 1) {
+			return end($a);
+		}
+		return $a;
+	}
 }

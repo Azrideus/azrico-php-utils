@@ -3,10 +3,12 @@
 namespace AzUtils;
 
 use AzUtils\string\az_string_path;
+use AzUtils\string\az_string_serialize;
 
 class az_string
 {
 	use az_string_path;
+	use az_string_serialize;
 	/**
 	 * check if two string are not empty and equal ignorecase 
 	 */
