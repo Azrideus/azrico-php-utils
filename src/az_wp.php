@@ -8,6 +8,7 @@ use AzUtils\wp\az_wp_post_meta;
 use AzUtils\wp\az_wp_post;
 use AzUtils\wp\az_wp_styles;
 use AzUtils\wp\az_wp_category;
+use AzUtils\wp\az_wp_links;
 
 class az_wp
 {
@@ -16,13 +17,11 @@ class az_wp
 	use az_wp_external_post;
 	use az_wp_styles;
 	use az_wp_category;
+	use az_wp_links;
 
 	private static $cached_dirs = [];
 
-	static function getUrl($params = [])
-	{
-		return (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-	}
+
 
 	/**
 	 * get plugin base url path based on a given file path
