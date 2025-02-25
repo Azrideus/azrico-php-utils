@@ -45,12 +45,30 @@ trait az_wp_post
 	 */
 	static function getId($input): int|null
 	{
-		if (is_a($input, 'WP_Post')) return $input->ID;
-		if (is_a($input, 'WC_Product')) return $input->get_id();
+		if (empty($input)) return null;
+		if ($input instanceof WP_Post) return $input->ID;
+		if ($input instanceof WC_Product) return $input->get_id();
+		if ($input instanceof WC_Order_Item_Product) return $input->get_product_id();
+		if (\is_array($input)) {
+			if (isset($input['id'])) return $input['id'];
+			if (isset($input['ID'])) return $input['ID'];
+		}
 		return null;
 	}
 
+	static function get_product($input): \WC_Product|null
+	{
+		if (empty($input)) return null;
+		if ($input instanceof WC_Product)
+			return $input;
 
+		if ($input instanceof WC_Order_Item_Product)
+			return $input->get_product();
+
+		$pr_id = static::getId($input);
+		if (empty($pr_id)) return null;
+		return wc_get_product($pr_id);
+	}
 	/**
 	 * get a post of given type 
 	 */
@@ -58,11 +76,11 @@ trait az_wp_post
 	{
 		if (empty($input)) return null;
 
-		if (is_a($input, 'WP_Post')) {
+		if ($input instanceof \WP_Post) {
 			/* ------------------------------ post is given ----------------------------- */
 			$result = $input;
 			unset($input);
-		} else if (is_a($input, 'WC_Product')) {
+		} else if ($input instanceof \WC_Product) {
 			/* ------------------------------ post is given ----------------------------- */
 			$input = $input->get_id();
 		}
