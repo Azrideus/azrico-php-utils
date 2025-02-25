@@ -30,6 +30,15 @@ class az_object
 		if (isset(az_object::$local_cache[$name])) return az_object::$local_cache[$name];
 		return null;
 	}
+	/**
+	 * wrap given input in array 
+	 */
+	static function wrap_array($data)
+	{
+		if (is_array($data)) return $data;
+		if (empty($data)) return [];
+		return [$data];
+	}
 	static function get_from(object|array $arr, ...$keys)
 	{
 		if (is_object($arr)) $arr = (array)$arr;

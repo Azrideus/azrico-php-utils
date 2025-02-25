@@ -61,9 +61,13 @@ abstract class az_i18n
 	{
 		echo static::translate($str, ...$params);
 	}
+	public static function echo_translate(string $str, ...$params)
+	{
+		echo static::translate($str, ...$params);
+	}
 
 
-	private static function getPostType(object $item)
+	private static function get_post_type(object $item)
 	{
 		assert(is_a($item, 'WP_Post'), 'Invalid post object');
 		$ptype = $item->post_type;
@@ -114,8 +118,8 @@ abstract class az_i18n
 		}
 		return $item->post_type;
 	}
-	public static function translatePostType(object $item): string
+	public static function translate_post_type(object $item): string
 	{
-		return static::translate(static::getPostType($item));
+		return static::translate(static::get_post_type($item));
 	}
 }

@@ -30,8 +30,8 @@ class az_jsonld
 		assert(is_a($pr, 'WC_Product'), 'jsonld: invalid product');
 		assert(function_exists('get_woocommerce_currency'), 'jsonld: WC is not installed');
 
-		// return YoastSEO()->meta->for_post($pr->get_id())->schema; 
-		$validuntil = (new DateTime('tomorrow'))->format(DateTime::ATOM);
+		// return YoastSEO()->meta->for_post($pr->get_id())->schema;  
+		$validuntil = date("Y-m-d", strtotime('tomorrow'));
 		$currency = get_woocommerce_currency();
 		$desc = $pr->get_description();
 		if (empty($desc)) $desc = $pr->get_title();

@@ -11,7 +11,7 @@ trait az_wp_external_post
 	 * works for both internal posts and external links such as youtube videos 
 	 * @param [type] $post
 	 */
-	static function getPostLink(object $post): string
+	static function get_post_link(object $post): string
 	{
 		$itemid = $post->ID;
 

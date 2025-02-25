@@ -6,12 +6,17 @@ use AzUtils\classes\AZ_DataClass;
 use AzUtils\wp\az_wp_external_post;
 use AzUtils\wp\az_wp_post_meta;
 use AzUtils\wp\az_wp_post;
+use AzUtils\wp\az_wp_styles;
+use AzUtils\wp\az_wp_category;
 
 class az_wp
 {
 	use az_wp_post_meta;
 	use az_wp_post;
 	use az_wp_external_post;
+	use az_wp_styles;
+	use az_wp_category;
+
 	private static $cached_dirs = [];
 
 	static function getUrl($params = [])
@@ -63,5 +68,20 @@ class az_wp
 		}
 
 		return self::$cached_dirs[$cache_name];
+	}
+	/**
+	 * get plugin dir path based on a given file path of the plugin 
+	 */
+	public static function getPluginName(string $file_path = '')
+	{
+		$path = self::getPluginDir($file_path);
+		$plugin_name = explode(DIRECTORY_SEPARATOR, $path);
+		$plugin_name = end($plugin_name);
+		return $plugin_name;
+	}
+	public static function is_localhost($whitelist = ['127.0.0.1', '::1'])
+	{
+		return $_SERVER['HTTP_HOST'] == 'localhost' ||
+			in_array($_SERVER['REMOTE_ADDR'], $whitelist);
 	}
 }

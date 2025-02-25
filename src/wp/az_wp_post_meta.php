@@ -4,20 +4,83 @@ namespace AzUtils\wp;
 
 trait az_wp_post_meta
 {
+	/**
+	 * @deprecated
+	 */
+	static function getMetaBoolOf($search, string $key): bool
+	{
+		return static::get_meta_bool_of(
+			$search,
+			$key
+		);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	static function getMetaNumericOf($search, string $key, int $default = -1): int|float
+	{
+		return static::get_meta_numeric_of(
+			$search,
+			$key,
+			$default
+		);
+	}
 
 
+	/**
+	 * @deprecated
+	 */
+	static function getMetaOf($search, string $key)
+	{
+		return static::get_meta_of($search, $key);
+	}
+	/**
+	 * @deprecated
+	 */
 	static function getMetaListOf($search, array $key_list): array
+	{
+		return static::get_meta_list_of($search, $key_list);
+	}
+
+
+	static function get_meta_list_of($search, array $key_list): array
 	{
 		if (is_a($search, 'WP_Post')) $search = $search->ID;
 		$res = [];
 		foreach ($key_list as $key) {
-			$res[$key] = self::getMetaOf($search, $key);
+			$res[$key] = static::get_meta_of($search, $key);
 		}
 		return $res;
 	}
-	static function getMetaOf($search, string $key)
-	{
 
+
+	static function get_meta_bool_of($search, string $key): bool
+	{
+		$meta_value = static::get_meta_of(
+			$search,
+			$key
+		);
+		if (empty($meta_value)) return false;
+		return filter_var(
+			$meta_value,
+			FILTER_VALIDATE_BOOL
+		);
+	}
+	static function get_meta_numeric_of($search, string $key, int $default = -1): int|float
+	{
+		$meta_value = static::get_meta_of(
+			$search,
+			$key
+		);
+		if (is_int($meta_value)) return intval($meta_value);
+		if (is_float($meta_value)) return floatval($meta_value);
+		if (is_numeric($meta_value)) return intval($meta_value);
+		return $default;
+	}
+
+	static function get_meta_of($search, string $key)
+	{
 		assert(is_string($key) && strlen($key) > 0, 'invalid key for meta! got: ' . strval($key));
 		assert(function_exists('get_post_meta'), 'get_post_meta function is not defined. are you in a wordpress environment?');
 
@@ -58,28 +121,5 @@ trait az_wp_post_meta
 			$key,
 			true
 		);
-	}
-	static function getMetaBoolOf($search, string $key): bool
-	{
-		$meta_value = self::getMetaOf(
-			$search,
-			$key
-		);
-		if (empty($meta_value)) return false;
-		return filter_var(
-			$meta_value,
-			FILTER_VALIDATE_BOOL
-		);
-	}
-	static function getMetaNumericOf($search, string $key, int $default = -1): int|float
-	{
-		$meta_value = self::getMetaOf(
-			$search,
-			$key
-		);
-		if (is_int($meta_value)) return intval($meta_value);
-		if (is_float($meta_value)) return floatval($meta_value);
-		if (is_numeric($meta_value)) return intval($meta_value);
-		return $default;
 	}
 }
