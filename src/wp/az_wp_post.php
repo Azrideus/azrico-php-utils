@@ -72,18 +72,16 @@ trait az_wp_post
 	/**
 	 * get cart_item by its key 
 	 */
-	static function get_cart_item(string|array $input): array
+	static function get_cart_item(string|array $input): null|array
 	{
 		$cart = WC()->cart->get_cart();
 		if (is_array($input) && isset($input['key'])) $input = $input['key'];
 
 		if (isset($cart[$input])) return $cart[$input];
 		foreach ($cart as $cart_item_key => $cart_item) {
-			if ($cart_item_key === $input) {
+			if ($cart_item_key === $input)
 				return $cart_item;
-			}
 		}
-
 		return null;
 	}
 	static function get_product($input): \WC_Product|null
