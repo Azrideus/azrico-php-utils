@@ -74,7 +74,8 @@ trait az_wp_post
 	 */
 	static function get_cart_item(string|array $input): null|array
 	{
-		$cart = WC()->cart->get_cart();
+		global $woocommerce;
+		$cart = $woocommerce->cart->get_cart();
 		if (is_array($input) && isset($input['key'])) $input = $input['key'];
 
 		if (isset($cart[$input])) return $cart[$input];
