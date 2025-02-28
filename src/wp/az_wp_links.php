@@ -34,8 +34,12 @@ trait az_wp_links
 	static function actionlink($action, $params = [])
 	{
 		$redirect_to = static::get_current_url();
-		$targetLink = admin_url('admin-post.php?action=' . $action)
-			. static::build_parameters([...$params, 'backto' => urlencode($redirect_to)]);
+		$targetLink = admin_url('admin-post.php')
+			. static::build_parameters([
+				...$params,
+				'action' => $action,
+				'backto' => urlencode($redirect_to)
+			]);
 		return wp_nonce_url($targetLink, $action);
 	}
 	static function url_add_params(string $url, array $params = [])
