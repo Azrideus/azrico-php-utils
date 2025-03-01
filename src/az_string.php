@@ -129,6 +129,15 @@ class az_string
 		return \preg_replace('/^\d+\.?/', '', trim($title));
 	}
 
+	/**
+	 * Remove any non numeric value from given string 
+	 * then cast it to float
+	 */
+	public static function to_number(string $title): float
+	{
+		return floatval(\preg_replace('/[^\d.]+/', '', $title));
+	}
+
 	static function truncate($string, $length, $dots = "...")
 	{
 		return (strlen($string) > $length) ? substr($string, 0, $length - strlen($dots)) . $dots : $string;
