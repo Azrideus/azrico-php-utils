@@ -53,6 +53,16 @@ class az_object
 		$arr[$key][] = $val;
 		return $arr[$key];
 	}
+
+	/**
+	 * Remove given element from array 
+	 */
+	static function arr_remove(array $arr, $rm): array
+	{
+		return array_filter($arr, static function ($element) use ($rm) {
+			return $element !== $rm;
+		});
+	}
 	static function comma_array($val): array
 	{
 		if (is_string($val)) {
