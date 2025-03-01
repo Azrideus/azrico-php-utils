@@ -133,9 +133,9 @@ class az_string
 	 * Remove any non numeric value from given string 
 	 * then cast it to float
 	 */
-	public static function to_number(string $title): float
+	public static function to_float(string $title): float
 	{
-		return floatval(\preg_replace('/[^\d.]+/', '', $title));
+		return floatval(\preg_replace('/[^0-9-.]/', '', $title));
 	}
 
 	static function truncate($string, $length, $dots = "...")
