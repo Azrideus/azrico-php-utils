@@ -5,6 +5,8 @@ namespace AzUtils;
 
 class az_math
 {
+	static $basic_operator_regex = "/(>=|<=|<|>)/";
+
 	public static function ceil_plus(float $value, ?int $precision = null): float
 	{
 		if (null === $precision) {
@@ -27,6 +29,16 @@ class az_math
 	{
 		return in_array(str_split(strval($number)), ['.', ',']);
 	}
+
+	public static function get_operator(string $operation): string
+	{
+		preg_match(self::$basic_operator_regex, $operation, $operator_match);
+		if (!$operator_match) {
+			throw new \InvalidArgumentException("Invalid operation format");
+		}
+		return $operator_match[0];
+	}
+
 	/**
 	 * check if a basic `>,<,<=,>=` operation is satisfied
 	 *
@@ -35,17 +47,17 @@ class az_math
 	 */
 	public static function is_satisfied(string $operation): bool
 	{
-		$operator_regex = "/(>=|<=|<|>)/";
+
 
 		// Extract operands and operator
-		preg_match($operator_regex, $operation, $operator_match);
+		preg_match(self::$basic_operator_regex, $operation, $operator_match);
 
 		if (!$operator_match) {
 			throw new \InvalidArgumentException("Invalid operation format");
 		}
 
 		$operator = $operator_match[0];
-		$operands = preg_split($operator_regex, $operation);
+		$operands = preg_split(self::$basic_operator_regex, $operation);
 
 		if (count($operands) !== 2) {
 			throw new \InvalidArgumentException("Invalid number of operands");
