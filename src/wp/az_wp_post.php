@@ -111,6 +111,15 @@ trait az_wp_post
 	{
 		if (empty($input)) return null;
 
+		if (
+			is_object($input)
+			&& property_exists($input, 'field')
+			&& $input->field instanceof \WP_Post
+		) {
+			$input = $input->field;
+		}
+
+
 		if ($input instanceof \WP_Post) {
 			/* ------------------------------ post is given ----------------------------- */
 			$result = $input;

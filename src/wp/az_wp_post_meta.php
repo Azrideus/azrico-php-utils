@@ -2,6 +2,8 @@
 
 namespace AzUtils\wp;
 
+use AzUtils\az_wp;
+
 trait az_wp_post_meta
 {
 	/**
@@ -120,6 +122,23 @@ trait az_wp_post_meta
 			$search,
 			$key,
 			true
+		);
+	}
+	static function set_meta_of($search, string $key, $value)
+	{
+		$search = az_wp::get_post($search);
+		/**
+		 * WP_Post
+		 */
+		if (is_a($search, 'WP_Post')) {
+			$search = $search->ID;
+		}
+		assert(is_numeric($search), 'could not load the post id to set its meta! got: ' . strval($search));
+
+		return update_post_meta(
+			$search,
+			$key,
+			$value
 		);
 	}
 }
