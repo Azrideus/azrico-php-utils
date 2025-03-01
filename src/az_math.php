@@ -38,6 +38,14 @@ class az_math
 		}
 		return $operator_match[0];
 	}
+	public static function split_operands(string $operation): array
+	{
+		$operands = preg_split(self::$basic_operator_regex, $operation);
+		if (count($operands) !== 2) {
+			throw new \InvalidArgumentException("Invalid number of operands");
+		}
+		return $operands;
+	}
 
 	/**
 	 * check if a basic `>,<,<=,>=` operation is satisfied
@@ -48,20 +56,9 @@ class az_math
 	public static function is_satisfied(string $operation): bool
 	{
 
+		$operator = self::get_operator($operation);
+		$operands = self::split_operands($operation);
 
-		// Extract operands and operator
-		preg_match(self::$basic_operator_regex, $operation, $operator_match);
-
-		if (!$operator_match) {
-			throw new \InvalidArgumentException("Invalid operation format");
-		}
-
-		$operator = $operator_match[0];
-		$operands = preg_split(self::$basic_operator_regex, $operation);
-
-		if (count($operands) !== 2) {
-			throw new \InvalidArgumentException("Invalid number of operands");
-		}
 
 		// Trim and convert operands to numbers
 		$left = trim($operands[0]);
