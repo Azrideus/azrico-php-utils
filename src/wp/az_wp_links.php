@@ -15,10 +15,32 @@ trait az_wp_links
 
 		return static::add_parameters($res, $params);
 	}
+
+
+	/**
+	 * add given parameters to the url 
+	 */
 	static function add_parameters($url, $params = [])
 	{
-		$add_qmark = \str_contains($url, '?') ? '&' : '?';
-		return $url . static::build_parameters($params, $add_qmark);
+		$parsed_url = \parse_url($url);
+		if ($parsed_url === false) {
+			return $url; // Return original URL if parsing fails
+		}
+		// Extract components
+		$scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+		$host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+		$port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+		$path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+		$query    = isset($parsed_url['query']) ? $parsed_url['query'] : '';
+
+		// Convert query string into an array
+		parse_str($query, $query_array);
+		// Merge existing query parameters with new ones
+		$query_array = array_merge($query_array, $params);
+		// Build new query string
+		$new_query = http_build_query($query_array);
+		// Construct final URL
+		return $scheme . $host . $port . $path . (!empty($new_query) ? '?' . $new_query : '');
 	}
 	static function build_parameters($params = [], $ending_mark = '?')
 	{
