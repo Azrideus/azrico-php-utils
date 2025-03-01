@@ -97,6 +97,7 @@ abstract class az_view
 
 	static function attr(...$params)
 	{
+		$esc_func = \function_exists('esc_attr') ? 'esc_attr' : null;
 
 		$attr_str = '';
 		$final_list = [];
@@ -129,13 +130,13 @@ abstract class az_view
 		}
 
 		foreach ($final_list as $sub_key => $value) {
-			if (is_numeric($sub_key) && is_string($value)) {
-				$attr_str .= ' ' . $value;
+			if (is_array($value)) $value = trim(join(" ", array_unique($value)));
+			$value = $esc_func ? $esc_func($value) : $value;
+
+			if (is_numeric($sub_key)) {
+				$attr_str .= " $value";
 			} else {
-				$attr_str .= ' ' . $sub_key;
-				$attr_str .= "='";
-				$attr_str .= trim(join(" ", array_unique($value)));
-				$attr_str .= "'";
+				$attr_str .= " $sub_key='$value'";
 			}
 		}
 		return trim($attr_str);
