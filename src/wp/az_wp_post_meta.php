@@ -84,30 +84,30 @@ trait az_wp_post_meta
 	static function get_meta_of($search, string $key)
 	{
 		assert(is_string($key) && strlen($key) > 0, 'invalid key for meta! got: ' . strval($key));
-		assert(function_exists('get_post_meta'), 'get_post_meta function is not defined. are you in a wordpress environment?');
 
+		if (!is_numeric($search)) {
+			/**
+			 * WP_Term
+			 */
+			if (
+				$search instanceof \WP_Term
+			) {
+				return get_term_meta($search->term_id, $key, true);
+			}
+			/**
+			 * WC_Order_Item
+			 */
+			if ($search instanceof \WC_Order_Item) {
+				return $search->get_meta($key);
+			}
+			/**
+			 * WP_Post
+			 */
+			$search = az_wp::get_post($search);
+			if ($search instanceof \WP_Post)
+				$search = $search->ID;
+		}
 
-		/**
-		 * WP_Term
-		 */
-		if (
-			$search instanceof \WP_Term
-		) {
-			return get_term_meta($search->term_id, $key, true);
-		}
-		/**
-		 * WC_Order_Item
-		 */
-		if ($search instanceof \WC_Order_Item) {
-			return $search->get_meta($key);
-		}
-		/**
-		 * WP_Post
-		 */
-		$search = az_wp::get_post($search);
-		if ($search instanceof \WP_Post) {
-			$search = $search->ID;
-		}
 
 		assert(is_numeric($search), 'could not load the post id to get its meta! got: ' . strval($search));
 
@@ -119,13 +119,15 @@ trait az_wp_post_meta
 	}
 	static function set_meta_of($search, string $key, $value)
 	{
-		/**
-		 * WP_Post
-		 */
-		$search = az_wp::get_post($search);
-		if ($search instanceof \WP_Post) {
-			$search = $search->ID;
+		if (!is_numeric($search)) {
+			/**
+			 * WP_Post
+			 */
+			$search = az_wp::get_post($search);
+			if ($search instanceof \WP_Post)
+				$search = $search->ID;
 		}
+
 		assert(is_numeric($search), 'could not load the post id to set its meta! got: ' . strval($search));
 
 		return update_post_meta(
