@@ -59,6 +59,7 @@ class az_object
 	 */
 	static function array_remove(array $arr, $rm): array
 	{
+		if (!in_array($rm, $arr)) return $arr;
 		return array_filter($arr, static function ($element) use ($rm) {
 			return $element !== $rm;
 		});
