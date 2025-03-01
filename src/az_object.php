@@ -47,7 +47,7 @@ class az_object
 		}
 		return null;
 	}
-	static function arr_push(array $arr, $key, $val): array
+	static function array_push(array $arr, $key, $val): array
 	{
 		if (empty($arr[$key])) $arr[$key] = [];
 		$arr[$key][] = $val;
@@ -57,7 +57,7 @@ class az_object
 	/**
 	 * Remove given element from array 
 	 */
-	static function arr_remove(array $arr, $rm): array
+	static function array_remove(array $arr, $rm): array
 	{
 		return array_filter($arr, static function ($element) use ($rm) {
 			return $element !== $rm;
