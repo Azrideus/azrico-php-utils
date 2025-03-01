@@ -12,34 +12,39 @@ trait az_wp_links
 	static function get_current_url($params = [])
 	{
 		$res = (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-		return $res . static::build_parameters($params);
+
+		return static::add_parameters($res, $params);
 	}
-	static function build_parameters($params = [], $add_qmark = true)
+	static function add_parameters($url, $params = [])
 	{
-		$targetLink = '';
-		foreach ($params as $key => $value) {
-			$targetLink .= "&$key=$value";
-		}
-		$targetLink = trim($targetLink, '&');
+		$add_qmark = \str_contains($url, '?') ? '&' : '?';
+		return $url . static::build_parameters($params, $add_qmark);
+	}
+	static function build_parameters($params = [], $ending_mark = '?')
+	{
+		$q = http_build_query($params);
 		/**
 		 * add question mark if needed
 		 */
-		if ($add_qmark && !empty($targetLink)) $targetLink = '?' . $targetLink;
-		return $targetLink;
+		if ($ending_mark != false && !empty($ending_mark) && !empty($final_params))
+			$final_params = $ending_mark . $q;
+		return $q;
 	}
 	static function ajaxlink($params = [])
 	{
-		return admin_url('admin-ajax.php') . static::build_parameters($params);
+		return static::add_parameters(admin_url('admin-ajax.php'), $params);
 	}
 	static function actionlink($action, $params = [])
 	{
 		$redirect_to = static::get_current_url();
-		$targetLink = admin_url('admin-post.php')
-			. static::build_parameters([
+		$targetLink =  static::add_parameters(
+			admin_url('admin-post.php'),
+			[
 				...$params,
 				'action' => $action,
 				'backto' => urlencode($redirect_to)
-			]);
+			]
+		);
 		return wp_nonce_url($targetLink, $action);
 	}
 	static function url_add_params(string $url, array $params = [])
