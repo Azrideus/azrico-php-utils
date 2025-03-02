@@ -2,30 +2,14 @@
 
 namespace AzUtils\wp;
 
+use AzUtils\az_assets;
 use AzUtils\az_string;
 use AzUtils\az_wp;
 
-trait az_wp_styles_js
+trait az_wp_plugin
 {
-	/**
-	 * get a list of all css  files in given dir 
-	 */
-	private static function get_style_files($file_path)
-	{
-		$css_files = scandir($file_path);
-		$css_files = array_filter($css_files, function ($file) {
-			return \str_ends_with($file, '.css');
-		});
-		return $css_files;
-	}
-	private static function get_js_files($file_path)
-	{
-		$css_files = scandir($file_path);
-		$css_files = array_filter($css_files, function ($file) {
-			return \str_ends_with($file, '.js');
-		});
-		return $css_files;
-	}
+
+
 	static function load_style_folder(
 		string $plugin_file,
 		string $folder,
@@ -46,8 +30,12 @@ trait az_wp_styles_js
 			'src/styles/',
 			$folder
 		);
+		if (!\file_exists($file_path)) return;
+
 		$plugin_name = az_wp::getPluginName($plugin_file);
 		$style_prefix = "$plugin_name-$folder";
+
+
 		if ($use_cahce) {
 			/* -------------------------------------------------------------------------- */
 			/*                                  use cache                                 */
@@ -61,14 +49,14 @@ trait az_wp_styles_js
 			$compressed_name = $style_prefix . '_' . $version . '.css';
 			$compressed_file = az_string::join_paths($cache_folder, $compressed_name);
 			if (!\file_exists($compressed_file)) {
-				$css_files = self::get_style_files($file_path);
+				$css_files = az_assets::get_files_in($file_path, '.css');
 				$compressed_css = '';
 				foreach ($css_files as $file) {
 					// Load the content of the css file 
 					$css_content = file_get_contents(az_string::join_paths($file_path, $file));
 					$compressed_css .= ' ' . $css_content;
 				}
-				$compressed_css = self::compress_css($compressed_css);
+				$compressed_css = az_assets::compress_css($compressed_css);
 				$myfile = fopen($compressed_file, "w") or die("unable to open file!");
 				fwrite($myfile, $compressed_css);
 				fclose($myfile);
@@ -85,7 +73,7 @@ trait az_wp_styles_js
 			/* -------------------------------------------------------------------------- */
 			/*                           default mode. no cache                           */
 			/* -------------------------------------------------------------------------- */
-			$css_files = self::get_style_files($file_path);
+			$css_files = az_assets::get_files_in($file_path, '.css');
 			$loaded_styles = [];
 			foreach ($css_files as $file) {
 				$file_name = basename($file);
@@ -101,28 +89,7 @@ trait az_wp_styles_js
 			return $loaded_styles;
 		}
 	}
-	static function compress_css($input)
-	{
-		// Remove space after colons
-		$input = str_replace(': ', ':', $input);
 
-
-		$input = str_replace(["\r", "\n", "\t"], '', $input);
-
-		// input whitespace
-		$input = str_replace(
-			array(
-				'  ',
-				'    ',
-				'    '
-			),
-			'',
-			$input
-		);
-
-
-		return $input;
-	}
 
 	static function load_js_folder(
 		string $plugin_file,
@@ -150,7 +117,7 @@ trait az_wp_styles_js
 		/* -------------------------------------------------------------------------- */
 		/*                           default mode. no cache                           */
 		/* -------------------------------------------------------------------------- */
-		$css_files = self::get_js_files($file_path);
+		$css_files = az_assets::get_files_in($file_path, '.js');
 		$loaded_files = [];
 		foreach ($css_files as $file) {
 			$file_name = basename($file);
@@ -164,5 +131,66 @@ trait az_wp_styles_js
 			);
 		}
 		return $loaded_files;
+	}
+
+	/**
+	 * prepare plugin js files 
+	 */
+	static function load_plugin_js(string $plugin_file, $version)
+	{
+		add_action(
+			'wp_enqueue_scripts',
+			function () use ($plugin_file, $version) {
+				az_wp::load_js_folder($plugin_file, 'frontend', [], $version);
+				az_wp::load_style_folder($plugin_file, 'shared', [], $version);
+			}
+		);
+		add_action(
+			'admin_enqueue_scripts',
+			function () use ($plugin_file, $version) {
+				az_wp::load_js_folder($plugin_file, 'admin', [], $version);
+				az_wp::load_js_folder($plugin_file, 'backend', [], $version);
+				az_wp::load_js_folder($plugin_file, 'shared', [], $version);
+			}
+		);
+	}
+	/**
+	 * prepare plugin js files 
+	 */
+	static function load_plugin_css(string $plugin_file, $version)
+	{
+		add_action(
+			'wp_enqueue_scripts',
+			function () use ($plugin_file, $version) {
+				az_wp::load_style_folder($plugin_file, 'frontend', [], $version);
+				az_wp::load_style_folder($plugin_file, 'shared', [], $version);
+			}
+		);
+		add_action(
+			'admin_enqueue_scripts',
+			function () use ($plugin_file, $version) {
+				az_wp::load_style_folder($plugin_file, 'admin', [], $version);
+				az_wp::load_style_folder($plugin_file, 'backend', [], $version);
+				az_wp::load_style_folder($plugin_file, 'shared', [], $version);
+			}
+		);
+	}
+	/**
+	 * load all loader.php files in the plugin/src
+	 * 
+	 */
+	static function load_plugin_files(string $plugin_file,)
+	{
+		$pdir = az_wp::getPluginDir($plugin_file);
+		$load_paths = ['classes', 'styles', 'js'];
+		foreach ($load_paths as $f) {
+			$loader_path = az_string::join_paths(
+				$pdir,
+				$f,
+				'loader.php'
+			);
+			if (!file_exists($loader_path)) continue;
+			require_once $loader_path;
+		}
 	}
 }
