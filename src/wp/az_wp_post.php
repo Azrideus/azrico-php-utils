@@ -3,6 +3,7 @@
 namespace AzUtils\wp;
 
 use AzUtils\az_object;
+use AzUtils\az_wp;
 use WP_Post;
 
 trait az_wp_post
@@ -160,7 +161,7 @@ trait az_wp_post
 		 */
 		if (
 			!empty($post_type)
-			&& !in_array($result->post_type, az_object::wrap_array($post_type))
+			&& !az_wp::post_type_matches($result, $post_type)
 		) return null;
 
 		return $result;
@@ -172,7 +173,7 @@ trait az_wp_post
 	 * @param [type] $input
 	 * @param array|string $allowedTypes 
 	 */
-	static function postTypeMatches(object $input, array|string $allowedTypes)
+	static function post_type_matches(object $input, array|string $allowedTypes)
 	{
 		if (is_object($input) && property_exists($input, 'post_type'))
 			$input = $input->post_type;

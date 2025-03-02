@@ -64,10 +64,12 @@ trait az_wp_category
 		bool $add_parent_cats = false
 	) {
 		if (empty($search)) $post =  az_wp::get_post(get_the_ID());
-		else $post = az_wp::get_post($search, 'any');
+		else $post = az_wp::get_post($search);
 
 		if (empty($post)) {
-			$err = "findCategoriesOfPost failed because post is empty, searched for: " . json_encode($search);
+			$err = "get_categories_of failed because post is empty";
+			$err .= " \n searched for: " . json_encode($search);
+			$err .= " \n got : " . json_encode($post);
 			return new \WP_Error($err);
 		}
 
