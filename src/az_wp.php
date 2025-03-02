@@ -71,13 +71,20 @@ class az_wp
 
 	public static function getPluginMainFile(string $plugin_file = '')
 	{
-		$pdir = az_wp::getPluginDir($plugin_file);
-		$files = az_assets::get_files_in($pdir, '.php');
-		foreach ($files as $f) {
-			$plugin_data = get_file_data($f, ['Version' => 'Version']);
-			if ($f['Version']) return $f;
+		$cache_name = (empty($file_path) ? __FILE__ : $file_path) . "__main_file";
+		if (!isset(self::$cached_dirs[$cache_name])) {
+			$pdir = az_wp::getPluginDir($plugin_file);
+			$files = az_assets::get_files_in($pdir, '.php');
+			foreach ($files as $f) {
+				$plugin_data = get_file_data($f, ['Version' => 'Version']);
+				if ($plugin_data['Version']) {
+					self::$cached_dirs[$cache_name] = $f;
+					break;
+				}
+			}
 		}
-		return null;
+
+		return self::$cached_dirs[$cache_name];
 	}
 	/**
 	 * get plugin dir path based on a given file path of the plugin 
