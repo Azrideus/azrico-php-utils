@@ -129,7 +129,12 @@ trait az_wp_post_meta
 		}
 
 		assert(is_numeric($search), 'could not load the post id to set its meta! got: ' . strval($search));
-
+		if (null == $value) {
+			return delete_post_meta(
+				$search,
+				$key
+			);
+		}
 		return update_post_meta(
 			$search,
 			$key,
