@@ -11,7 +11,8 @@ trait az_wp_plugin
 	static function get_plugin_version(
 		string $plugin_file,
 	) {
-		$plugin_data = get_plugin_data($plugin_file);
+		$f = az_wp::getPluginMainFile($plugin_file);
+		$plugin_data = get_file_data($f, ['Version' => 'Version']);
 		return $plugin_data['Version'];
 	}
 
@@ -187,22 +188,9 @@ trait az_wp_plugin
 			}
 		);
 	}
-	/**
-	 * load all loader.php files in the plugin/src
-	 * 
-	 */
-	static function load_plugin_files(string $plugin_file,)
+	static function load_plugin(string $plugin_file)
 	{
-		$pdir = az_wp::getPluginDir($plugin_file);
-		$load_paths = ['classes', 'styles', 'js'];
-		foreach ($load_paths as $f) {
-			$loader_path = az_string::join_paths(
-				$pdir,
-				$f,
-				'loader.php'
-			);
-			if (!file_exists($loader_path)) continue;
-			require_once $loader_path;
-		}
+		az_wp::load_plugin_js($plugin_file);
+		az_wp::load_plugin_css($plugin_file);
 	}
 }
