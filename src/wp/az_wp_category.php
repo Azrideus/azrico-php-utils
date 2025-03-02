@@ -105,7 +105,9 @@ trait az_wp_category
 		bool $getFirst = false
 	) {
 		$categories = static::get_categories_of($search);
-		$primary_category_id = az_wp::getMetaOf($search, '_yoast_wpseo_primary_category');
+		if ($categories instanceof \WP_Error) return null;
+
+		$primary_category_id = az_wp::get_meta_of($search, '_yoast_wpseo_primary_category');
 
 		if (!empty($primary_category_id) && !is_wp_error($categories)) {
 			foreach ($categories as $cat) {
