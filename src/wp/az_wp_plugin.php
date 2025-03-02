@@ -63,7 +63,7 @@ trait az_wp_plugin
 				$compressed_css = '';
 				foreach ($css_files as $file) {
 					// Load the content of the css file 
-					$css_content = file_get_contents(az_string::join_paths($file_path, $file));
+					$css_content = file_get_contents($file);
 					$compressed_css .= ' ' . $css_content;
 				}
 				$compressed_css = az_assets::compress_css($compressed_css);

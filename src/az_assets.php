@@ -34,6 +34,9 @@ abstract class az_assets
 	) {
 		if (!\file_exists($folder)) return [];
 		$file_list = scandir($folder);
+		$file_list = \array_map(function ($file) use ($folder) {
+			return az_string::join_paths($folder, $file);
+		}, $file_list);
 		if (!empty($suffix)) {
 			$file_list = array_filter($file_list, function ($file) use ($suffix) {
 				return \str_ends_with($file, $suffix);
