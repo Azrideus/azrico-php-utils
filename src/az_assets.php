@@ -47,12 +47,14 @@ abstract class az_assets
 	/**
 	 * require all files in a folder 
 	 */
-	static function reguire_folder(
+	static function require_folder(
+		string $current_file,
 		string $folder,
 		$suffix = '.php',
 	) {
 		$files = self::get_files_in($folder, $suffix);
 		foreach ($files as $file) {
+			if (\basename($current_file) == \basename($file)) continue; //avoid loops
 			require_once $file;
 		}
 	}
