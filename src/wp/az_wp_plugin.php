@@ -8,7 +8,12 @@ use AzUtils\az_wp;
 
 trait az_wp_plugin
 {
-
+	static function get_plugin_version(
+		string $plugin_file,
+	) {
+		$plugin_data = get_plugin_data($plugin_file);
+		return $plugin_data['Version'];
+	}
 
 	static function load_style_folder(
 		string $plugin_file,
@@ -31,6 +36,10 @@ trait az_wp_plugin
 			$folder
 		);
 		if (!\file_exists($file_path)) return;
+
+		if (empty($version)) {
+			$version = az_wp::get_plugin_version($plugin_file);
+		}
 
 		$plugin_name = az_wp::getPluginName($plugin_file);
 		$style_prefix = "$plugin_name-$folder";
@@ -136,8 +145,9 @@ trait az_wp_plugin
 	/**
 	 * prepare plugin js files 
 	 */
-	static function load_plugin_js(string $plugin_file, $version)
+	static function load_plugin_js(string $plugin_file)
 	{
+		$version = az_wp::get_plugin_version($plugin_file);
 		add_action(
 			'wp_enqueue_scripts',
 			function () use ($plugin_file, $version) {
@@ -157,8 +167,10 @@ trait az_wp_plugin
 	/**
 	 * prepare plugin js files 
 	 */
-	static function load_plugin_css(string $plugin_file, $version)
+	static function load_plugin_css(string $plugin_file)
 	{
+		$version = az_wp::get_plugin_version($plugin_file);
+
 		add_action(
 			'wp_enqueue_scripts',
 			function () use ($plugin_file, $version) {

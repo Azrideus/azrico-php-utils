@@ -41,6 +41,18 @@ abstract class az_assets
 		}
 		return $file_list;
 	}
+	/**
+	 * require all files in a folder 
+	 */
+	static function reguire_folder(
+		string $folder,
+		$suffix = '.php',
+	) {
+		$files = self::get_files_in($folder, $suffix);
+		foreach ($files as $file) {
+			require_once $file;
+		}
+	}
 	public static function get_url(string $file, string $name)
 	{
 		return az_wp::getPluginUrl($file, '/src/assets/' . $name);
