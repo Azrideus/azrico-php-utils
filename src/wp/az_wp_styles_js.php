@@ -5,7 +5,7 @@ namespace AzUtils\wp;
 use AzUtils\az_string;
 use AzUtils\az_wp;
 
-trait az_wp_styles
+trait az_wp_styles_js
 {
 	/**
 	 * get a list of all css  files in given dir 
@@ -15,6 +15,14 @@ trait az_wp_styles
 		$css_files = scandir($file_path);
 		$css_files = array_filter($css_files, function ($file) {
 			return \str_ends_with($file, '.css');
+		});
+		return $css_files;
+	}
+	private static function get_js_files($file_path)
+	{
+		$css_files = scandir($file_path);
+		$css_files = array_filter($css_files, function ($file) {
+			return \str_ends_with($file, '.js');
 		});
 		return $css_files;
 	}
@@ -114,5 +122,47 @@ trait az_wp_styles
 
 
 		return $input;
+	}
+
+	static function load_js_folder(
+		string $plugin_file,
+		string $folder,
+		array $deps = [],
+		string|int $version = null
+	) {
+
+		$pdir = az_wp::getPluginDir($plugin_file);
+		$purl = az_wp::getPluginUrl($plugin_file);
+		$file_path = az_string::join_paths(
+			$pdir,
+			'src/js/',
+			$folder
+		);
+		$file_url = az_string::join_paths(
+			$purl,
+			'src/js/',
+			$folder
+		);
+		$plugin_name = az_wp::getPluginName($plugin_file);
+		$js_prefix = "$plugin_name-js-$folder";
+
+
+		/* -------------------------------------------------------------------------- */
+		/*                           default mode. no cache                           */
+		/* -------------------------------------------------------------------------- */
+		$css_files = self::get_js_files($file_path);
+		$loaded_files = [];
+		foreach ($css_files as $file) {
+			$file_name = basename($file);
+			$js_name = "$js_prefix-$file_name";
+			$loaded_files[] = $js_name;
+			wp_enqueue_script(
+				$js_name,
+				az_string::join_url($file_url, $file_name),
+				$deps,
+				$version
+			);
+		}
+		return $loaded_files;
 	}
 }

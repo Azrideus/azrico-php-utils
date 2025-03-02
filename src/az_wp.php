@@ -6,7 +6,7 @@ use AzUtils\classes\AZ_DataClass;
 use AzUtils\wp\az_wp_external_post;
 use AzUtils\wp\az_wp_post_meta;
 use AzUtils\wp\az_wp_post;
-use AzUtils\wp\az_wp_styles;
+use AzUtils\wp\az_wp_styles_js;
 use AzUtils\wp\az_wp_category;
 use AzUtils\wp\az_wp_links;
 
@@ -15,7 +15,7 @@ class az_wp
 	use az_wp_post_meta;
 	use az_wp_post;
 	use az_wp_external_post;
-	use az_wp_styles;
+	use az_wp_styles_js;
 	use az_wp_category;
 	use az_wp_links;
 
