@@ -5,7 +5,7 @@ namespace AzUtils\string;
 trait az_string_path
 {
 
-	static function sanitize_filename($file)
+	static function sanitize_filename($file, $strict = false)
 	{
 		// Remove anything which isn't a word, whitespace, number
 		// or any of the following caracters -_~,;[]().
@@ -13,6 +13,16 @@ trait az_string_path
 		// you can use preg_replace rather than mb_ereg_replace
 		// Thanks @Łukasz Rysiak!
 		$file = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $file);
+		// Remove any runs of periods (thanks falstro!)
+		$file = mb_ereg_replace("([\.]{2,})", '', $file);
+		if ($strict) {
+			$file = mb_ereg_replace("(^.)|\s", '', $file);
+		}
+		return $file;
+	}
+	static function sanitize_foldername($folder)
+	{
+		$file = self::sanitize_filename($folder);
 		// Remove any runs of periods (thanks falstro!)
 		$file = mb_ereg_replace("([\.]{2,})", '', $file);
 		return $file;
