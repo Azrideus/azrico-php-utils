@@ -18,6 +18,7 @@ trait az_string_path
 		if ($strict) {
 			$file = mb_ereg_replace("(^.)|\s", '', $file);
 		}
+		$file = \substr($file, 0, 255);
 		return $file;
 	}
 	static function sanitize_foldername($folder)
