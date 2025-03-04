@@ -16,7 +16,7 @@ trait az_string_path
 		// Remove any runs of periods (thanks falstro!)
 		$file = mb_ereg_replace("([\.]{2,})", '', $file);
 		if ($strict) {
-			$file = mb_ereg_replace("(^.)|\s", '', $file);
+			$file = mb_ereg_replace("(^\.)|\s", '', $file);
 		}
 		$file = \substr($file, 0, 255);
 		return $file;
