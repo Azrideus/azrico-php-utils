@@ -8,6 +8,17 @@ use AzUtils\az_wp;
 
 trait az_wp_plugin
 {
+
+	private static $front_folder_conditions = [
+		'frontend' => '__return_true',
+		'cart' => 'is_cart',
+		'checkout' => 'is_checkout',
+		'cart_checkout' => [self::class, 'is_cart_checkout'],
+	];
+	private static $admin_folders = ['admin', 'backend'];
+	private static $shared_folders = ['shared'];
+
+
 	static function get_plugin_version(
 		string $plugin_file,
 	) {
@@ -146,45 +157,63 @@ trait az_wp_plugin
 	/**
 	 * prepare plugin js files 
 	 */
-	static function load_plugin_js(string $plugin_file)
+	static function load_plugin_js(string $plugin_file, array $deps = [])
 	{
 		$version = az_wp::get_plugin_version($plugin_file);
 		add_action(
 			'wp_enqueue_scripts',
-			function () use ($plugin_file, $version) {
-				az_wp::load_js_folder($plugin_file, 'frontend', [], $version);
-				az_wp::load_style_folder($plugin_file, 'shared', [], $version);
+			function () use ($plugin_file, $version, $deps) {
+				foreach (az_wp_plugin::$front_folder_conditions as $key => $value) {
+					if (is_callable($value) && $value()) {
+						az_wp::load_js_folder($plugin_file, $key, $deps, $version);
+					}
+				}
+				foreach (az_wp_plugin::$shared_folders as   $value) {
+					az_wp::load_js_folder($plugin_file, $value, $deps, $version);
+				}
 			}
 		);
 		add_action(
 			'admin_enqueue_scripts',
-			function () use ($plugin_file, $version) {
-				az_wp::load_js_folder($plugin_file, 'admin', [], $version);
-				az_wp::load_js_folder($plugin_file, 'backend', [], $version);
-				az_wp::load_js_folder($plugin_file, 'shared', [], $version);
+			function () use ($plugin_file, $version, $deps) {
+				foreach (az_wp_plugin::$admin_folders as  $value) {
+					az_wp::load_js_folder($plugin_file, $value, $deps, $version);
+				}
+				foreach (az_wp_plugin::$shared_folders as   $value) {
+					az_wp::load_js_folder($plugin_file, $value, $deps, $version);
+				}
 			}
 		);
 	}
 	/**
 	 * prepare plugin js files 
 	 */
-	static function load_plugin_css(string $plugin_file)
+	static function load_plugin_css(string $plugin_file, array $deps = [])
 	{
 		$version = az_wp::get_plugin_version($plugin_file);
 
 		add_action(
 			'wp_enqueue_scripts',
-			function () use ($plugin_file, $version) {
-				az_wp::load_style_folder($plugin_file, 'frontend', [], $version);
-				az_wp::load_style_folder($plugin_file, 'shared', [], $version);
+			function () use ($plugin_file, $version, $deps) {
+				foreach (az_wp_plugin::$front_folder_conditions as $key => $value) {
+					if (is_callable($value) && $value()) {
+						az_wp::load_style_folder($plugin_file, $key, $deps, $version);
+					}
+				}
+				foreach (az_wp_plugin::$shared_folders as   $value) {
+					az_wp::load_style_folder($plugin_file, $value, $deps, $version);
+				}
 			}
 		);
 		add_action(
 			'admin_enqueue_scripts',
-			function () use ($plugin_file, $version) {
-				az_wp::load_style_folder($plugin_file, 'admin', [], $version);
-				az_wp::load_style_folder($plugin_file, 'backend', [], $version);
-				az_wp::load_style_folder($plugin_file, 'shared', [], $version);
+			function () use ($plugin_file, $version, $deps) {
+				foreach (az_wp_plugin::$admin_folders as   $value) {
+					az_wp::load_style_folder($plugin_file, $value, $deps, $version);
+				}
+				foreach (az_wp_plugin::$shared_folders as   $value) {
+					az_wp::load_style_folder($plugin_file, $value, $deps, $version);
+				}
 			}
 		);
 	}
@@ -192,5 +221,12 @@ trait az_wp_plugin
 	{
 		az_wp::load_plugin_js($plugin_file);
 		az_wp::load_plugin_css($plugin_file);
+	}
+	/**
+	 * is cart or checkout page 
+	 */
+	private static function is_cart_checkout()
+	{
+		return is_cart() || is_checkout();
 	}
 }
