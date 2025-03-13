@@ -44,7 +44,7 @@ class az_math
 		if (count($operands) !== 2) {
 			throw new \InvalidArgumentException("Invalid number of operands");
 		}
-		return $operands;
+		return [trim($operands[0]), trim($operands[1])];
 	}
 
 	/**
@@ -60,8 +60,8 @@ class az_math
 		$operands = self::split_operands($operation);
 
 		// Trim and convert operands to numbers
-		$left = trim($operands[0]);
-		$right = trim($operands[1]);
+		$left = $operands[0];
+		$right = $operands[1];
 
 		if (!is_numeric($left) || !is_numeric($right)) {
 			/* ------------------------- Non Numeric Comparison ------------------------- */
