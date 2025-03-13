@@ -163,12 +163,12 @@ trait az_wp_plugin
 		add_action(
 			'wp_enqueue_scripts',
 			function () use ($plugin_file, $version, $deps) {
-				foreach (az_wp_plugin::$front_folder_conditions as $key => $value) {
+				foreach (static::$front_folder_conditions as $key => $value) {
 					if (is_callable($value) && $value()) {
 						az_wp::load_js_folder($plugin_file, $key, $deps, $version);
 					}
 				}
-				foreach (az_wp_plugin::$shared_folders as   $value) {
+				foreach (static::$shared_folders as   $value) {
 					az_wp::load_js_folder($plugin_file, $value, $deps, $version);
 				}
 			}
@@ -176,10 +176,10 @@ trait az_wp_plugin
 		add_action(
 			'admin_enqueue_scripts',
 			function () use ($plugin_file, $version, $deps) {
-				foreach (az_wp_plugin::$admin_folders as  $value) {
+				foreach (static::$admin_folders as  $value) {
 					az_wp::load_js_folder($plugin_file, $value, $deps, $version);
 				}
-				foreach (az_wp_plugin::$shared_folders as   $value) {
+				foreach (static::$shared_folders as   $value) {
 					az_wp::load_js_folder($plugin_file, $value, $deps, $version);
 				}
 			}
@@ -195,12 +195,12 @@ trait az_wp_plugin
 		add_action(
 			'wp_enqueue_scripts',
 			function () use ($plugin_file, $version, $deps) {
-				foreach (az_wp_plugin::$front_folder_conditions as $key => $value) {
+				foreach (static::$front_folder_conditions as $key => $value) {
 					if (is_callable($value) && $value()) {
 						az_wp::load_style_folder($plugin_file, $key, $deps, $version);
 					}
 				}
-				foreach (az_wp_plugin::$shared_folders as   $value) {
+				foreach (static::$shared_folders as   $value) {
 					az_wp::load_style_folder($plugin_file, $value, $deps, $version);
 				}
 			}
@@ -208,10 +208,10 @@ trait az_wp_plugin
 		add_action(
 			'admin_enqueue_scripts',
 			function () use ($plugin_file, $version, $deps) {
-				foreach (az_wp_plugin::$admin_folders as   $value) {
+				foreach (static::$admin_folders as   $value) {
 					az_wp::load_style_folder($plugin_file, $value, $deps, $version);
 				}
-				foreach (az_wp_plugin::$shared_folders as   $value) {
+				foreach (static::$shared_folders as   $value) {
 					az_wp::load_style_folder($plugin_file, $value, $deps, $version);
 				}
 			}
