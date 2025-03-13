@@ -55,7 +55,7 @@ trait az_string_traits
 	}
 	static function sanitize_traits(string $str)
 	{
-		return preg_replace(static::$traits_regex, '', $str);
+		return trim(preg_replace(static::$traits_regex, '', $str));
 	}
 	static function has_any_trait(string $str)
 	{
@@ -73,10 +73,12 @@ trait az_string_traits
 		$result = [];
 		preg_match_all(static::$traits_regex, $str, $matches);
 		foreach ($matches[0] as $m) {
+			$match_value = substr($m, 1, -1); //remove brackets
 			foreach (static::$traits as $list_name => $trait_list) {
 				foreach ($trait_list as $tk => $value) {
-					if ($m == $tk) {
-						if (empty($result[$list_name])) $result[$trait_list] = [];
+
+					if ($match_value == $tk) {
+						if (empty($result[$list_name])) $result[$list_name] = [];
 						$result[$list_name][] = $value;
 					}
 				}
