@@ -5,7 +5,7 @@ namespace AzUtils;
 
 class az_math
 {
-	static $basic_operator_regex = "/(>=|<=|<|>|!=)/";
+	static $basic_operator_regex = "/(>=|<=|<|>|!=|==|===)/";
 
 	public static function ceil_plus(float $value, ?int $precision = null): float
 	{
@@ -59,20 +59,29 @@ class az_math
 		$operator = self::get_operator($operation);
 		$operands = self::split_operands($operation);
 
-
 		// Trim and convert operands to numbers
 		$left = trim($operands[0]);
 		$right = trim($operands[1]);
 
 		if (!is_numeric($left) || !is_numeric($right)) {
-			throw new \InvalidArgumentException("Operands must be numeric");
+			/* ------------------------- Non Numeric Comparison ------------------------- */
+			switch ($operator) {
+				case '==':
+				case '===':
+					return az_string::eq($left, $right);
+				case '!=':
+					return !az_string::eq($left, $right);
+			}
+			return false;
 		}
-
+		/* --------------------------- Numeric Comparison --------------------------- */
 		$left = (float) $left;
 		$right = (float) $right;
-
 		// Evaluate the operation
 		switch ($operator) {
+			case '==':
+			case '===':
+				return $left == $right;
 			case '!=':
 				return $left != $right;
 			case '>':
