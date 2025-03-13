@@ -33,13 +33,17 @@ trait az_string_traits
 	];
 	static function render_with_traits(string $elem, string $str, array $attr = [])
 	{
+		echo static::element_with_traits($elem, $str, $attr);
+	}
+	static function element_with_traits(string $elem, string $str, array $attr = [])
+	{
 		$raw_str = static::sanitize_traits($str);
 		$traits = static::get_traits($str);
 		$traits_str = '';
 		foreach ($traits as $key => $value) {
 			$traits_str = $key . ':' . end($value) . ';';
 		}
-		echo az_view::render(
+		return az_view::element(
 			$elem,
 			$raw_str,
 			[
