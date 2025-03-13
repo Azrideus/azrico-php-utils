@@ -31,7 +31,7 @@ trait az_string_traits
 			'medium' => 'medium',
 		]
 	];
-	static function render_with_traits(string $elem, string $str)
+	static function render_with_traits(string $elem, string $str, array $attr = [])
 	{
 		$raw_str = static::sanitize_traits($str);
 		$traits = static::get_traits($str);
@@ -44,7 +44,8 @@ trait az_string_traits
 			$raw_str,
 			[
 				'style' => $traits_str
-			]
+			],
+			$attr
 		);
 	}
 	static function sanitize_traits(string $str)
