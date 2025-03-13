@@ -19,7 +19,8 @@ trait az_string_traits
 			'black' => 'black',
 			'white' => 'white',
 			'gold' => 'gold',
-			'pcbgold' => 'rgb(181, 159, 56)'
+			'pcbgold' => 'rgb(203 150 19)',
+			'primary' => 'var(--az-primary,var(--azpcb-primary,var(--ast-global-color-0))'
 		],
 		'text-decoration-line' => [
 			'underline' => 'underline',
