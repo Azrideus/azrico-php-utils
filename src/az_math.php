@@ -5,7 +5,7 @@ namespace AzUtils;
 
 class az_math
 {
-	static $basic_operator_regex = "/(>=|<=|<|>)/";
+	static $basic_operator_regex = "/(>=|<=|<|>|!=)/";
 
 	public static function ceil_plus(float $value, ?int $precision = null): float
 	{
@@ -48,7 +48,7 @@ class az_math
 	}
 
 	/**
-	 * check if a basic `>,<,<=,>=` operation is satisfied
+	 * check if a basic `>,<,<=,>=,!=` operation is satisfied
 	 *
 	 * @param string $operation
 	 * @return boolean
@@ -73,6 +73,8 @@ class az_math
 
 		// Evaluate the operation
 		switch ($operator) {
+			case '!=':
+				return $left != $right;
 			case '>':
 				return $left > $right;
 			case '<':

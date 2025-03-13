@@ -144,6 +144,38 @@ class az_string
 	}
 
 	/**
+	 * advanced expand string
+	 *
+	 * test[1|2|3] = test1,test2,test3
+	 */
+	static function expand($string, $expand_sep = "|", $join_sep = ",")
+	{
+		$matches = [];
+		$result_string = $string;
+
+		// Use preg_match_all to catch all bracketed sections
+		preg_match_all('/\[.*?\]/', $string, $matches, PREG_OFFSET_CAPTURE);
+		if (empty($matches[0])) return $result_string;
+		foreach ($matches[0] as $match) {
+			$result_string = \str_replace($match[0], '', $result_string);
+		}
+
+		$result_prefix = $result_string;
+
+		$result_array = [];
+		foreach ($matches[0] as $match) {
+			$match_str = $match[0];
+			$match_str  = substr($match_str, 1, strlen($match_str) - 2); // remove brackets
+			$match_parts = explode($expand_sep, $match_str);
+			foreach ($match_parts as $mp) {
+				$result_array[] = $result_prefix . $mp;
+			}
+		}
+		$result_string = implode($join_sep, $result_array);
+		return $result_string;
+	}
+
+	/**
 	 * return haysack's string part up until the needle
 	 *
 	 * @param string $haysack
