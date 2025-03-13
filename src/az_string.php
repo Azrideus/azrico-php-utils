@@ -9,6 +9,7 @@ class az_string
 {
 	use az_string_path;
 	use az_string_serialize;
+	use az_string_traits;
 	/**
 	 * check if two string are not empty and equal ignorecase 
 	 */
