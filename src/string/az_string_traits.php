@@ -6,6 +6,7 @@ use AzUtils\az_view;
 
 trait az_string_traits
 {
+	static $traits_regex = '/\[\w+\]/';
 	static $traits = [
 		'color' => [
 			'red' => 'red',
@@ -54,11 +55,11 @@ trait az_string_traits
 	}
 	static function sanitize_traits(string $str)
 	{
-		return preg_replace('/\[.*\]/', '', $str);
+		return preg_replace(static::$traits_regex, '', $str);
 	}
 	static function has_any_trait(string $str)
 	{
-		preg_match('/\[.*\]/', $str, $matches);
+		preg_match(static::$traits_regex, $str, $matches);
 		return !empty($matches);
 	}
 	static function has_trait(string $str, string $trait)
@@ -70,7 +71,7 @@ trait az_string_traits
 	static function get_traits(string $str)
 	{
 		$result = [];
-		preg_match_all('/\[.*\]/', $str, $matches);
+		preg_match_all(static::$traits_regex, $str, $matches);
 		foreach ($matches[0] as $m) {
 			foreach (static::$traits as $list_name => $trait_list) {
 				foreach ($trait_list as $tk => $value) {
