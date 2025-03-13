@@ -35,6 +35,8 @@ trait az_string_traits
 
 	static function get_trait_color(string $str)
 	{
+		if (!static::has_any_trait($str))
+			return '';
 		foreach (static::$color_traits as $key => $value) {
 			if (static::has_trait($str, $key)) return $value;
 		}
