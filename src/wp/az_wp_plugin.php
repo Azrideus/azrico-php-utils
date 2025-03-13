@@ -9,14 +9,14 @@ use AzUtils\az_wp;
 trait az_wp_plugin
 {
 
-	private static $front_folder_conditions = [
+	static $front_folder_conditions = [
 		'frontend' => '__return_true',
 		'cart' => 'is_cart',
 		'checkout' => 'is_checkout',
 		'cart_checkout' => [self::class, 'is_cart_checkout'],
 	];
-	private static $admin_folders = ['admin', 'backend'];
-	private static $shared_folders = ['shared'];
+	static $admin_folders = ['admin', 'backend'];
+	static $shared_folders = ['shared'];
 
 
 	static function get_plugin_version(
