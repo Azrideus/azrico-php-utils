@@ -2,21 +2,51 @@
 
 namespace AzUtils\string;
 
+use AzUtils\az_view;
+
 trait az_string_traits
 {
-	static $color_traits = [
-		'red' => 'red',
-		'blue' => 'blue',
-		'green' => 'green',
-		'yellow' => 'yellow',
-		'orange' => 'orange',
-		'purple' => 'purple',
-		'pink' => 'pink',
-		'black' => 'black',
-		'white' => 'white',
-		'gold' => 'gold',
-		'pcbgold' => 'rgb(181, 159, 56)'
+	static $traits = [
+		'color' => [
+			'red' => 'red',
+			'blue' => 'blue',
+			'green' => 'green',
+			'yellow' => 'yellow',
+			'orange' => 'orange',
+			'purple' => 'purple',
+			'pink' => 'pink',
+			'black' => 'black',
+			'white' => 'white',
+			'gold' => 'gold',
+			'pcbgold' => 'rgb(181, 159, 56)'
+		],
+		'text-decoration-line' => [
+			'underline' => 'underline',
+			'overline' => 'overline',
+			'line-through' => 'line-through',
+		],
+		'font-size' => [
+			'large' => 'large',
+			'small' => 'small',
+			'medium' => 'medium',
+		]
 	];
+	static function render_with_traits(string $elem, string $str)
+	{
+		$raw_str = static::sanitize_traits($str);
+		$traits = static::get_traits($str);
+		$traits_str = '';
+		foreach ($traits as $key => $value) {
+			$traits_str = $key . ':' . end($value) . ';';
+		}
+		echo az_view::render(
+			$elem,
+			$raw_str,
+			[
+				'style' => $traits_str
+			]
+		);
+	}
 	static function sanitize_traits(string $str)
 	{
 		return preg_replace('/\[.*\]/', '', $str);
@@ -32,14 +62,20 @@ trait az_string_traits
 		preg_match($trait_regex, $str, $matches);
 		return !empty($matches);
 	}
-
-	static function get_trait_color(string $str)
+	static function get_traits(string $str)
 	{
-		if (!static::has_any_trait($str))
-			return '';
-		foreach (static::$color_traits as $key => $value) {
-			if (static::has_trait($str, $key)) return $value;
+		$result = [];
+		preg_match_all('/\[.*\]/', $str, $matches);
+		foreach ($matches[0] as $m) {
+			foreach (static::$traits as $list_name => $trait_list) {
+				foreach ($trait_list as $tk => $value) {
+					if ($m == $tk) {
+						if (empty($result[$list_name])) $result[$trait_list] = [];
+						$result[$list_name][] = $value;
+					}
+				}
+			}
 		}
-		return '';
+		return $result;
 	}
 }
