@@ -112,13 +112,21 @@ trait az_wp_post
 	{
 		if (empty($input)) return null;
 
-		if (
-			is_object($input)
-			&& property_exists($input, 'field')
-			&& $input->field instanceof \WP_Post
-		) {
-			$input = $input->field;
+		if (is_object($input)) {
+			if (
+				property_exists($input, 'field')
+				&& $input->field instanceof \WP_Post
+			) {
+				$input = $input->field;
+			}
+			if (
+				property_exists($input, 'post')
+				&& $input->post instanceof \WP_Post
+			) {
+				$input = $input->post;
+			}
 		}
+
 
 
 		if ($input instanceof \WP_Post) {
