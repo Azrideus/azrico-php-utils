@@ -5,6 +5,17 @@ namespace AzUtils;
 class az_object
 {
 	static $local_cache = [];
+
+
+	/**
+	 * Evaluate given function or return the value 
+	 */
+	static function eval($fn)
+	{
+		if (\is_callable($fn)) return $fn();
+		return $fn;
+	}
+
 	/**
 	 * get data in either $_REQUEST, $_GET or $_GET
 	 */
@@ -16,6 +27,7 @@ class az_object
 		if (isset($_POST[$name])) return $_POST[$name];
 		return null;
 	}
+
 	static function get($name)
 	{
 		return self::getRequestData($name);

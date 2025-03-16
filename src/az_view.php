@@ -84,8 +84,13 @@ abstract class az_view
 	{
 		echo static::element(
 			'input',
-			$value,
-			["name" => $name, 'type' => 'text', 'hidden' => true],
+			'',
+			[
+				"name" => $name,
+				"value" => az_object::eval($value),
+				'type' => 'text',
+				'hidden' => true
+			],
 			...$rest_attr
 		);
 	}
@@ -111,7 +116,7 @@ abstract class az_view
 	public static function element(string $tag, callable|string $content = '',  ...$rest_attr)
 	{
 		$attr = static::attr(...$rest_attr);
-		if (\is_callable($content)) $content = $content();
+		$content = az_object::eval($content); //evaluate the content if its a function
 		return "<$tag $attr> $content </$tag>";
 	}
 
