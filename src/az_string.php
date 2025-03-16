@@ -139,6 +139,10 @@ class az_string
 	{
 		return floatval(\preg_replace('/[^0-9-.]/', '', $title));
 	}
+	public static function has_digits(string $str): float
+	{
+		return preg_match('/\d/', $str);
+	}
 
 	static function truncate($string, $length, $dots = "...")
 	{
