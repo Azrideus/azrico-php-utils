@@ -83,7 +83,6 @@ trait az_wp_post_meta
 
 	static function get_meta_of($search, string $key)
 	{
-		assert(is_string($key) && strlen($key) > 0, 'invalid key for meta! got: ' . strval($key));
 
 		if (!is_numeric($search)) {
 			/**
@@ -109,8 +108,7 @@ trait az_wp_post_meta
 		}
 
 
-		assert(is_numeric($search), 'could not load the post id to get its meta! got: ' . strval($search));
-
+		if (!is_numeric($search)) throw new \Exception('could not load the post id to get its meta! got: ' . strval($search));
 		return get_post_meta(
 			$search,
 			$key,
@@ -127,8 +125,7 @@ trait az_wp_post_meta
 			if ($search instanceof \WP_Post)
 				$search = $search->ID;
 		}
-
-		assert(is_numeric($search), 'could not load the post id to set its meta! got: ' . strval($search));
+		if (!is_numeric($search)) throw new \Exception('could not load the post id to set its meta! got: ' . strval($search));
 		if (null == $value) {
 			return delete_post_meta(
 				$search,
