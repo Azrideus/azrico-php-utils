@@ -130,11 +130,11 @@ trait az_wp_post
 
 
 		if ($input instanceof \WP_Post) {
-			/* ------------------------------ post is given ----------------------------- */
 			$result = $input;
 			unset($input);
 		} else if ($input instanceof \WC_Product) {
-			/* ------------------------------ post is given ----------------------------- */
+			$input = $input->get_id();
+		} else if ($input instanceof \WC_Order) {
 			$input = $input->get_id();
 		}
 
