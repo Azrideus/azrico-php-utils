@@ -33,11 +33,11 @@ trait az_string_traits
 			'medium' => 'medium',
 		]
 	];
-	static function render_with_traits(string $elem, string $str, array $attr = [])
+	static function render_with_traits(string $elem, string $str,  ...$rest_attr)
 	{
-		echo static::element_with_traits($elem, $str, $attr);
+		echo static::element_with_traits($elem, $str, ...$rest_attr);
 	}
-	static function element_with_traits(string $elem, string $str, array $attr = [])
+	static function element_with_traits(string $elem, string $str,  ...$rest_attr)
 	{
 		$raw_str = static::sanitize_traits($str);
 		$traits = static::get_traits($str);
@@ -51,7 +51,7 @@ trait az_string_traits
 			[
 				'style' => $traits_str
 			],
-			$attr
+			...$rest_attr
 		);
 	}
 	static function sanitize_traits(string $str)
