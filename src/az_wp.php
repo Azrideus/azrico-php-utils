@@ -9,9 +9,11 @@ use AzUtils\wp\az_wp_post;
 use AzUtils\wp\az_wp_plugin;
 use AzUtils\wp\az_wp_category;
 use AzUtils\wp\az_wp_links;
+use AzUtils\wp\az_wp_searchquery;
 
 class az_wp
 {
+	use az_wp_searchquery;
 	use az_wp_post_meta;
 	use az_wp_post;
 	use az_wp_external_post;
