@@ -10,8 +10,7 @@ trait az_wp_searchquery
 {
 	/**
 	 * Convert search querty (sq) inputs to hidden inputs
-	 * can be used in forms to keep the search query inputs
-	 * 
+	 * can be used in forms to keep the search query inputs 
 	 */
 	static function search_query_inputs(
 		$exclude = array(),
