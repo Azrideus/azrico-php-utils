@@ -135,9 +135,17 @@ class az_string
 	 * Remove any non numeric value from given string 
 	 * then cast it to float
 	 */
-	public static function to_float(string $title): float
+	public static function to_float(string $str): float
 	{
-		return floatval(\preg_replace('/[^0-9-.]/', '', $title));
+		return az_parser::to_float($str);
+	}
+	/**
+	 * Remove any non numeric value from given string 
+	 * then cast it to int
+	 */
+	public static function to_int(string $str): float
+	{
+		return az_parser::to_int($str);
 	}
 	public static function has_digits(string $str): float
 	{

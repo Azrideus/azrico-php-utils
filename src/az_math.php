@@ -7,6 +7,8 @@ class az_math
 {
 	static $basic_operator_regex = "/(>=|<=|<|>|!=|==|===)/";
 
+
+
 	public static function ceil_plus(float $value, ?int $precision = null): float
 	{
 		if (null === $precision) {
@@ -95,5 +97,36 @@ class az_math
 			default:
 				throw new \InvalidArgumentException("Unknown operator");
 		}
+	}
+
+	/**
+	 * convert the given number (ex: 25) into a range that can be used for searching:
+	 * 25
+	 * 250-259 (1)
+	 * 2500-2599 (2)
+	 * 25000-25999 (3)
+	 * @param num
+	 * @param count number of zeros to add
+	 * @returns
+	 */
+	public static function search_range(int $num, int $count): array
+	{
+		$rangeResults = [];
+
+		//Exact match
+		$rangeResults[] = ['eq' => $num];
+
+		for ($index = 1; $index <= $count; $index++) {
+			$startingNumber = $num * pow(10, $index);
+			$ninesToAdd = (int)str_repeat('9', $index);
+			$endingNumber = $startingNumber + $ninesToAdd;
+
+			$rangeResults[] = [
+				'gte' => $startingNumber,
+				'lte' => $endingNumber,
+			];
+		}
+
+		return $rangeResults;
 	}
 }

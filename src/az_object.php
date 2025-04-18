@@ -16,22 +16,39 @@ class az_object
 		return $fn;
 	}
 
+
+	/**
+	 * @deprecated use get_request_data
+	 */
+	static function getRequestData(array|string|int $name, $sanitize = false)
+	{
+		return self::get_request_data($name, $sanitize);
+	}
+	static function get(array|string|int $name, $sanitize = false)
+	{
+		return self::get_request_data($name, $sanitize);
+	}
+
 	/**
 	 * get data in either $_REQUEST, $_GET or $_GET
 	 */
-	static function getRequestData(array|string|int $name)
+	static function get_request_data(array|string|int $name, $sanitize = false)
 	{
 		if (\is_array($name)) $name = join('', $name);
-		if (isset($_REQUEST[$name])) return $_REQUEST[$name];
-		if (isset($_GET[$name])) return $_GET[$name];
-		if (isset($_POST[$name])) return $_POST[$name];
-		return null;
+		$val = null;
+		if (isset($_REQUEST[$name])) $val = $_REQUEST[$name];
+		if (isset($_GET[$name])) $val = $_GET[$name];
+		if (isset($_POST[$name])) $val = $_POST[$name];
+
+		/* -------------------------------- sanitize -------------------------------- */
+		if ($val != null && $sanitize) {
+			if (function_exists('sanitize_text_field')) {
+				$val = \is_array($val) ? array_map('sanitize_text_field', $val) : sanitize_text_field($val);
+			}
+		}
+		return $val;
 	}
 
-	static function get($name)
-	{
-		return self::getRequestData($name);
-	}
 	static function setGlobal($name, $value, $clear = false)
 	{
 		az_object::$local_cache[$name] = $value;
