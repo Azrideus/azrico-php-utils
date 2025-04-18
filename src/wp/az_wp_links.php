@@ -13,15 +13,16 @@ trait az_wp_links
 	{
 		$res = (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
-		return static::add_parameters($res, $params);
+		return static::add_url_parameters($res, $params);
 	}
 
 
 	/**
-	 * add given parameters to the url 
+	 * add given parameters to the given url (or current url if url is null)
 	 */
-	static function add_parameters($url, $params = [])
+	static function add_url_parameters(string|null $url, array $params = []): string
 	{
+		if (empty($url)) $url = self::get_current_url();
 		$parsed_url = \parse_url($url);
 		if ($parsed_url === false) {
 			return $url; // Return original URL if parsing fails
@@ -54,12 +55,12 @@ trait az_wp_links
 	}
 	static function ajaxlink($params = [])
 	{
-		return static::add_parameters(admin_url('admin-ajax.php'), $params);
+		return static::add_url_parameters(admin_url('admin-ajax.php'), $params);
 	}
 	static function actionlink($action, $params = [])
 	{
 		$redirect_to = static::get_current_url();
-		$targetLink =  static::add_parameters(
+		$targetLink =  static::add_url_parameters(
 			admin_url('admin-post.php'),
 			[
 				...$params,
