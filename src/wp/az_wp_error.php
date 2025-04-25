@@ -9,7 +9,8 @@ use WP_Post;
 trait az_wp_error
 {
 	public static function detailed_error(
-		\WP_Error $wp_error
+		\WP_Error $wp_error,
+		$default_error_code = 400
 	): array {
 		$res = [
 			'code' => $wp_error->get_error_code(),
@@ -26,20 +27,18 @@ trait az_wp_error
 			}
 		}
 		$res['code'] = $wp_error->get_error_code();
-		if (empty($res['code'])) $res['code'] = 400;
+		if (empty($res['code'])) $res['code'] = $default_error_code;
 		$res['message'] = $wp_error->get_error_message();
 		return $res;
 	}
 	/**
-	 * calls `wp_send_json_error` with detailed error message using `detailed_error`
-	 *
-	 * @param WP_Error $wp_error
-	 * @return void
+	 * calls `wp_send_json_error` with detailed error message using `detailed_error` 
 	 */
 	public static function send_json_detailed_error(
-		\WP_Error $wp_error
+		\WP_Error $wp_error,
+		$default_error_code = 400
 	) {
-		$res = static::detailed_error($wp_error);
+		$res = static::detailed_error($wp_error, $default_error_code);
 		wp_send_json_error($res, $res['code']);
 	}
 }
