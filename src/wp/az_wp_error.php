@@ -63,11 +63,12 @@ trait az_wp_error
 	 */
 	public static function send_json_detailed(
 		mixed $response,
-		mixed $default_ok_value = "OK",
+		mixed $default_ok_value = null,
 		int $default_ok_code = null,
 		int $default_error_code = 400
 	) {
 		if (is_wp_error($response)) return static::send_json_detailed_error($response, $default_error_code);
+		if (empty($default_ok_value)) $default_ok_value = $response;
 		return wp_send_json_success($default_ok_value, $default_ok_code);
 	}
 }
