@@ -8,32 +8,38 @@ use WP_Post;
 
 trait az_wp_error
 {
-	public static function detailed_error(
+	public static function detailed_error_list(
 		mixed $wp_error,
-		int $default_error_code = 400
-	): array {
-
-		if (!is_wp_error($wp_error)) {
-			return [];
-		}
-		$res = [
-			'code' => $wp_error->get_error_code(),
-			'message' => $wp_error->get_error_message()
-		];
-		$errors = $wp_error->get_error_data();
-		if (is_array($errors)) {
-			foreach ($errors as $key => $value) {
-				if (is_array($value)) {
-					$res[$key] = implode(',', $value);
-				} else {
-					$res[$key] = $value;
+		int $default_error_code = 400,
+		int $depth = 0
+	): array|null {
+		if (is_wp_error($wp_error)) {
+			$res = [
+				'code' => $wp_error->get_error_code(),
+				'message' => $wp_error->get_error_message()
+			];
+			$errors = $wp_error->get_error_data();
+			if (is_array($errors)) {
+				foreach ($errors as $key => $value) {
+					if (is_array($value)) {
+						$res[$key] = implode(',', $value);
+					} else {
+						$res[$key] = $value;
+					}
 				}
 			}
+			$res['code'] = $wp_error->get_error_code();
+			if (empty($res['code'])) $res['code'] = $default_error_code;
+			$res['message'] = $wp_error->get_error_message();
+			return [$res];
+		} else if ($depth == 0 && is_array($wp_error)) {
+			$res = [];
+			foreach ($wp_error as $sub_error) {
+				$val = static::detailed_error_list($sub_error, $default_error_code, $depth + 1);
+				if ($val != null && !empty($val)) $res[] = $val;
+			}
 		}
-		$res['code'] = $wp_error->get_error_code();
-		if (empty($res['code'])) $res['code'] = $default_error_code;
-		$res['message'] = $wp_error->get_error_message();
-		return $res;
+		return null;
 	}
 	/**
 	 * calls `wp_send_json_error` with detailed error message using `detailed_error` 
@@ -42,10 +48,12 @@ trait az_wp_error
 		mixed $wp_error,
 		int $default_error_code = 400
 	) {
-		if (!is_wp_error($wp_error)) {
-			return false;
-		}
-		$res = static::detailed_error($wp_error, $default_error_code);
+
+		/**
+		 * get details of the error
+		 */
+		$res = static::detailed_error_list($wp_error, $default_error_code);
+		if (empty($res)) return false;
 		return wp_send_json_error($res, $res['code']);
 	}
 
