@@ -26,6 +26,7 @@ trait az_wp_error
 			}
 		}
 		$res['code'] = $wp_error->get_error_code();
+		if (empty($res['code'])) $res['code'] = 400;
 		$res['message'] = $wp_error->get_error_message();
 		return $res;
 	}
@@ -39,6 +40,6 @@ trait az_wp_error
 		\WP_Error $wp_error
 	) {
 		$res = static::detailed_error($wp_error);
-		wp_send_json_error($res, $wp_error->get_error_code());
+		wp_send_json_error($res, $res['code']);
 	}
 }
