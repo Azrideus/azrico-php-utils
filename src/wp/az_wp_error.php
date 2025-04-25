@@ -9,9 +9,13 @@ use WP_Post;
 trait az_wp_error
 {
 	public static function detailed_error(
-		\WP_Error $wp_error,
-		$default_error_code = 400
+		mixed $wp_error,
+		int $default_error_code = 400
 	): array {
+
+		if (!is_wp_error($wp_error)) {
+			return [];
+		}
 		$res = [
 			'code' => $wp_error->get_error_code(),
 			'message' => $wp_error->get_error_message()
@@ -35,10 +39,13 @@ trait az_wp_error
 	 * calls `wp_send_json_error` with detailed error message using `detailed_error` 
 	 */
 	public static function send_json_detailed_error(
-		\WP_Error $wp_error,
-		$default_error_code = 400
+		mixed $wp_error,
+		int $default_error_code = 400
 	) {
+		if (!is_wp_error($wp_error)) {
+			return false;
+		}
 		$res = static::detailed_error($wp_error, $default_error_code);
-		wp_send_json_error($res, $res['code']);
+		return wp_send_json_error($res, $res['code']);
 	}
 }
