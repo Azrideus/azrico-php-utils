@@ -64,14 +64,16 @@ trait az_wp_category
 		bool $add_parent_cats = false
 	) {
 		if (empty($search)) $post =  az_wp::get_post(get_the_ID());
-		else $post = az_wp::get_post($search, 'any');
+		else $post = az_wp::get_post($search);
 
 		if (empty($post)) {
-			$err = "findCategoriesOfPost failed because post is empty, searched for: " . json_encode($search);
+			$err = "get_categories_of failed because post is empty";
+			$err .= " \n searched for: " . json_encode($search);
+			$err .= " \n got : " . json_encode($post);
 			return new \WP_Error($err);
 		}
 
-		$post_id = az_wp::getId($post);
+		$post_id = az_wp::get_id($post);
 		$cache_key = 'cats_' . $post_id . ($add_parent_cats ? "_p" : "_n");
 		return az_cache::get($cache_key, function () use ($post_id, $add_parent_cats) {
 
@@ -105,7 +107,9 @@ trait az_wp_category
 		bool $getFirst = false
 	) {
 		$categories = static::get_categories_of($search);
-		$primary_category_id = az_wp::getMetaOf($search, '_yoast_wpseo_primary_category');
+		if ($categories instanceof \WP_Error) return null;
+
+		$primary_category_id = az_wp::get_meta_of($search, '_yoast_wpseo_primary_category');
 
 		if (!empty($primary_category_id) && !is_wp_error($categories)) {
 			foreach ($categories as $cat) {

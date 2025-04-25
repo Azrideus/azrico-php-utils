@@ -45,4 +45,21 @@ class az_parser
 
 		return $result;
 	}
+
+	/**
+	 * Remove any non numeric value from given string 
+	 * then cast it to float
+	 */
+	public static function to_float(string $str): float
+	{
+		return floatval(\preg_replace('/[^0-9-.]/', '', $str));
+	}
+	/**
+	 * Remove any non numeric value from given string 
+	 * then cast it to int
+	 */
+	public static function to_int(string $str): int
+	{
+		return intval(\preg_replace('/[^0-9-]/', '', $str));
+	}
 }

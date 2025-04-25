@@ -19,19 +19,19 @@ abstract class az_view
 		 * this is needed so we know where to load view files from 
 		 */
 		$plugin_path = static::getPath();
-		assert(!empty($plugin_path), 'getPath() is not implemented correctly');
-		assert(file_exists($plugin_path), 'plugin_path does not exist');
+		if (empty($plugin_path)) throw new \Exception('getPath() is not implemented correctly');
+		if (!file_exists($plugin_path)) throw new \Exception('plugin_path does not exist');
 
 		/**
 		 * get root path of the plugin,
 		 * this is where the src/views folder is located
 		 */
 		$rootpath = az_wp::getPluginDir($plugin_path);
-		assert(file_exists($rootpath), 'rootpath does not exist');
+		if (!file_exists($rootpath)) throw new \Exception('rootpath does not exist');
 
 
 		$rootpath = az_string::join_paths($rootpath, 'src', 'views');
-		assert(file_exists($rootpath), 'rootpath does not have the src/views folder');
+		if (!file_exists($rootpath)) throw new \Exception('rootpath does not have the src/views folder');
 
 		//load the file
 		$view_full_path = az_string::join_paths($rootpath, $view_name) . '.php';
@@ -73,7 +73,27 @@ abstract class az_view
 		echo static::shared($dir, $model);
 	}
 
+	/* -------------------------------------------------------------------------- */
 
+	/**
+	 * render a hidden input field, mostly used in forms
+	 * 
+	 * uses the render method to render the input field
+	 */
+	public static function render_hidden_input(string $name, callable|string $value = '',  ...$rest_attr)
+	{
+		echo static::element(
+			'input',
+			'',
+			[
+				"name" => $name,
+				"value" => az_object::eval($value),
+				'type' => 'text',
+				'hidden' => true
+			],
+			...$rest_attr
+		);
+	}
 	/**
 	 * render an element with given attributes 
 	 */
@@ -82,21 +102,33 @@ abstract class az_view
 		echo static::element($tag, $content, ...$rest_attr);
 	}
 	/**
-	 * make an element with given attributes 
+	 * render an element with given attributes 
+	 * @deprecated use render instead
 	 */
-	public static function element(string $tag, callable|string $content = '',  ...$rest_attr)
-	{
-		$attr = static::attr(...$rest_attr);
-		if (\is_callable($content)) $content = $content();
-		return "<$tag $attr> $content </$tag>";
-	}
 	public static function echo_element(string $tag, callable|string $content = '',  ...$rest_attr)
 	{
 		echo static::element($tag, $content, ...$rest_attr);
 	}
 
+	/**
+	 * make an element with given attributes 
+	 */
+	public static function element(string $tag, callable|string $content = '',  ...$rest_attr)
+	{
+		$attr = static::attr(...$rest_attr);
+		$content = az_object::eval($content); //evaluate the content if its a function
+		return "<$tag $attr> $content </$tag>";
+	}
+
+
+
+	static function echo_attr(...$params)
+	{
+		echo static::attr(...$params);
+	}
 	static function attr(...$params)
 	{
+		$esc_func = \function_exists('esc_attr') ? 'esc_attr' : null;
 
 		$attr_str = '';
 		$final_list = [];
@@ -129,21 +161,18 @@ abstract class az_view
 		}
 
 		foreach ($final_list as $sub_key => $value) {
-			if (is_numeric($sub_key) && is_string($value)) {
-				$attr_str .= ' ' . $value;
+			if (is_array($value)) $value = trim(join(" ", array_unique($value)));
+			$value = $esc_func ? $esc_func($value) : $value;
+
+			if (is_numeric($sub_key)) {
+				$attr_str .= " $value";
 			} else {
-				$attr_str .= ' ' . $sub_key;
-				$attr_str .= "='";
-				$attr_str .= trim(join(" ", array_unique($value)));
-				$attr_str .= "'";
+				$attr_str .= " $sub_key='$value'";
 			}
 		}
 		return trim($attr_str);
 	}
-	static function echo_attr(...$params)
-	{
-		echo static::attr(...$params);
-	}
+
 
 	static function clsx(...$params)
 	{

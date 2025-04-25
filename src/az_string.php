@@ -3,10 +3,14 @@
 namespace AzUtils;
 
 use AzUtils\string\az_string_path;
+use AzUtils\string\az_string_serialize;
+use AzUtils\string\az_string_traits;
 
 class az_string
 {
 	use az_string_path;
+	use az_string_serialize;
+	use az_string_traits;
 	/**
 	 * check if two string are not empty and equal ignorecase 
 	 */
@@ -127,9 +131,62 @@ class az_string
 		return \preg_replace('/^\d+\.?/', '', trim($title));
 	}
 
+	/**
+	 * Remove any non numeric value from given string 
+	 * then cast it to float
+	 */
+	public static function to_float(string $str): float
+	{
+		return az_parser::to_float($str);
+	}
+	/**
+	 * Remove any non numeric value from given string 
+	 * then cast it to int
+	 */
+	public static function to_int(string $str): float
+	{
+		return az_parser::to_int($str);
+	}
+	public static function has_digits(string $str): float
+	{
+		return preg_match('/\d/', $str);
+	}
+
 	static function truncate($string, $length, $dots = "...")
 	{
 		return (strlen($string) > $length) ? substr($string, 0, $length - strlen($dots)) . $dots : $string;
+	}
+
+	/**
+	 * advanced expand string
+	 *
+	 * test[1|2|3] = test1,test2,test3
+	 */
+	static function expand($string, $expand_sep = "|", $join_sep = ",")
+	{
+		$matches = [];
+		$result_string = $string;
+
+		// Use preg_match_all to catch all bracketed sections
+		preg_match_all('/\[.*?\]/', $string, $matches, PREG_OFFSET_CAPTURE);
+		if (empty($matches[0])) return $result_string;
+		foreach ($matches[0] as $match) {
+			$result_string = \str_replace($match[0], '', $result_string);
+		}
+
+		$result_prefix = $result_string;
+
+		$result_array = [];
+		foreach ($matches[0] as $match) {
+			$match_str = $match[0];
+			$match_str  = substr($match_str, 1, strlen($match_str) - 2); // remove brackets
+			$match_parts = explode($expand_sep, $match_str);
+			foreach ($match_parts as $mp) {
+				$result_array[] = $result_prefix . $mp;
+			}
+		}
+		$result_string = implode($join_sep, $result_array);
+		return $result_string;
 	}
 
 	/**

@@ -17,5 +17,8 @@
 			"name": "Azrideus",
 			"email": "22293394+Azrideus@users.noreply.github.com"
 		}
-	]
+	],
+	"require-dev": {
+		"phpunit/phpunit": "12"
+	}
 }

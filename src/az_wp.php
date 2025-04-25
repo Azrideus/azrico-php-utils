@@ -6,23 +6,24 @@ use AzUtils\classes\AZ_DataClass;
 use AzUtils\wp\az_wp_external_post;
 use AzUtils\wp\az_wp_post_meta;
 use AzUtils\wp\az_wp_post;
-use AzUtils\wp\az_wp_styles;
+use AzUtils\wp\az_wp_plugin;
 use AzUtils\wp\az_wp_category;
+use AzUtils\wp\az_wp_links;
+use AzUtils\wp\az_wp_searchquery;
 
 class az_wp
 {
+	use az_wp_searchquery;
 	use az_wp_post_meta;
 	use az_wp_post;
 	use az_wp_external_post;
-	use az_wp_styles;
+	use az_wp_plugin;
 	use az_wp_category;
+	use az_wp_links;
 
 	private static $cached_dirs = [];
 
-	static function getUrl($params = [])
-	{
-		return (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-	}
+
 
 	/**
 	 * get plugin base url path based on a given file path
@@ -65,6 +66,24 @@ class az_wp
 			$temp_dir = az_string::join_paths(WP_PLUGIN_DIR, $plugin_name);
 			assert(file_exists($temp_dir), 'failed to get plugin dir');
 			self::$cached_dirs[$cache_name] =	$temp_dir;
+		}
+
+		return self::$cached_dirs[$cache_name];
+	}
+
+	public static function getPluginMainFile(string $plugin_file = '')
+	{
+		$cache_name = (empty($file_path) ? __FILE__ : $file_path) . "__main_file";
+		if (!isset(self::$cached_dirs[$cache_name])) {
+			$pdir = az_wp::getPluginDir($plugin_file);
+			$files = az_assets::get_files_in($pdir, '.php');
+			foreach ($files as $f) {
+				$plugin_data = get_file_data($f, ['Version' => 'Version']);
+				if ($plugin_data['Version']) {
+					self::$cached_dirs[$cache_name] = $f;
+					break;
+				}
+			}
 		}
 
 		return self::$cached_dirs[$cache_name];

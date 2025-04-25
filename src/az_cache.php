@@ -21,15 +21,16 @@ abstract class az_cache
 		}
 	}
 
-	static function set($key, $value, $wpcache = false)
+	static function set($key, $value, int|bool $wpcache = false)
 	{
 		static::$cache[$key] = $value;
 		if ($wpcache && function_exists('wp_cache_set')) {
-			wp_cache_set($key, $value, static::getCacheGroup(), 3600);
+			if (\is_bool($wpcache)) $wpcache = 3600;
+			wp_cache_set($key, $value, static::getCacheGroup(), $wpcache);
 		}
 		return $value;
 	}
-	static function get($key, $callback = null, $wpcache = false)
+	static function get($key, $callback = null,  int|bool $wpcache = false)
 	{
 		if (isset(static::$cache[$key])) return static::$cache[$key];
 
@@ -42,7 +43,7 @@ abstract class az_cache
 		}
 		return null;
 	}
-	static function delete(string $key, $wpcache = false)
+	static function delete(string $key,  int|bool $wpcache = false)
 	{
 		unset(static::$cache[$key]);
 		if ($wpcache && function_exists('wp_cache_delete')) {

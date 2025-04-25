@@ -3,6 +3,7 @@
 namespace AzUtils\wp;
 
 use AzUtils\az_object;
+use AzUtils\az_wp;
 use WP_Post;
 
 trait az_wp_post
@@ -39,18 +40,71 @@ trait az_wp_post
 
 	/**
 	 * get id of given WP_Post or WC_Product
-	 *
+	 * @deprecated use get_id instead
 	 * @param [type] $input
 	 * @return integer|null
 	 */
 	static function getId($input): int|null
 	{
-		if (is_a($input, 'WP_Post')) return $input->ID;
-		if (is_a($input, 'WC_Product')) return $input->get_id();
+		return self::get_id($input);
+	}
+	/**
+	 * get id of given WP_Post or WC_Product 
+	 * @param [type] $input
+	 * @return integer|null
+	 */
+	static function get_id($input): int|null
+	{
+		if (empty($input)) return null;
+		if ($input instanceof WP_Post) return $input->ID;
+		if ($input instanceof WC_Product) return $input->get_id();
+		if ($input instanceof WC_Order_Item_Product) return $input->get_product_id();
+
+		if (\is_object($input)) {
+			if (property_exists($input, 'ID')) return $input->ID;
+			if (property_exists($input, 'id')) return $input->id;
+		} else if (\is_array($input)) {
+			if (isset($input['ID'])) return $input['ID'];
+			if (isset($input['id'])) return $input['id'];
+		}
 		return null;
 	}
 
+	/**
+	 * get cart_item by its key 
+	 */
+	static function get_cart_item(string|array $input): null|array
+	{
+		global $woocommerce;
+		$cart = $woocommerce->cart->get_cart();
+		if (is_array($input) && isset($input['key'])) $input = $input['key'];
 
+		if (isset($cart[$input])) return $cart[$input];
+		foreach ($cart as $cart_item_key => $cart_item) {
+			if ($cart_item_key === $input)
+				return $cart_item;
+		}
+		return null;
+	}
+	static function get_product($input): \WC_Product|null
+	{
+		if (empty($input)) return null;
+
+		/* ------------------------------- id is given ------------------------------ */
+		if (is_int($input) || (is_numeric($input) && intval($input) > 0))
+			return wc_get_product(intval($input));
+
+		/* ------------------------- product object is given ------------------------ */
+		if ($input instanceof WC_Product)
+			return $input;
+		if ($input instanceof WC_Order_Item_Product)
+			return $input->get_product();
+
+		/* ------------------------------- find the id ------------------------------ */
+		$pr_id = static::get_id($input);
+		if (empty($pr_id)) return null;
+		return wc_get_product($pr_id);
+	}
 	/**
 	 * get a post of given type 
 	 */
@@ -58,12 +112,29 @@ trait az_wp_post
 	{
 		if (empty($input)) return null;
 
-		if (is_a($input, 'WP_Post')) {
-			/* ------------------------------ post is given ----------------------------- */
+		if (is_object($input)) {
+			if (
+				property_exists($input, 'field')
+				&& $input->field instanceof \WP_Post
+			) {
+				$input = $input->field;
+			}
+			if (
+				property_exists($input, 'post')
+				&& $input->post instanceof \WP_Post
+			) {
+				$input = $input->post;
+			}
+		}
+
+
+
+		if ($input instanceof \WP_Post) {
 			$result = $input;
 			unset($input);
-		} else if (is_a($input, 'WC_Product')) {
-			/* ------------------------------ post is given ----------------------------- */
+		} else if ($input instanceof \WC_Product) {
+			$input = $input->get_id();
+		} else if ($input instanceof \WC_Order) {
 			$input = $input->get_id();
 		}
 
@@ -98,7 +169,7 @@ trait az_wp_post
 		 */
 		if (
 			!empty($post_type)
-			&& !in_array($result->post_type, az_object::wrap_array($post_type))
+			&& !az_wp::post_type_matches($result, $post_type)
 		) return null;
 
 		return $result;
@@ -110,7 +181,7 @@ trait az_wp_post
 	 * @param [type] $input
 	 * @param array|string $allowedTypes 
 	 */
-	static function postTypeMatches(object $input, array|string $allowedTypes)
+	static function post_type_matches(object $input, array|string $allowedTypes)
 	{
 		if (is_object($input) && property_exists($input, 'post_type'))
 			$input = $input->post_type;
