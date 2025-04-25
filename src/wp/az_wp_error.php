@@ -9,7 +9,7 @@ use WP_Post;
 trait az_wp_error
 {
 	public static function detailed_error(
-		WP_Error $wp_error
+		\WP_Error $wp_error
 	): array {
 		$res = [
 			'code' => $wp_error->get_error_code(),
@@ -36,7 +36,7 @@ trait az_wp_error
 	 * @return void
 	 */
 	public static function send_json_detailed_error(
-		WP_Error $wp_error
+		\WP_Error $wp_error
 	) {
 		$res = static::detailed_error($wp_error);
 		wp_send_json_error($res, $wp_error->get_error_code());
