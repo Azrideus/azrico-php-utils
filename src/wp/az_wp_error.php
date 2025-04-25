@@ -48,4 +48,18 @@ trait az_wp_error
 		$res = static::detailed_error($wp_error, $default_error_code);
 		return wp_send_json_error($res, $res['code']);
 	}
+
+	/**
+	 * Either calls `send_json_detailed_error`
+	 * or  `wp_send_json_success` with the OK message. 
+	 */
+	public static function send_json_detailed(
+		mixed $response,
+		mixed $default_ok_value = "OK",
+		int $default_ok_code = null,
+		int $default_error_code = 400
+	) {
+		if (is_wp_error($response)) return static::send_json_detailed_error($response, $default_error_code);
+		return wp_send_json_success($default_ok_value, $default_ok_code);
+	}
 }
