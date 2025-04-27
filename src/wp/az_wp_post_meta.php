@@ -100,6 +100,12 @@ trait az_wp_post_meta
 				return $search->get_meta($key);
 			}
 			/**
+			 * WC_Order
+			 */
+			if ($search instanceof \WC_Order) {
+				return $search->get_meta($key);
+			}
+			/**
 			 * WP_Post
 			 */
 			$search = az_wp::get_post($search);
