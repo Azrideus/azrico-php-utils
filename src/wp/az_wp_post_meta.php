@@ -127,9 +127,16 @@ trait az_wp_post_meta
 			/**
 			 * WC_Order
 			 */
-			if ($search instanceof \WC_Order) {
-				$search = $search->get_id();
+			if (
+				$search instanceof \WC_Order
+				|| $search instanceof \WC_Order_Item
+			) {
+				$search->update_meta_data($key, $value);
+				return $search->save_meta_data();
 			}
+		}
+
+		if (!is_numeric($search)) {
 			/**
 			 * WP_Post
 			 */
