@@ -24,6 +24,7 @@ trait az_wp_orders
 	 */
 	static function wc_status_equals(\WC_Order|string $order1, \WC_Order|string $order2): bool
 	{
+		if ($order1 === $order2) return true;
 		$order_status1 = static::get_wc_order_status_prefixed($order1);
 		$order_status2 = static::get_wc_order_status_prefixed($order2);
 		return az_string::eq($order_status1, $order_status2);
@@ -33,7 +34,16 @@ trait az_wp_orders
 	 */
 	static function wc_status_contains(array $status_list, \WC_Order|string $status): bool
 	{
+		/**
+		 * quick check if the status is in the list
+		 */
+		if (in_array($status, $status_list)) return true;
+		/**
+		 * check if the status is in the list with wc- prefix
+		 */
 		$status_prefixed = static::get_wc_order_status_prefixed($status);
+		if (in_array($status_prefixed, $status_list)) return true;
+
 		foreach ($status_list as $s) {
 			$check_prefixed = static::get_wc_order_status_prefixed($s);
 			if (az_string::eq($check_prefixed, $status_prefixed)) return true;
