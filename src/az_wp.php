@@ -8,6 +8,7 @@ use AzUtils\wp\az_wp_post_meta;
 use AzUtils\wp\az_wp_post;
 use AzUtils\wp\az_wp_plugin;
 use AzUtils\wp\az_wp_category;
+use AzUtils\wp\az_wp_orders;
 use AzUtils\wp\az_wp_links;
 use AzUtils\wp\az_wp_error;
 use AzUtils\wp\az_wp_searchquery;
@@ -21,6 +22,7 @@ class az_wp
 	use az_wp_plugin;
 	use az_wp_category;
 	use az_wp_links;
+	use az_wp_orders;
 	use az_wp_error;
 
 	private static $cached_dirs = [];
