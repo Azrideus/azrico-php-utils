@@ -114,7 +114,13 @@ trait az_wp_post_meta
 		}
 
 
-		if (!is_numeric($search)) throw new \Exception('could not load the post id to get its meta! got: ' . strval($search));
+		if (!is_numeric($search)) {
+			throw new \Exception(
+				"cant get the post id to get meta ({$key}) " .
+					' got: ' . strval($search) .
+					' search: ' . \json_encode($search)
+			);
+		}
 		return get_post_meta(
 			$search,
 			$key,

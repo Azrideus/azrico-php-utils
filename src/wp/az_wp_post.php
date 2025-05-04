@@ -115,10 +115,14 @@ trait az_wp_post
 		$postlist = static::get_post_list($search, $allowedTypes, 1);
 
 		if (!is_array($postlist)) {
-
-			throw new \Exception('get_post did not got an array from get_post_list! got: ' . strval($search));
+			throw new \Exception('get_post did not got a post array from get_post_list!');
 		}
-
+		foreach ($postlist as $key => $post) {
+			if (!($post instanceof \WP_Post)) {
+				throw new \Exception('get_post_list returned a non post object!');
+			}
+		}
+		error_log('get_post_list: ' . print_r($postlist, true));
 		if (empty($postlist)) return null;
 		return end($postlist);
 	}
@@ -152,20 +156,17 @@ trait az_wp_post
 			}
 		}
 		if ($input instanceof \WP_Post) {
-			$result = $input;
-			unset($input);
+			return static::get_post_array_if_type_matches($input, $allowedTypes);
 		} else if ($input instanceof \WC_Product) {
 			$input = $input->get_id();
 		} else if ($input instanceof \WC_Order) {
 			$input = $input->get_id();
-		}
-		if (is_object($search) && !empty(az_wp::get_id($search))) {
+		} else if (is_object($search) && !empty(az_wp::get_id($search))) {
 			/**
 			 * some object with ID is given
 			 */
-			return static::get_post_list(az_wp::get_id($search), $allowedTypes, $limit);
+			$input = az_wp::get_id($search);
 		}
-
 
 		/**
 		 * if no $post_type is given use all post types to avoid exclude from search
@@ -197,11 +198,7 @@ trait az_wp_post
 		/* ----------------------------- get post by id ----------------------------- */
 		if (is_numeric($search)) {
 			$foundPost = get_post($search);
-			if (!empty($foundPost)) {
-				if (az_wp::post_type_matches($foundPost, $allowedTypes))
-					return [$foundPost];
-				return [];
-			}
+			return static::get_post_if_type_matches($foundPost, $allowedTypes);
 		}
 		/* ---------------------------- get post by slug ---------------------------- */
 		if (is_string($search)) {
@@ -260,7 +257,28 @@ trait az_wp_post
 		if (isset($allowedTypes[0]) && $allowedTypes[0] === 'any') return true;
 		return in_array(strval($input), $allowedTypes);
 	}
-
+	/**
+	 * if the post type of the input matches one of the allowedTypes return the input 
+	 */
+	static function get_post_if_type_matches(object|array $input, array|string $allowedTypes)
+	{
+		if (static::post_type_matches($input, $allowedTypes))
+			return $input;
+		return null;
+	}
+	/**
+	 * if the post type of the input matches one of the allowedTypes return the input 
+	 */
+	static function get_post_array_if_type_matches(array $input, array|string $allowedTypes)
+	{
+		$post_list = [];
+		foreach ($input as $key => $post) {
+			if (static::post_type_matches($post, $allowedTypes)) {
+				$post_list[] = $post;
+			}
+		}
+		return $post_list;
+	}
 	private static function build_post_pageid_regex(string|array $pageidlist): string
 	{
 		$pagesToSearch = is_array($pageidlist) ? $pageidlist : explode(',', $pageidlist);
