@@ -24,7 +24,87 @@ trait az_wp_category
 			]
 		);
 	}
+	/** 
+	 * search for categories based on search criteria
+	 */
+	static function find_categories(
+		array|object $search,
+	) {
+		$search = shortcode_atts(
+			array(
+				'post_type'   => 'auto',
+				'categories' => [],
+				'include' => [],
+				'exclude' => [],
+				'hide_empty' => 1,
+				'parent' => 0,
+			),
+			$search
+		);
+		/* ------------------ suport for custom category taxonomies ----------------- */
 
+		$category_taxonomy = az_wp::get_category_taxonomy_of_post_type($search['post_type']);
+
+		if (!empty($search['categories'])) {
+			$cats = explode(',', $search['categories']);
+			return array_map(
+				function ($cat_search) use ($category_taxonomy) {
+					return az_wp::get_category($cat_search, $category_taxonomy);
+				},
+				$cats
+			);
+		}
+		/* ----------------------------- parse parent id ---------------------------- */
+
+		if (!empty($search['parent'])) {
+			if ($search['parent'] === 'this') {
+				$current_category = get_queried_object();
+				if (is_a($current_category, 'WP_Term')) {
+					$search['parent'] =  $current_category->term_id;
+				}
+			} else {
+				$parent_cat =
+					az_wp::get_category(
+						$search['parent'],
+						$category_taxonomy
+					);
+				if (empty($parent_cat)) unset($search['parent']);
+				else
+					$search['parent'] = $parent_cat->term_id;
+			}
+		}
+
+
+		$sq =  array(
+			'hide_empty' => filter_var(
+				$search['hide_empty'],
+				FILTER_VALIDATE_BOOLEAN
+			),
+
+		);
+		if (isset($search['parent']) && $search['parent'] >= 0) {
+			$sq['parent'] = $search['parent'];
+		}
+		if (!empty($search['exclude'])) {
+			$sq['exclude'] = azlp_parser::toArray($search['exclude']);
+		}
+		if (!empty($search['include'])) {
+			$sq['include'] = azlp_parser::toArray($search['include']);
+		}
+
+		$sq = array_merge(
+			array(
+				'orderby'  => 'slug',
+				'order'    => 'DESC'
+			),
+			$sq,
+			array(
+				'taxonomy' => $category_taxonomy,
+				'number'  => 100,
+			)
+		);
+		return get_terms($sq);
+	}
 
 
 	/**  
@@ -57,10 +137,11 @@ trait az_wp_category
 		return get_term_by('slug', ($search), $tax);
 	}
 	/**  
+	 * get all categories of a given post
 	 * @return  \WP_Error|\WP_Term[]
 	 */
 	static function get_categories_of(
-		object $search,
+		array|object $search,
 		bool $add_parent_cats = false
 	) {
 		if (empty($search)) $post =  az_wp::get_post(get_the_ID());

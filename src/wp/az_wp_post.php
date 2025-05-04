@@ -106,12 +106,28 @@ trait az_wp_post
 		return wc_get_product($pr_id);
 	}
 	/**
-	 * get a post of given type 
+	 * get a post of given type , uses `get_post_list`
 	 */
-	static function get_post($input, string|array $post_type = ''): \WP_Post|null
+	static function get_post($search, string|array $post_type = ''): \WP_Post|null
 	{
-		if (empty($input)) return null;
+		$postlist = self::findPosts($search, $post_type, 1);
+		return end($postlist);
+	}
+	/**
+	 * search for a list of posts
+	 *
+	 * @return \WP_Post[]
+	 */
+	static function get_post_list(
+		object|string|int|array $search,
+		array|string $allowedTypes = 'post',
+		int $limit = 100
+	) {
 
+		/* -------------------------------------------------------------------------- */
+		/*                              verify the input                              */
+		/* -------------------------------------------------------------------------- */
+		if (empty($input)) return null;
 		if (is_object($input)) {
 			if (
 				property_exists($input, 'field')
@@ -126,9 +142,9 @@ trait az_wp_post
 				$input = $input->post;
 			}
 		}
-
-
-
+		/* -------------------------------------------------------------------------- */
+		/*                                Specail Cases                               */
+		/* -------------------------------------------------------------------------- */
 		if ($input instanceof \WP_Post) {
 			$result = $input;
 			unset($input);
@@ -138,41 +154,84 @@ trait az_wp_post
 			$input = $input->get_id();
 		}
 
-
-		if (!empty($input) && \is_numeric($input)) {
-			/* -------------------------------- get by id ------------------------------- */
-			$post_id = intval($input);
-			if ($post_id < 0) return null;
-
+		if (is_object($search) && !empty(az_wp::get_id($search))) {
 			/**
-			 * if no $post_type is given use all post types to avoid exclude from search
-			 * https://stackoverflow.com/questions/30554730/get-all-post-types-in-wordpress-in-query-posts
-			 * https://wordpress.stackexchange.com/questions/13029/getting-only-a-specific-post-type-with-get-post
+			 * some object with ID is given
 			 */
-			if (empty($post_type)) $post_type =  get_post_types();
-			$sq = [
-				'post__in' => [$post_id],
-				'limit' => 1,
-				'post_type' => $post_type
-			];
-			$result = get_posts($sq);
-			$result = end($result);
+			return static::get_post_list(az_wp::get_id($search), $allowedTypes, $limit);
 		}
 
-		/**
-		 * nothing found
-		 */
-		if (empty($result) || false == $result) return null;
 
 		/**
-		 * check if post type matches
+		 * if no $post_type is given use all post types to avoid exclude from search
+		 * https://stackoverflow.com/questions/30554730/get-all-post-types-in-wordpress-in-query-posts
+		 * https://wordpress.stackexchange.com/questions/13029/getting-only-a-specific-post-type-with-get-post
 		 */
-		if (
-			!empty($post_type)
-			&& !az_wp::post_type_matches($result, $post_type)
-		) return null;
+		if (empty($allowedTypes)) $allowedTypes =  get_post_types();
+		/**
+		 * when searching for attachments, we search for status of inherit
+		 */
+		$allowedTypes = az_object::comma_array($allowedTypes);
+		$postStatus = in_array('attachment', $allowedTypes) ? "inherit" : "publish";
 
-		return $result;
+
+		/**
+		 * we cant search for posts and attachments at the same time
+		 * so we have to seperate the searches
+		 */
+		if (in_array('attachment', $allowedTypes) && sizeof($allowedTypes) > 1) {
+			if (($key = array_search('attachment', $allowedTypes)) !== false) {
+				unset($allowedTypes[$key]);
+			}
+			return array_merge(
+				static::get_post_list($search, 'attachment', $limit),
+				static::get_post_list($search, $allowedTypes, $limit)
+			);
+		}
+
+		/* ----------------------------- get post by id ----------------------------- */
+		if (is_numeric($search)) {
+			$foundPost = get_post($search);
+			if (!empty($foundPost)) {
+				if (az_wp::post_type_matches($foundPost, $allowedTypes))
+					return [$foundPost];
+				return [];
+			}
+		}
+		/* ---------------------------- get post by slug ---------------------------- */
+		if (is_string($search)) {
+			$search = array(
+				'name'           => trim($search),
+				'post_type'      => $allowedTypes,
+				'post_status'    => $postStatus,
+				'posts_per_page' => $limit
+			);
+		}
+		if (!is_array($search)) return [];
+
+		/* ------------------------------ pageid search ----------------------------- */
+		if (array_key_exists('pageid', $search)) {
+			$searchRgx = self::buildRegex($search['pageid']);
+			return self::findPosts(
+				array('meta_query'     => array(
+					array(
+						'key'     => 'paginator_pageid',
+						'compare' => 'REGEXP',
+						'value'   => $searchRgx,
+					),
+				)),
+				$allowedTypes,
+				$limit
+			);
+		}
+		return get_posts(array_merge(
+			[
+				'post_type'      => $allowedTypes,
+				'post_status'    => $postStatus,
+				'posts_per_page' => $limit,
+			],
+			$search
+		));
 	}
 
 	/**
