@@ -200,7 +200,7 @@ trait az_wp_post
 		/* ----------------------------- get post by id ----------------------------- */
 		if (is_numeric($input)) {
 			$foundPost = get_post($input);
-			return static::get_post_if_type_matches($foundPost, $allowedTypes);
+			return static::get_post_array_if_type_matches($foundPost, $allowedTypes);
 		}
 		/* ---------------------------- get post by slug ---------------------------- */
 		if (is_string($input)) {
@@ -272,7 +272,7 @@ trait az_wp_post
 	/**
 	 * if the post type of the input matches one of the allowedTypes return the input 
 	 */
-	static function get_post_array_if_type_matches(array|object $input, array|string $allowedTypes)
+	static function get_post_array_if_type_matches(array|object $input, array|string $allowedTypes): array
 	{
 		$post_list = [];
 		if (!is_array($input)) return $input = [$input];
