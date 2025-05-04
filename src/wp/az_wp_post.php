@@ -110,9 +110,15 @@ trait az_wp_post
 	/**
 	 * get a post of given type , uses `get_post_list`
 	 */
-	static function get_post($search, string|array $post_type = ''): \WP_Post|null
+	static function get_post($search, string|array $allowedTypes = ''): \WP_Post|null
 	{
-		$postlist = static::get_post_list($search, $post_type, 1);
+		$postlist = static::get_post_list($search, $allowedTypes, 1);
+
+		if (!is_array($postlist)) {
+
+			throw new \Exception('get_post did not got an array from get_post_list! got: ' . strval($search));
+		}
+
 		if (empty($postlist)) return null;
 		return end($postlist);
 	}
@@ -123,7 +129,7 @@ trait az_wp_post
 	 */
 	static function get_post_list(
 		object|string|int|array $search,
-		array|string $allowedTypes = 'post',
+		array|string $allowedTypes = '',
 		int $limit = 100
 	): array {
 
