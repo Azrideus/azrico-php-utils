@@ -113,15 +113,7 @@ trait az_wp_post
 	static function get_post($search, string|array $allowedTypes = ''): \WP_Post|null
 	{
 		$postlist = static::get_post_list($search, $allowedTypes, 1);
-
-		if (!is_array($postlist)) {
-			throw new \Exception('get_post did not got a post array from get_post_list!');
-		}
-		foreach ($postlist as $key => $post) {
-			if (!($post instanceof \WP_Post)) {
-				throw new \Exception('get_post_list returned a non post object!');
-			}
-		}
+		error_log('get_post: ' . \json_encode($search));
 		error_log('get_post_list: ' . print_r($postlist, true));
 		if (empty($postlist)) return null;
 		return end($postlist);
@@ -132,7 +124,7 @@ trait az_wp_post
 	 * @return \WP_Post[]
 	 */
 	static function get_post_list(
-		object|string|int|array $search,
+		object|string|int|array $input,
 		array|string $allowedTypes = '',
 		int $limit = 100
 	): array {
@@ -141,6 +133,7 @@ trait az_wp_post
 		/*                              verify the input                              */
 		/* -------------------------------------------------------------------------- */
 		if (empty($input)) return [];
+
 		if (is_object($input)) {
 			if (
 				property_exists($input, 'field')
@@ -155,19 +148,28 @@ trait az_wp_post
 				$input = $input->post;
 			}
 		}
+
 		if ($input instanceof \WP_Post) {
+			/**
+			 * post is directly given
+			 */
 			return static::get_post_array_if_type_matches($input, $allowedTypes);
 		} else if ($input instanceof \WC_Product) {
+			/**
+			 *  wc product is given
+			 */
 			$input = $input->get_id();
 		} else if ($input instanceof \WC_Order) {
+			/**
+			 *  order is given
+			 */
 			$input = $input->get_id();
-		} else if (is_object($search) && !empty(az_wp::get_id($search))) {
+		} else if (!empty(az_wp::get_id($input))) {
 			/**
 			 * some object with ID is given
 			 */
-			$input = az_wp::get_id($search);
+			$input = az_wp::get_id($input);
 		}
-
 		/**
 		 * if no $post_type is given use all post types to avoid exclude from search
 		 * https://stackoverflow.com/questions/30554730/get-all-post-types-in-wordpress-in-query-posts
@@ -190,30 +192,30 @@ trait az_wp_post
 				unset($allowedTypes[$key]);
 			}
 			return array_merge(
-				static::get_post_list($search, 'attachment', $limit),
-				static::get_post_list($search, $allowedTypes, $limit)
+				static::get_post_list($input, 'attachment', $limit),
+				static::get_post_list($input, $allowedTypes, $limit)
 			);
 		}
 
 		/* ----------------------------- get post by id ----------------------------- */
-		if (is_numeric($search)) {
-			$foundPost = get_post($search);
+		if (is_numeric($input)) {
+			$foundPost = get_post($input);
 			return static::get_post_if_type_matches($foundPost, $allowedTypes);
 		}
 		/* ---------------------------- get post by slug ---------------------------- */
-		if (is_string($search)) {
-			$search = array(
-				'name'           => trim($search),
+		if (is_string($input)) {
+			$input = array(
+				'name'           => trim($input),
 				'post_type'      => $allowedTypes,
 				'post_status'    => $postStatus,
 				'posts_per_page' => $limit
 			);
 		}
-		if (!is_array($search)) return [];
+		if (!is_array($input)) return [];
 
 		/* ------------------------------ pageid search ----------------------------- */
-		if (array_key_exists('pageid', $search)) {
-			$searchRgx = static::build_post_pageid_regex($search['pageid']);
+		if (array_key_exists('pageid', $input)) {
+			$searchRgx = static::build_post_pageid_regex($input['pageid']);
 			return static::get_post_list(
 				array('meta_query'     => array(
 					array(
@@ -232,7 +234,7 @@ trait az_wp_post
 				'post_status'    => $postStatus,
 				'posts_per_page' => $limit,
 			],
-			$search
+			$input
 		));
 	}
 
@@ -244,18 +246,19 @@ trait az_wp_post
 	 */
 	static function post_type_matches(object $input, array|string $allowedTypes)
 	{
+		$type = '';
 		if (is_object($input) && property_exists($input, 'post_type'))
-			$input = $input->post_type;
-		else if (is_a($input, 'WC_Product'))
-			$input = 'product';
-		else if (is_a($input, 'WP_Post'))
-			$input = 'post';
-
+			$type = $input->post_type;
+		else if ($input instanceof \WC_Product)
+			$type = 'product';
+		else if ($input instanceof \Wp_Post)
+			$type = 'post';
+		else return false;
 
 		$allowedTypes = (array)$allowedTypes;
-		if (sizeof($allowedTypes) === 0) return false;
-		if (isset($allowedTypes[0]) && $allowedTypes[0] === 'any') return true;
-		return in_array(strval($input), $allowedTypes);
+		if (count($allowedTypes) === 0) return false;
+		if (in_array('any', $allowedTypes)) return true;
+		return in_array(strval($type), $allowedTypes);
 	}
 	/**
 	 * if the post type of the input matches one of the allowedTypes return the input 
@@ -269,9 +272,10 @@ trait az_wp_post
 	/**
 	 * if the post type of the input matches one of the allowedTypes return the input 
 	 */
-	static function get_post_array_if_type_matches(array $input, array|string $allowedTypes)
+	static function get_post_array_if_type_matches(array|object $input, array|string $allowedTypes)
 	{
 		$post_list = [];
+		if (!is_array($input)) return $input = [$input];
 		foreach ($input as $key => $post) {
 			if (static::post_type_matches($post, $allowedTypes)) {
 				$post_list[] = $post;
