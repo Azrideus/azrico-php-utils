@@ -113,6 +113,7 @@ trait az_wp_post
 	static function get_post($search, string|array $post_type = ''): \WP_Post|null
 	{
 		$postlist = static::get_post_list($search, $post_type, 1);
+		if (empty($postlist)) return null;
 		return end($postlist);
 	}
 	/**
