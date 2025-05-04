@@ -95,9 +95,9 @@ trait az_wp_post
 			return wc_get_product(intval($input));
 
 		/* ------------------------- product object is given ------------------------ */
-		if ($input instanceof WC_Product)
+		if ($input instanceof \WC_Product)
 			return $input;
-		if ($input instanceof WC_Order_Item_Product)
+		if ($input instanceof \WC_Order_Item_Product)
 			return $input->get_product();
 
 		/* ------------------------------- find the id ------------------------------ */
@@ -211,8 +211,8 @@ trait az_wp_post
 
 		/* ------------------------------ pageid search ----------------------------- */
 		if (array_key_exists('pageid', $search)) {
-			$searchRgx = self::buildRegex($search['pageid']);
-			return self::findPosts(
+			$searchRgx = static::build_post_pageid_regex($search['pageid']);
+			return static::get_post_list(
 				array('meta_query'     => array(
 					array(
 						'key'     => 'paginator_pageid',
@@ -254,5 +254,29 @@ trait az_wp_post
 		if (sizeof($allowedTypes) === 0) return false;
 		if (isset($allowedTypes[0]) && $allowedTypes[0] === 'any') return true;
 		return in_array(strval($input), $allowedTypes);
+	}
+
+	private static function build_post_pageid_regex(string|array $pageidlist): string
+	{
+		$pagesToSearch = is_array($pageidlist) ? $pageidlist : explode(',', $pageidlist);
+		$anyOfRegex   = "";
+		foreach ($pagesToSearch as $key => $p) {
+			if (empty($p))
+				continue;
+			//fix the search regex
+			$p = preg_replace("/[^A-Za-z0-9_-]/", '', $p);
+			$p = str_replace("-", '\-', $p);
+			/** 
+			 * search for texts that
+			 * start with, contain in middle , end with
+			 * the given parameter
+			 *
+			 * simplified version of = (^test,)|(,test,)|(,test$)|(^test$)
+			 * becomes = (^|,)(test)(,|$)
+			 */
+			$anyOfRegex .= "|(^|,)($p)(,|$)";
+		}
+		$anyOfRegex = preg_replace("/^\|/", '', $anyOfRegex);
+		return "($anyOfRegex)";
 	}
 }
