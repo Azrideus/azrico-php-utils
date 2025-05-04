@@ -51,9 +51,10 @@ trait az_wp_post
 	/**
 	 * get id of given WP_Post or WC_Product 
 	 * @param [type] $input
+	 * @param [type] $direct_parse treat input integer as id and return it directly
 	 * @return integer|null
 	 */
-	static function get_id($input): int|null
+	static function get_id($input, $direct_parse = false): int|null
 	{
 		if (empty($input)) return null;
 		if ($input instanceof WP_Post) return $input->ID;
@@ -66,7 +67,7 @@ trait az_wp_post
 		} else if (\is_array($input)) {
 			if (isset($input['ID'])) return $input['ID'];
 			if (isset($input['id'])) return $input['id'];
-		}
+		} else if (is_int($input) && $direct_parse) return $input;
 		return null;
 	}
 
@@ -122,12 +123,12 @@ trait az_wp_post
 		object|string|int|array $search,
 		array|string $allowedTypes = 'post',
 		int $limit = 100
-	) {
+	): array {
 
 		/* -------------------------------------------------------------------------- */
 		/*                              verify the input                              */
 		/* -------------------------------------------------------------------------- */
-		if (empty($input)) return null;
+		if (empty($input)) return [];
 		if (is_object($input)) {
 			if (
 				property_exists($input, 'field')
@@ -142,9 +143,6 @@ trait az_wp_post
 				$input = $input->post;
 			}
 		}
-		/* -------------------------------------------------------------------------- */
-		/*                                Specail Cases                               */
-		/* -------------------------------------------------------------------------- */
 		if ($input instanceof \WP_Post) {
 			$result = $input;
 			unset($input);
@@ -153,7 +151,6 @@ trait az_wp_post
 		} else if ($input instanceof \WC_Order) {
 			$input = $input->get_id();
 		}
-
 		if (is_object($search) && !empty(az_wp::get_id($search))) {
 			/**
 			 * some object with ID is given
