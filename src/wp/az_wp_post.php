@@ -49,12 +49,13 @@ trait az_wp_post
 		return self::get_id($input);
 	}
 	/**
-	 * get id of given WP_Post or WC_Product 
+	 * get id from one of: `WP_Post, WC_Product, WC_Order_Item_Product,
+	 * object->id , object->ID , array['id'] , array['ID']`
 	 * @param [type] $input
 	 * @param [type] $direct_parse treat input integer as id and return it directly
 	 * @return integer|null
 	 */
-	static function get_id($input, $direct_parse = false): int|null
+	static function get_id($input, bool $direct_parse = false): int|null
 	{
 		if (empty($input)) return null;
 		if ($input instanceof WP_Post) return $input->ID;
