@@ -20,7 +20,7 @@ trait az_wp_external_post
 
 		if ($itemid < -2) //external post
 			return $post->post_content;
-		return null;
+		return '';
 	}
 	/**
 	 * get post image link.
