@@ -174,7 +174,12 @@ trait az_wp_post
 		 * https://stackoverflow.com/questions/30554730/get-all-post-types-in-wordpress-in-query-posts
 		 * https://wordpress.stackexchange.com/questions/13029/getting-only-a-specific-post-type-with-get-post
 		 */
-		if (empty($allowedTypes)) $allowedTypes =  get_post_types();
+		if (empty($allowedTypes)) {
+			if (true === $debug) {
+				error_log("[az_wp_post] no allowedTypes given, using all post types");
+			}
+			$allowedTypes =  get_post_types();
+		}
 		/**
 		 * when searching for attachments, we search for status of inherit
 		 */
@@ -190,6 +195,9 @@ trait az_wp_post
 			if (($key = array_search('attachment', $allowedTypes)) !== false) {
 				unset($allowedTypes[$key]);
 			}
+			if (true === $debug) {
+				error_log("[az_wp_post] seperate search of attachment and posts");
+			}
 			return array_merge(
 				static::get_post_list($input, 'attachment', $limit),
 				static::get_post_list($input, $allowedTypes, $limit)
@@ -199,7 +207,12 @@ trait az_wp_post
 		/* ----------------------------- get post by id ----------------------------- */
 		if (is_numeric($input)) {
 			$foundPost = get_post($input);
-			return static::get_post_array_if_type_matches($foundPost, $allowedTypes);
+			$foundPostTypeMatch = static::get_post_array_if_type_matches($foundPost, $allowedTypes);
+			if (true === $debug) {
+				error_log("[az_wp_post] search by post_id: " . strval($input));
+				error_log("[az_wp_post] result: " . count($foundPostTypeMatch));
+			}
+			return $foundPostTypeMatch;
 		}
 		/* ---------------------------- get post by slug ---------------------------- */
 		if (is_string($input)) {
@@ -224,14 +237,16 @@ trait az_wp_post
 					),
 				)
 			);
-			if (true === $debug) {
-				error_log("pageid search: " . print_r($final_search, true));
-			}
-			return static::get_post_list(
+			$result = static::get_post_list(
 				$final_search,
 				$allowedTypes,
 				$limit
 			);
+			if (true === $debug) {
+				error_log("[az_wp_post] search by pageid: " . print_r($final_search, true));
+				error_log("[az_wp_post] result: " . count($result));
+			}
+			return $result;
 		}
 
 		$final_search =	array_merge(
@@ -242,12 +257,14 @@ trait az_wp_post
 			],
 			$input
 		);
-		if (true === $debug) {
-			error_log("final_search: " . print_r($final_search, true));
-		}
-		return get_posts(
+		$result = get_posts(
 			$final_search
 		);
+		if (true === $debug) {
+			error_log("[az_wp_post] final_search: " . print_r($final_search, true));
+			error_log("[az_wp_post] result: " . count($result));
+		}
+		return $result;
 	}
 
 	/**
