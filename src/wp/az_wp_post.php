@@ -304,7 +304,7 @@ trait az_wp_post
 	static function get_post_array_if_type_matches(array|object $input, array|string $allowedTypes): array
 	{
 		$post_list = [];
-		if (!is_array($input)) return $input = [$input];
+		if (!is_array($input)) $input = [$input];
 		foreach ($input as $key => $post) {
 			if (static::post_type_matches($post, $allowedTypes)) {
 				$post_list[] = $post;
