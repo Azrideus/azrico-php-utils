@@ -124,7 +124,8 @@ trait az_wp_post
 	static function get_post_list(
 		object|string|int|array $input,
 		array|string $allowedTypes = '',
-		int $limit = 100
+		int $limit = 100,
+		bool $debug = false
 	): array {
 
 		/* -------------------------------------------------------------------------- */
@@ -214,26 +215,39 @@ trait az_wp_post
 		/* ------------------------------ pageid search ----------------------------- */
 		if (array_key_exists('pageid', $input)) {
 			$searchRgx = static::build_post_pageid_regex($input['pageid']);
-			return static::get_post_list(
-				array('meta_query'     => array(
+			$final_search = array(
+				'meta_query'     => array(
 					array(
 						'key'     => 'paginator_pageid',
 						'compare' => 'REGEXP',
 						'value'   => $searchRgx,
 					),
-				)),
+				)
+			);
+			if (true === $debug) {
+				error_log("pageid search: " . print_r($final_search, true));
+			}
+			return static::get_post_list(
+				$final_search,
 				$allowedTypes,
 				$limit
 			);
 		}
-		return get_posts(array_merge(
+
+		$final_search =	array_merge(
 			[
 				'post_type'      => $allowedTypes,
 				'post_status'    => $postStatus,
 				'posts_per_page' => $limit,
 			],
 			$input
-		));
+		);
+		if (true === $debug) {
+			error_log("final_search: " . print_r($final_search, true));
+		}
+		return get_posts(
+			$final_search
+		);
 	}
 
 	/**
