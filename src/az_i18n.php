@@ -55,7 +55,16 @@ abstract class az_i18n
 
 	public static function translate(string $str, ...$params)
 	{
-		return sprintf(__($str, static::getDomain()), ...$params);
+
+		$translated = __($str, static::getDomain());
+		if ($translated === $str) {
+			/**
+			 * maybe translation was saved in lowercase, so we need to check for that too
+			 */
+			$lc_translated = __(\strtolower($str), static::getDomain());
+			if ($lc_translated !== $str) $translated = $lc_translated;
+		}
+		return sprintf($translated, ...$params);
 	}
 	public static function etranslate(string $str, ...$params)
 	{
@@ -81,15 +90,15 @@ abstract class az_i18n
 				&& (str_contains($ptitle, 'proje')
 					|| str_contains($ptitle, 'پروژه')))
 		) {
-			return 'project';
+			return 'Project';
 		}
 
 		if ($ptype === 'product') {
-			return 'shop';
+			return 'Shop';
 		}
 
 		if ($ptype === 'blog') {
-			return 'blog';
+			return 'Blog';
 		}
 
 		if ($ptype === 'product_doc') {
@@ -106,7 +115,7 @@ abstract class az_i18n
 				return 'Schematic';
 
 			if (str_contains($pname, 'github'))
-				return 'github';
+				return 'Github';
 
 			if (str_contains($ptitle, 'source') || str_contains($ptitle, 'keil'))
 				return 'Source Code';
@@ -114,7 +123,7 @@ abstract class az_i18n
 			if (str_contains($ptitle, 'cube'))
 				return 'Cube Project';
 
-			return 'attachment';
+			return 'Attachment';
 		}
 		return $item->post_type;
 	}
