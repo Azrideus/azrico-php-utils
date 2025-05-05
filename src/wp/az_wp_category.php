@@ -3,6 +3,7 @@
 namespace AzUtils\wp;
 
 use AzUtils\az_cache;
+use AzUtils\az_object;
 use AzUtils\az_wp;
 use WP_Post;
 
@@ -86,10 +87,10 @@ trait az_wp_category
 			$sq['parent'] = $search['parent'];
 		}
 		if (!empty($search['exclude'])) {
-			$sq['exclude'] = azlp_parser::toArray($search['exclude']);
+			$sq['exclude'] = az_object::comma_array($search['exclude']);
 		}
 		if (!empty($search['include'])) {
-			$sq['include'] = azlp_parser::toArray($search['include']);
+			$sq['include'] = az_object::comma_array($search['include']);
 		}
 
 		$sq = array_merge(
