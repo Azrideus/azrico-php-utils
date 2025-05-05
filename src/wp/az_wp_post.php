@@ -110,7 +110,7 @@ trait az_wp_post
 	/**
 	 * get a post of given type , uses `get_post_list`
 	 */
-	static function get_post($search, string|array $allowedTypes = ''): \WP_Post|null
+	static function get_post($search, string|array $allowedTypes = 'any'): \WP_Post|null
 	{
 		$postlist = static::get_post_list($search, $allowedTypes, 1);
 		if (empty($postlist)) return null;
@@ -123,7 +123,7 @@ trait az_wp_post
 	 */
 	static function get_post_list(
 		object|string|int|array $input,
-		array|string $allowedTypes = '',
+		array|string $allowedTypes = 'any',
 		int $limit = 100,
 		bool $debug = false
 	): array {

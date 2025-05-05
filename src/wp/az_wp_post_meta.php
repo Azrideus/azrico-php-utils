@@ -108,7 +108,7 @@ trait az_wp_post_meta
 			/**
 			 * WP_Post
 			 */
-			$search = az_wp::get_post($search);
+			$search = az_wp::get_post($search, 'any');
 			if ($search instanceof \WP_Post)
 				$search = $search->ID;
 		}
@@ -146,7 +146,7 @@ trait az_wp_post_meta
 			/**
 			 * WP_Post
 			 */
-			$search = az_wp::get_post($search);
+			$search = az_wp::get_post($search, 'any');
 			if ($search instanceof \WP_Post)
 				$search = $search->ID;
 		}
