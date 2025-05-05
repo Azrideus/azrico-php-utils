@@ -141,7 +141,7 @@ trait az_wp_category
 	 * @return  \WP_Error|\WP_Term[]
 	 */
 	static function get_categories_of(
-		array|object $search,
+		array|object|int $search,
 		bool $add_parent_cats = false
 	) {
 		if (empty($search)) $post =  az_wp::get_post(get_the_ID());
