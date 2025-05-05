@@ -100,10 +100,13 @@ class az_string
 	}
 
 	/**
-	 * get the short name of a post by comparing its title and slug
+	 * get the short name of a post by comparing its title and slug 
+	 * 
+	 * it also removes some predefined prefixes from the title
 	 */
 	public static function get_post_shortname(array|object $input): string
 	{
+
 		if (is_a($input, 'WC_Product')) {
 			$title = $input->get_title();
 			$slug = $input->get_slug();
@@ -116,6 +119,14 @@ class az_string
 		}
 		if (!empty($title) && !empty($slug)) {
 			$title = self::find_upto($title, $slug);;
+		}
+
+		$extra_prefixes = ['بررسی اجمالی ماژول', 'بررسی اجمالی', "Overview of"];
+		foreach ($extra_prefixes as $prefix) {
+			if (\str_contains($title, $prefix)) {
+				$title_parts = explode($prefix, $title);
+				$title = $title_parts[1] ?? $title;
+			}
 		}
 		return self::trim_post_name($title);
 	}
