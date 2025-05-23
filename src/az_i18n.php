@@ -90,6 +90,12 @@ abstract class az_i18n
 				&& (str_contains($ptitle, 'proje')
 					|| str_contains($ptitle, 'پروژه')))
 		) {
+			if (
+				str_contains($ptitle, 'arduino')
+				|| str_contains($ptitle, 'آردوینو')
+				|| str_contains($ptitle, 'اردوینو')
+			)
+				return 'Arduino Project';
 			return 'Project';
 		}
 
