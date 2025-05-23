@@ -213,19 +213,28 @@ trait az_wp_category
 		string|int|object $search,
 		bool $getFirst = false
 	) {
-		$categories = static::get_categories_of($search);
-		if ($categories instanceof \WP_Error) return null;
 
-		$primary_category_id = az_wp::get_meta_of($search, '_yoast_wpseo_primary_category');
+		$post = az_wp::get_post($search);
+		$tax = az_wp::get_category_taxonomy_of_post_type($post->post_type);
 
-		if (!empty($primary_category_id) && !is_wp_error($categories)) {
-			foreach ($categories as $cat) {
-				if ($primary_category_id == $cat->term_id)
-					return $cat;
+		if (function_exists('yoast_get_primary_term_id')) {
+			$primary_category_id = yoast_get_primary_term_id($tax, $search);
+		} else {
+			$primary_category_id = az_wp::get_meta_of($search, '_yoast_wpseo_primary_category');
+		}
+
+		if ($primary_category_id) {
+			$primary_category = az_wp::get_category($primary_category_id, $tax);
+			if ($primary_category instanceof \WP_Term) {
+				return $primary_category;
 			}
 		}
-		if (true == $getFirst)
-			return reset($categories);
+
+		if ($getFirst) {
+			$categories = az_wp::get_categories_of($post);
+			if (!empty($categories))		return reset($categories);
+		}
+
 		return null;
 	}
 }
