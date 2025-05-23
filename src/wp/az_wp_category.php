@@ -107,16 +107,23 @@ trait az_wp_category
 		return get_terms($sq);
 	}
 
-	public static function get_category_id_list(
+
+	/**
+	 * get a list of category ids from a list of categories
+	 * @param array $cat_list
+	 * @param string $tax
+	 * @return array
+	 */
+	public static function map_category_id_list(
 		array $cat_list,
-		$tax_if_category_not_found = 'product_cat'
+		$tax = 'product_cat'
 	) {
 		return array_map(
-			function ($cat) use ($tax_if_category_not_found) {
-				if ($cat instanceof \WP_Term)
+			function ($cat) use ($tax) {
+				if ($cat instanceof \WP_Term && $cat->taxonomy == $tax) {
 					return $cat->term_id;
-				else {
-					$found_cat = static::get_category($cat, $tax_if_category_not_found);
+				} else {
+					$found_cat = static::get_category($cat, $tax);
 					if ($found_cat instanceof \WP_Term)
 						return $found_cat->term_id;
 				}
