@@ -120,6 +120,7 @@ trait az_wp_category
 	) {
 		return array_map(
 			function ($cat) use ($tax) {
+
 				$found_cat = static::get_category($cat, $tax);
 				if ($found_cat instanceof \WP_Term)
 					return $found_cat->term_id;
@@ -133,9 +134,10 @@ trait az_wp_category
 	 * @return \WP_Term
 	 */
 	public static function get_category(
-		string|int|object $search,
+		mixed $search,
 		$tax = 'product_cat'
 	) {
+		if (null == $search || empty($search)) return null;
 		if ($search instanceof \WP_Term) {
 			if ($search->taxonomy == $tax) {
 				/**
