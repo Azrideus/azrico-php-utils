@@ -107,7 +107,24 @@ trait az_wp_category
 		return get_terms($sq);
 	}
 
-
+	public static function get_category_id_list(
+		array $cat_list,
+		$tax_if_category_not_found = 'product_cat'
+	) {
+		return array_map(
+			function ($cat) use ($tax_if_category_not_found) {
+				if ($cat instanceof \WP_Term)
+					return $cat->term_id;
+				else {
+					$found_cat = static::get_category($cat, $tax_if_category_not_found);
+					if ($found_cat instanceof \WP_Term)
+						return $found_cat->term_id;
+				}
+				return null;
+			},
+			$cat_list
+		);
+	}
 	/**  
 	 * get a single category of a given taxonomy
 	 * @return \WP_Term
@@ -119,14 +136,19 @@ trait az_wp_category
 		if (is_a($search, 'WP_Term')) {
 			if ($search->taxonomy == $tax) {
 				/**
-				 * Input is what the user wants.
+				 * input is exactly what the user wants.
 				 */
 				return $search;
 			} else {
 				/**
-				 * Get category of other taxonomy from the given category
+				 * get category of other taxonomy from the given category
+				 * ex: get `product category` from a `post category`
 				 */
-				$search = $search->slug;
+				$res = static::get_category($search->slug, $tax);
+				if (!empty($res)) return $res;
+				$res = static::get_category($search->name, $tax);
+				if (!empty($res)) return $res;
+				return null;
 			}
 		}
 
