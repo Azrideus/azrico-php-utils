@@ -112,7 +112,7 @@ trait az_wp_category
 	 * get a list of category ids from a list of categories
 	 * @param array $cat_list
 	 * @param string $tax
-	 * @return array
+	 * @return WP_Term[]
 	 */
 	public static function map_category_id_list(
 		array $cat_list,
@@ -120,13 +120,9 @@ trait az_wp_category
 	) {
 		return array_map(
 			function ($cat) use ($tax) {
-				if ($cat instanceof \WP_Term && $cat->taxonomy == $tax) {
-					return $cat->term_id;
-				} else {
-					$found_cat = static::get_category($cat, $tax);
-					if ($found_cat instanceof \WP_Term)
-						return $found_cat->term_id;
-				}
+				$found_cat = static::get_category($cat, $tax);
+				if ($found_cat instanceof \WP_Term)
+					return $found_cat->term_id;
 				return null;
 			},
 			$cat_list
@@ -140,7 +136,7 @@ trait az_wp_category
 		string|int|object $search,
 		$tax = 'product_cat'
 	) {
-		if (is_a($search, 'WP_Term')) {
+		if ($search instanceof \WP_Term) {
 			if ($search->taxonomy == $tax) {
 				/**
 				 * input is exactly what the user wants.
