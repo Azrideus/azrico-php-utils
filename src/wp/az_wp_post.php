@@ -273,7 +273,7 @@ trait az_wp_post
 	 * @param [type] $input
 	 * @param array|string $allowedTypes 
 	 */
-	static function post_type_matches(object $input, array|string $allowedTypes)
+	static function post_type_matches(mixed $input, array|string $allowedTypes)
 	{
 		$type = '';
 		if (is_object($input) && property_exists($input, 'post_type'))
@@ -292,8 +292,9 @@ trait az_wp_post
 	/**
 	 * if the post type of the input matches one of the allowedTypes return the input 
 	 */
-	static function get_post_if_type_matches(object|array $input, array|string $allowedTypes)
+	static function get_post_if_type_matches(mixed $input, array|string $allowedTypes)
 	{
+		if (empty($input)) return null;
 		if (static::post_type_matches($input, $allowedTypes))
 			return $input;
 		return null;
@@ -301,8 +302,10 @@ trait az_wp_post
 	/**
 	 * if the post type of the input matches one of the allowedTypes return the input 
 	 */
-	static function get_post_array_if_type_matches(array|object $input, array|string $allowedTypes): array
+	static function get_post_array_if_type_matches(mixed $input, array|string $allowedTypes): array
 	{
+		if (empty($input)) return [];
+
 		$post_list = [];
 		if (!is_array($input)) $input = [$input];
 		foreach ($input as $key => $post) {
