@@ -50,16 +50,24 @@ class az_parser
 	 * Remove any non numeric value from given string 
 	 * then cast it to float
 	 */
-	public static function to_float(string $str): float
+	public static function to_float(string $str, $default = -1): float
 	{
-		return floatval(\preg_replace('/[^0-9-.]/', '', $str));
+		$res_str = \preg_replace('/[^0-9-.]/', '', $str);
+		if (empty($res_str)) {
+			return floatval($default);
+		}
+		return floatval($res_str);
 	}
 	/**
 	 * Remove any non numeric value from given string 
 	 * then cast it to int
 	 */
-	public static function to_int(string $str): int
+	public static function to_int(string $str, $default = -1): int
 	{
-		return intval(\preg_replace('/[^0-9-]/', '', $str));
+		$res_str = \preg_replace('/[^0-9-]/', '', $str);
+		if (empty($res_str)) {
+			return floatval($default);
+		}
+		return intval($res_str);
 	}
 }

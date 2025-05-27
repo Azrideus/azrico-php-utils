@@ -146,17 +146,17 @@ class az_string
 	 * Remove any non numeric value from given string 
 	 * then cast it to float
 	 */
-	public static function to_float(string $str): float
+	public static function to_float(string $str, $default = -1): float
 	{
-		return az_parser::to_float($str);
+		return az_parser::to_float($str, $default);
 	}
 	/**
 	 * Remove any non numeric value from given string 
 	 * then cast it to int
 	 */
-	public static function to_int(string $str): float
+	public static function to_int(string $str, $default = -1): float
 	{
-		return az_parser::to_int($str);
+		return az_parser::to_int($str, $default);
 	}
 	public static function has_digits(string $str): float
 	{
