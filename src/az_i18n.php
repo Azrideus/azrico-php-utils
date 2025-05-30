@@ -55,14 +55,13 @@ abstract class az_i18n
 
 	public static function translate(string $str, ...$params)
 	{
-
 		$translated = __($str, static::getDomain());
 		if ($translated === $str) {
 			/**
 			 * maybe translation was saved in lowercase, so we need to check for that too
 			 */
 			$lc_translated = __(\strtolower($str), static::getDomain());
-			if ($lc_translated !== $str) $translated = $lc_translated;
+			if (!az_string::eq_loose($lc_translated, $str)) $translated = $lc_translated;
 		}
 		return sprintf($translated, ...$params);
 	}
