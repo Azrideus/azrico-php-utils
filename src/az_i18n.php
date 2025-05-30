@@ -60,8 +60,9 @@ abstract class az_i18n
 			/**
 			 * maybe translation was saved in lowercase, so we need to check for that too
 			 */
-			$lc_translated = __(\strtolower($str), static::getDomain());
-			if (!az_string::eq_loose($lc_translated, $str)) $translated = $lc_translated;
+			$lc_str = strtolower($str);
+			$lc_translated = __($lc_str, static::getDomain());
+			if ($lc_str != $lc_translated) $translated = $lc_translated;
 		}
 		return sprintf($translated, ...$params);
 	}
