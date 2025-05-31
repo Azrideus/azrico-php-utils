@@ -19,9 +19,21 @@ class az_string
 		if ($not_empty && (empty($s1) || empty($s2))) return false;
 		return (bool)(0 == strcasecmp($s1, $s2));
 	}
+
+	/**
+	 * check if two string are not empty and equal ignorecase 
+	 *
+	 * this function `trim` and `stripslashes` the strings before comparing
+	 */
 	static function eq_loose($s1, $s2, $not_empty = true): bool
 	{
-		return (bool)self::eq(trim(strval($s1)), trim(strval($s2)), $not_empty);
+		$s1 = trim(strval($s1));
+		$s2 = trim(strval($s2));
+		if (self::eq($s1, $s2, $not_empty)) return true;
+		$s1 = az_parser::stripslashes($s1);
+		$s2 = az_parser::stripslashes($s2);
+		if (self::eq($s1, $s2, $not_empty)) return true;
+		return false;
 	}
 	/**
 	 * converts string to lower and replaces white spaces with - 
