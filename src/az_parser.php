@@ -72,13 +72,17 @@ class az_parser
 	}
 
 
-	public static function stripslashes_deep($value)
+	public static function stripslashes($value, $forced = false)
 	{
 		if (is_array($value)) {
-			return array_map([__CLASS__, 'stripslashes_deep'], $value);
+			return array_map([__CLASS__, 'stripslashes'], $value);
 		}
 		if (is_string($value)) {
-			return stripslashes($value);
+			$value = stripslashes($value);
+			if ($forced && str_contains($value, '\\')) {
+				$value = stripslashes($value);
+			}
+			return $value;
 		}
 		return $value;
 	}
