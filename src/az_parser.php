@@ -70,4 +70,16 @@ class az_parser
 		}
 		return intval($res_str);
 	}
+
+
+	public static function stripslashes_deep($value)
+	{
+		if (is_array($value)) {
+			return array_map([__CLASS__, 'stripslashes_deep'], $value);
+		}
+		if (is_string($value)) {
+			return stripslashes($value);
+		}
+		return $value;
+	}
 }
