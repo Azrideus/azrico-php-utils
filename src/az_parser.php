@@ -75,8 +75,13 @@ class az_parser
 	public static function stripslashes($value, $forced = false)
 	{
 		if (is_array($value)) {
-			return array_map([__CLASS__, 'stripslashes'], $value);
+			$new_value = [];
+			foreach ($value as $key => $val) {
+				$new_value[$key] = self::stripslashes($val, $forced);
+			}
+			return $new_value;
 		}
+
 		if (is_string($value)) {
 			$value = stripslashes($value);
 			if ($forced && str_contains($value, '\\')) {
