@@ -137,18 +137,21 @@ trait az_wp_post_meta
 		 * see: https://woocommerce.com/document/high-performance-order-storage/
 		 *
 		 */
-		if (!is_numeric($search) && class_exists('WC_Order') && class_exists('WC_Order_Item')) {
-			/**
-			 * WC_Order
-			 */
-			if (
-				$search instanceof \WC_Order
-				|| $search instanceof \WC_Order_Item
-			) {
-				$search = $search->get_id();
-				// $search->update_meta_data($key, $value);
-				// return $search->save_meta_data();
-			}
+
+
+		/**
+		 * WC_Order_Item
+		 */
+		if (class_exists('WC_Order_Item') && $search instanceof \WC_Order_Item) {
+			$search->update_meta_data($key, $value);
+			return $search->save();
+		}
+		/**
+		 * WC_Order
+		 */
+		if (class_exists('WC_Order')  && $search instanceof \WC_Order) {
+			$search->update_meta_data($key, $value);
+			return $search->save();
 		}
 
 		if (!is_numeric($search)) {
