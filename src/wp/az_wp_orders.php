@@ -39,35 +39,37 @@ trait az_wp_orders
 	/**
 	 * check if the given status list contains the given status 
 	 */
-	static function wc_status_contains(array $status_list, \WC_Order|string $status): bool
+	static function wc_status_contains(\WC_Order|string $status, array $status_list): bool
 	{
-		/**
-		 * quick check if the status is in the list
-		 */
-		if (in_array($status, $status_list)) return true;
-		/**
-		 * check if the status is in the list with wc- prefix
-		 */
-		$status_prefixed = static::get_wc_order_status_no_prefix($status);
-		if (in_array($status_prefixed, $status_list)) return true;
-
-		foreach ($status_list as $s) {
-			$check_prefixed = static::get_wc_order_status_no_prefix($s);
-			if (az_string::eq($check_prefixed, $status_prefixed)) return true;
-		}
-		return false;
+		$s = static::get_wc_order_status($status, $status_list);
+		return !empty($s);
 	}
 
 	/**
 	 * using `wc_get_order_statuses` search for the given status in the list of order statuses 
 	 */
-	static function get_wc_order_status(array $status_list, \WC_Order|string $status): string|null
+	static function get_wc_order_status(\WC_Order|string $status, array $status_list = []): string|null
 	{
-		$status_list = wc_get_order_statuses();
-		$status_prefixed = static::get_wc_order_status_no_prefix($status);
-		foreach ($status_list as $s) {
-			$check_prefixed = static::get_wc_order_status_no_prefix($s);
-			if (az_string::eq($check_prefixed, $status_prefixed)) return $s;
+		if (empty($status_list)) $status_list = wc_get_order_statuses();
+
+		/**
+		 * Quick Check 1
+		 */
+		if (in_array($status, array_keys($status_list))) return $status;
+
+		$status_no_prefix = static::get_wc_order_status_no_prefix($status);
+
+		/**
+		 * Quick Check 2
+		 */
+		if (in_array($status_no_prefix, array_keys($status_list))) return $status_no_prefix;
+
+		foreach ($status_list as $key => $value) {
+			if (
+				$key == $status
+				|| $key == $status_no_prefix
+				|| az_string::eq(static::get_wc_order_status_no_prefix($key), $status_no_prefix)
+			) return $key;
 		}
 		return null;
 	}
