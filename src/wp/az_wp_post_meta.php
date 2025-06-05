@@ -96,10 +96,11 @@ trait az_wp_post_meta
 			/**
 			 * WC_Order_Item / WC_Order
 			 */
-			if ($search instanceof \WC_Order_Item || $search instanceof \WC_Order) {
-				$search = $search->get_id();
+			if (class_exists('WC_Order') && class_exists('WC_Order_Item')) {
+				if ($search instanceof \WC_Order_Item || $search instanceof \WC_Order) {
+					$search = $search->get_id();
+				}
 			}
-
 			/**
 			 * WP_Post
 			 */
@@ -124,7 +125,7 @@ trait az_wp_post_meta
 	}
 	static function set_meta_of($search, string $key, $value)
 	{
-		if (!is_numeric($search)) {
+		if (!is_numeric($search) && class_exists('WC_Order') && class_exists('WC_Order_Item')) {
 			/**
 			 * WC_Order
 			 */
