@@ -144,14 +144,14 @@ trait az_wp_post_meta
 		 */
 		if (class_exists('WC_Order_Item') && $search instanceof \WC_Order_Item) {
 			$search->update_meta_data($key, $value);
-			return $search->save();
+			return $search->save_meta_data();
 		}
 		/**
 		 * WC_Order
 		 */
 		if (class_exists('WC_Order')  && $search instanceof \WC_Order) {
 			$search->update_meta_data($key, $value);
-			return $search->save();
+			return $search->save_meta_data();
 		}
 
 		if (!is_numeric($search)) {
