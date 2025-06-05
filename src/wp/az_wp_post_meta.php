@@ -83,48 +83,60 @@ trait az_wp_post_meta
 
 	static function get_meta_of($search, string $key)
 	{
-
-		if (!is_numeric($search)) {
-			/**
-			 * WP_Term
-			 */
-			if (
-				$search instanceof \WP_Term
-			) {
-				return get_term_meta($search->term_id, $key, true);
-			}
-			/**
-			 * WC_Order_Item / WC_Order
-			 */
-			if (class_exists('WC_Order') && class_exists('WC_Order_Item')) {
-				if ($search instanceof \WC_Order_Item || $search instanceof \WC_Order) {
-					$search = $search->get_id();
-				}
-			}
+		/**
+		 * because of the HPOS (High-Performance Order Storage) in WooCommerce,
+		 * the meta data can be stored in different places depending on the type of the object.
+		 * see: https://woocommerce.com/document/high-performance-order-storage/
+		 *
+		 */
+		if (is_numeric($search)) {
+			return get_post_meta(
+				$search,
+				$key,
+				true
+			);
+		} else if ($search instanceof \WP_Post) {
 			/**
 			 * WP_Post
 			 */
-			$wp_post = az_wp::get_post($search, 'any');
-			if ($wp_post instanceof \WP_Post)
-				$search = $wp_post->ID;
-		}
-
-
-		if (!is_numeric($search)) {
+			return get_post_meta(
+				$search->ID,
+				$key,
+				true
+			);
+		} else if (
+			$search instanceof \WP_Term
+		) {
+			/**
+			 * WP_Term
+			 */
+			return get_term_meta($search->term_id, $key, true);
+		} else if (class_exists('WC_Order_Item') && $search instanceof \WC_Order_Item) {
+			/**
+			 * WC_Order_Item stored in `wp_woocommerce_order_itemmeta`
+			 */
+			return $search->get_meta($key);
+		} else if (class_exists('WC_Order') && $search instanceof \WC_Order) {
+			/**
+			 * WC_Order stored in `wp_woocommerce_order_itemmeta`
+			 */
+			return $search->get_meta($key);
+		} else {
 			throw new \Exception(
 				"cant get the post id to get meta ({$key}) " .
 					' got: ' . strval($search) .
 					' search: ' . \json_encode($search)
 			);
 		}
-		return get_post_meta(
-			$search,
-			$key,
-			true
-		);
 	}
 	static function set_meta_of($search, string $key, $value)
 	{
+		/**
+		 * because of the HPOS (High-Performance Order Storage) in WooCommerce,
+		 * the meta data can be stored in different places depending on the type of the object.
+		 * see: https://woocommerce.com/document/high-performance-order-storage/
+		 *
+		 */
 		if (!is_numeric($search) && class_exists('WC_Order') && class_exists('WC_Order_Item')) {
 			/**
 			 * WC_Order
