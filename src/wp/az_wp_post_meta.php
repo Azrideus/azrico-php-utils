@@ -94,23 +94,18 @@ trait az_wp_post_meta
 				return get_term_meta($search->term_id, $key, true);
 			}
 			/**
-			 * WC_Order_Item
+			 * WC_Order_Item / WC_Order
 			 */
-			if ($search instanceof \WC_Order_Item) {
-				return $search->get_meta($key);
+			if ($search instanceof \WC_Order_Item || $search instanceof \WC_Order) {
+				$search = $search->get_id();
 			}
-			/**
-			 * WC_Order
-			 */
-			if ($search instanceof \WC_Order) {
-				return $search->get_meta($key);
-			}
+
 			/**
 			 * WP_Post
 			 */
-			$search = az_wp::get_post($search, 'any');
-			if ($search instanceof \WP_Post)
-				$search = $search->ID;
+			$wp_post = az_wp::get_post($search, 'any');
+			if ($wp_post instanceof \WP_Post)
+				$search = $wp_post->ID;
 		}
 
 
@@ -137,8 +132,9 @@ trait az_wp_post_meta
 				$search instanceof \WC_Order
 				|| $search instanceof \WC_Order_Item
 			) {
-				$search->update_meta_data($key, $value);
-				return $search->save_meta_data();
+				$search = $search->get_id();
+				// $search->update_meta_data($key, $value);
+				// return $search->save_meta_data();
 			}
 		}
 
