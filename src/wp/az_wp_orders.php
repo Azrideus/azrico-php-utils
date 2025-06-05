@@ -57,4 +57,18 @@ trait az_wp_orders
 		}
 		return false;
 	}
+
+	/**
+	 * using `wc_get_order_statuses` search for the given status in the list of order statuses 
+	 */
+	static function get_wc_order_status(array $status_list, \WC_Order|string $status): string|null
+	{
+		$status_list = wc_get_order_statuses();
+		$status_prefixed = static::get_wc_order_status_no_prefix($status);
+		foreach ($status_list as $s) {
+			$check_prefixed = static::get_wc_order_status_no_prefix($s);
+			if (az_string::eq($check_prefixed, $status_prefixed)) return $s;
+		}
+		return null;
+	}
 }
