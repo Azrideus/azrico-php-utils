@@ -12,12 +12,12 @@ trait az_wp_orders
 	 */
 	static function get_wc_order_status_prefixed(\WC_Order|string $order)
 	{
-		return 'wc-' . static::get_wc_order_status_no_prefix($order);
+		return 'wc-' . static::get_wc_order_status_unprefixed($order);
 	}
 	/**
 	 * get the order status of the given order and remove the prefix 'wc-'
 	 */
-	static function get_wc_order_status_no_prefix(\WC_Order|string $order)
+	static function get_wc_order_status_unprefixed(\WC_Order|string $order)
 	{
 		if (is_string($order)) $order_status = $order;
 		else if (\is_object($order)) $order_status = $order->get_status();
@@ -32,8 +32,8 @@ trait az_wp_orders
 	static function wc_status_equals(\WC_Order|string $order1, \WC_Order|string $order2): bool
 	{
 		if ($order1 === $order2) return true;
-		$order_status1 = static::get_wc_order_status_no_prefix($order1);
-		$order_status2 = static::get_wc_order_status_no_prefix($order2);
+		$order_status1 = static::get_wc_order_status_unprefixed($order1);
+		$order_status2 = static::get_wc_order_status_unprefixed($order2);
 		return az_string::eq($order_status1, $order_status2);
 	}
 	/**
@@ -57,7 +57,7 @@ trait az_wp_orders
 		 */
 		if (in_array($status, array_keys($status_list))) return $status;
 
-		$status_no_prefix = static::get_wc_order_status_no_prefix($status);
+		$status_no_prefix = static::get_wc_order_status_unprefixed($status);
 
 		/**
 		 * Quick Check 2
@@ -68,7 +68,10 @@ trait az_wp_orders
 			if (
 				$key == $status
 				|| $key == $status_no_prefix
-				|| az_string::eq(static::get_wc_order_status_no_prefix($key), $status_no_prefix)
+				|| $value == $status
+				|| $value == $status_no_prefix
+				|| az_string::eq(static::get_wc_order_status_unprefixed($key), $status_no_prefix)
+				|| az_string::eq(static::get_wc_order_status_unprefixed($value), $status_no_prefix)
 			) return $key;
 		}
 		return null;
