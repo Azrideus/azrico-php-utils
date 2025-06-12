@@ -19,9 +19,21 @@ class az_string
 		if ($not_empty && (empty($s1) || empty($s2))) return false;
 		return (bool)(0 == strcasecmp($s1, $s2));
 	}
+
+	/**
+	 * check if two string are not empty and equal ignorecase 
+	 *
+	 * this function `trim` and `stripslashes` the strings before comparing
+	 */
 	static function eq_loose($s1, $s2, $not_empty = true): bool
 	{
-		return (bool)self::eq(trim(strval($s1)), trim(strval($s2)), $not_empty);
+		$s1 = trim(strval($s1));
+		$s2 = trim(strval($s2));
+		if (self::eq($s1, $s2, $not_empty)) return true;
+		$s1 = az_parser::stripslashes($s1);
+		$s2 = az_parser::stripslashes($s2);
+		if (self::eq($s1, $s2, $not_empty)) return true;
+		return false;
 	}
 	/**
 	 * converts string to lower and replaces white spaces with - 
@@ -100,10 +112,13 @@ class az_string
 	}
 
 	/**
-	 * get the short name of a post by comparing its title and slug
+	 * get the short name of a post by comparing its title and slug 
+	 * 
+	 * it also removes some predefined prefixes from the title
 	 */
 	public static function get_post_shortname(array|object $input): string
 	{
+
 		if (is_a($input, 'WC_Product')) {
 			$title = $input->get_title();
 			$slug = $input->get_slug();
@@ -116,6 +131,14 @@ class az_string
 		}
 		if (!empty($title) && !empty($slug)) {
 			$title = self::find_upto($title, $slug);;
+		}
+
+		$extra_prefixes = ['بررسی اجمالی ماژول', 'بررسی اجمالی', "Overview of"];
+		foreach ($extra_prefixes as $prefix) {
+			if (\str_contains($title, $prefix)) {
+				$title_parts = explode($prefix, $title);
+				$title = $title_parts[1] ?? $title;
+			}
 		}
 		return self::trim_post_name($title);
 	}
@@ -135,17 +158,17 @@ class az_string
 	 * Remove any non numeric value from given string 
 	 * then cast it to float
 	 */
-	public static function to_float(string $str): float
+	public static function to_float(string $str, $default = -1): float
 	{
-		return az_parser::to_float($str);
+		return az_parser::to_float($str, $default);
 	}
 	/**
 	 * Remove any non numeric value from given string 
 	 * then cast it to int
 	 */
-	public static function to_int(string $str): float
+	public static function to_int(string $str, $default = -1): float
 	{
-		return az_parser::to_int($str);
+		return az_parser::to_int($str, $default);
 	}
 	public static function has_digits(string $str): float
 	{

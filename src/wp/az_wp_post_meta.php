@@ -83,45 +83,82 @@ trait az_wp_post_meta
 
 	static function get_meta_of($search, string $key)
 	{
-
-		if (!is_numeric($search)) {
+		/**
+		 * because of the HPOS (High-Performance Order Storage) in WooCommerce,
+		 * the meta data can be stored in different places depending on the type of the object.
+		 * see: https://woocommerce.com/document/high-performance-order-storage/
+		 *
+		 */
+		if (is_numeric($search)) {
+			return get_post_meta(
+				$search,
+				$key,
+				true
+			);
+		} else if ($search instanceof \WP_Post) {
+			/**
+			 * WP_Post
+			 */
+			return get_post_meta(
+				$search->ID,
+				$key,
+				true
+			);
+		} else if (
+			$search instanceof \WP_Term
+		) {
 			/**
 			 * WP_Term
 			 */
-			if (
-				$search instanceof \WP_Term
-			) {
-				return get_term_meta($search->term_id, $key, true);
-			}
+			return get_term_meta($search->term_id, $key, true);
+		} else if (class_exists('WC_Order_Item') && $search instanceof \WC_Order_Item) {
 			/**
-			 * WC_Order_Item
+			 * WC_Order_Item stored in `wp_woocommerce_order_itemmeta`
 			 */
-			if ($search instanceof \WC_Order_Item) {
-				return $search->get_meta($key);
-			}
+			return $search->get_meta($key);
+		} else if (class_exists('WC_Order') && $search instanceof \WC_Order) {
 			/**
-			 * WP_Post
+			 * WC_Order stored in `wp_woocommerce_order_itemmeta`
 			 */
-			$search = az_wp::get_post($search);
-			if ($search instanceof \WP_Post)
-				$search = $search->ID;
+			return $search->get_meta($key);
+		} else {
+			throw new \Exception(
+				"cant get the post id to get meta ({$key}) " .
+					' got: ' . strval($search) .
+					' search: ' . \json_encode($search)
+			);
 		}
-
-
-		if (!is_numeric($search)) throw new \Exception('could not load the post id to get its meta! got: ' . strval($search));
-		return get_post_meta(
-			$search,
-			$key,
-			true
-		);
 	}
 	static function set_meta_of($search, string $key, $value)
 	{
+		/**
+		 * because of the HPOS (High-Performance Order Storage) in WooCommerce,
+		 * the meta data can be stored in different places depending on the type of the object.
+		 * see: https://woocommerce.com/document/high-performance-order-storage/
+		 *
+		 */
+
+
+		/**
+		 * WC_Order_Item
+		 */
+		if (class_exists('WC_Order_Item') && $search instanceof \WC_Order_Item) {
+			$search->update_meta_data($key, $value);
+			return $search->save_meta_data();
+		}
+		/**
+		 * WC_Order
+		 */
+		if (class_exists('WC_Order')  && $search instanceof \WC_Order) {
+			$search->update_meta_data($key, $value);
+			return $search->save_meta_data();
+		}
+
 		if (!is_numeric($search)) {
 			/**
 			 * WP_Post
 			 */
-			$search = az_wp::get_post($search);
+			$search = az_wp::get_post($search, 'any');
 			if ($search instanceof \WP_Post)
 				$search = $search->ID;
 		}
