@@ -257,9 +257,8 @@ trait az_wp_category
 		}
 
 
-		if ($getFirst) {
-			$categories = az_wp::get_categories_of($post);
-			if (!empty($categories))		return reset($categories);
+		if ($getFirst && !empty($categories)) {
+			return reset($categories);
 		}
 
 		return null;
