@@ -55,7 +55,9 @@ trait az_wp_orders
 		/**
 		 * Quick Check 1
 		 */
+		if (\in_array($status, $status_list)) return $status;
 		if (in_array($status, array_keys($status_list))) return $status;
+
 
 		$status_no_prefix = static::get_wc_order_status_unprefixed($status);
 
