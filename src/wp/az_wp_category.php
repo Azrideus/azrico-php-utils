@@ -225,16 +225,40 @@ trait az_wp_category
 			$primary_category_id = az_wp::get_meta_of($search, '_yoast_wpseo_primary_category');
 		}
 
-		if ($primary_category_id) {
+		if (!empty($primary_category_id)) {
 			$primary_category = az_wp::get_category($primary_category_id, $tax);
 			if ($primary_category instanceof \WP_Term) {
 				return $primary_category;
 			}
 		}
 
-		if ($getFirst) {
-			$categories = az_wp::get_categories_of($post);
-			if (!empty($categories))		return reset($categories);
+		/** 
+		 * If primary category is not set by Yoast SEO, 
+		 * we return the most child category
+		 */
+		$categories = az_wp::get_categories_of($post);
+		// Build a map of term_id => term object
+		$cat_map = [];
+		foreach ($categories as $cat) {
+			$cat_map[$cat->term_id] = $cat;
+		}
+		// Find categories that are not parents of any other category in the set
+		$parent_ids = [];
+		foreach ($categories as $cat) {
+			if ($cat->parent && isset($cat_map[$cat->parent])) {
+				$parent_ids[$cat->parent] = true;
+			}
+		}
+		// The first category that is not a parent (i.e., a child-most category)
+		foreach ($categories as $cat) {
+			if (! isset($parent_ids[$cat->term_id])) {
+				return $cat;
+			}
+		}
+
+
+		if ($getFirst && !empty($categories)) {
+			return reset($categories);
 		}
 
 		return null;
