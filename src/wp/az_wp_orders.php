@@ -20,11 +20,11 @@ trait az_wp_orders
 	static function get_wc_order_status_unprefixed(\WC_Order|string $order)
 	{
 		if (is_string($order)) $order_status = $order;
-		else if (\is_object($order)) $order_status = $order->get_status();
+		else if ($order instanceof \WC_Order) $order_status = $order->get_status();
 
 		if (empty($order_status)) return null;
 		if (str_starts_with($order_status, 'wc-')) return substr($order_status, 3);
-		return   $order_status;
+		return $order_status;
 	}
 	/**
 	 * check if the given order status is equal to the given order status 
