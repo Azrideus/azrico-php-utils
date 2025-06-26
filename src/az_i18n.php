@@ -16,7 +16,7 @@ abstract class az_i18n
 	 */
 	abstract public static function getPath();
 
-	public static function init($debug = false)
+	public static function init($debug = false, $priority = 10)
 	{
 		$plugin_root_dir = az_wp::getPluginDir(static::getPath());
 
@@ -36,7 +36,7 @@ abstract class az_i18n
 					$lang_dir
 				);
 			},
-			8000
+			$priority
 		);
 		if ($debug) {
 			add_action('wp_loaded', function () use ($domain, $lang_dir, $debug) {
