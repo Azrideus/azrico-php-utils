@@ -152,7 +152,7 @@ trait az_wp_post
 			/**
 			 * post is directly given
 			 */
-			return static::get_post_array_if_type_matches($input, $allowedTypes);
+			return static::filter_post_array_by_type($input, $allowedTypes);
 		} else if ($input instanceof \WC_Product) {
 			/**
 			 *  wc product is given
@@ -212,7 +212,7 @@ trait az_wp_post
 		/* ----------------------------- get post by id ----------------------------- */
 		if (is_numeric($input)) {
 			$foundPost = get_post($input);
-			$foundPostTypeMatch = static::get_post_array_if_type_matches($foundPost, $allowedTypes);
+			$foundPostTypeMatch = static::filter_post_array_by_type($foundPost, $allowedTypes);
 			if (true === $debug) {
 				error_log("[az_wp_post] search by post_id: " . strval($input));
 				error_log("[az_wp_post] result: " . count($foundPostTypeMatch));
@@ -285,7 +285,7 @@ trait az_wp_post
 			$type = $input->post_type;
 		else if ($input instanceof \WC_Product)
 			$type = 'product';
-		else if ($input instanceof \Wp_Post)
+		else if ($input instanceof \WP_Post)
 			$type = 'post';
 		else return false;
 
@@ -307,7 +307,7 @@ trait az_wp_post
 	/**
 	 * if the post type of the input matches one of the allowedTypes return the input 
 	 */
-	static function get_post_array_if_type_matches(mixed $input, array|string $allowedTypes): array
+	static function filter_post_array_by_type(mixed $input, array|string $allowedTypes): array
 	{
 		if (empty($input)) return [];
 
