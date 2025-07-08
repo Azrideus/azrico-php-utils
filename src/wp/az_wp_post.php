@@ -180,11 +180,8 @@ trait az_wp_post
 			}
 			$allowedTypes =  get_post_types();
 		}
-		/**
-		 * when searching for attachments, we search for status of inherit
-		 */
+
 		$allowedTypes = az_object::comma_array($allowedTypes);
-		$postStatus = in_array('attachment', $allowedTypes) ? "inherit" : "publish";
 
 
 		/**
@@ -192,17 +189,25 @@ trait az_wp_post
 		 * so we have to seperate the searches
 		 */
 		if (in_array('attachment', $allowedTypes) && sizeof($allowedTypes) > 1) {
-			if (($key = array_search('attachment', $allowedTypes)) !== false) {
-				unset($allowedTypes[$key]);
-			}
+
+			$allowedTypesExclAttachment = array_diff($allowedTypes, ['attachment']);
+
 			if (true === $debug) {
 				error_log("[az_wp_post] seperate search of attachment and posts");
 			}
 			return array_merge(
 				static::get_post_list($input, 'attachment', $limit),
-				static::get_post_list($input, $allowedTypes, $limit)
+				static::get_post_list($input, $allowedTypesExclAttachment, $limit)
 			);
 		}
+
+
+		/**
+		 * when searching for attachments, we search for status of inherit
+		 */
+		$postStatus = in_array('attachment', $allowedTypes) ? "inherit" : "publish";
+
+
 
 		/* ----------------------------- get post by id ----------------------------- */
 		if (is_numeric($input)) {
