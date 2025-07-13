@@ -5,6 +5,7 @@ namespace AzUtils;
 
 abstract class az_i18n
 {
+	private static $enabled = true;
 	/**
 	 * name of the cache group
 	 */
@@ -15,6 +16,11 @@ abstract class az_i18n
 	 * this is needed so we know where to load language files from 
 	 */
 	abstract public static function getPath();
+
+	public static function set_enabled(bool $en)
+	{
+		static::$enabled = $en;
+	}
 
 	public static function init($debug = false, $priority = 10)
 	{
@@ -55,6 +61,7 @@ abstract class az_i18n
 
 	public static function translate(string $str, ...$params)
 	{
+		if (!static::$enabled) return $str;
 		$translated = __($str, static::getDomain());
 		if ($translated === $str) {
 			/**
