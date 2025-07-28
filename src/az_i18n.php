@@ -83,7 +83,7 @@ abstract class az_i18n
 	}
 
 
-	private static function get_post_type(object $item)
+	public static function get_post_type(object $item)
 	{
 		assert(is_a($item, 'WP_Post'), 'Invalid post object');
 		$ptype = $item->post_type;
