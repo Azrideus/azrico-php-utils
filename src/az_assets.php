@@ -31,6 +31,14 @@ abstract class az_assets
 		);
 		$input = str_replace(
 			array(
+				': ',
+				' :',
+			),
+			':',
+			$input
+		);
+		$input = str_replace(
+			array(
 				'! ',
 				' !',
 			),
