@@ -12,16 +12,29 @@ abstract class az_assets
 		$input = str_replace(': ', ':', $input);
 
 
-		$input = str_replace(["\r", "\n", "\t"], '', $input);
-
+		$input = str_replace(["\r", "\n", "\t"], ' ', $input);
 		// input whitespace
 		$input = str_replace(
 			array(
-				'  ',
-				'    ',
-				'    '
+				'  ', // double spaces 
 			),
-			'',
+			' ',
+			$input
+		);
+		$input = str_replace(
+			array(
+				'; ',
+				' ;',
+			),
+			';',
+			$input
+		);
+		$input = str_replace(
+			array(
+				'! ',
+				' !',
+			),
+			'!',
 			$input
 		);
 
