@@ -95,7 +95,7 @@ abstract class az_wp_settings
 		</div>
 <?php
 	}
-	public static function render_setting_field($args)
+	public static function render_setting_field(array $args)
 	{
 		$op_name = static::getOptionName();
 
@@ -124,7 +124,7 @@ abstract class az_wp_settings
 				break;
 		}
 	}
-	protected static function sanitize_callback($input)
+	protected static function sanitize_callback(array $input)
 	{
 		$sanitized = [];
 		$fields = static::getSettingFields();
@@ -143,7 +143,7 @@ abstract class az_wp_settings
 
 		return $sanitized;
 	}
-	public static function get_option($key)
+	public static function get_option(string $key): mixed
 	{
 		$fields = static::getSettingFields();
 		foreach ($fields as $field) {
@@ -153,5 +153,9 @@ abstract class az_wp_settings
 			}
 		}
 		throw new \Exception("Option '$key' not found in settings.");
+	}
+	public static function get_option_boolean(string $key): bool
+	{
+		return \filter_var(static::get_option($key), FILTER_VALIDATE_BOOLEAN);
 	}
 }
