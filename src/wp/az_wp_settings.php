@@ -5,6 +5,7 @@ namespace AzUtils\wp;
 
 abstract class az_wp_settings
 {
+	abstract public static function getSettingsTitle();
 	abstract public static function getSettingsName();
 	abstract public static function getSettingFields();
 
@@ -37,7 +38,7 @@ abstract class az_wp_settings
 			'Gebra Setting',
 			'manage_options',
 			self::getSettingsSlug(),
-			[static::class, 'gms_settings_page'],
+			[static::class, 'render_settings_page'],
 			'dashicons-admin-generic'
 		);
 	}
@@ -74,6 +75,21 @@ abstract class az_wp_settings
 	public static function section_description()
 	{
 		echo '<p>Configure the main settings for the plugin below.</p>';
+	}
+	public static function render_settings_page()
+	{
+?>
+		<div class="wrap">
+			<h1><?php echo self::getSettingsTitle() ?></h1>
+			<form method="post" action="options.php">
+				<?php
+				settings_fields(self::getOptionGroup());
+				do_settings_sections(self::getSettingsSlug());
+				submit_button();
+				?>
+			</form>
+		</div>
+<?php
 	}
 	public static function render_setting_field($args)
 	{
