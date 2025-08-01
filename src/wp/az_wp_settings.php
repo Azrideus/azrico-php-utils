@@ -1,6 +1,6 @@
 <?php
 
-namespace AzUtils;
+namespace AzUtils\wp;
 
 
 /**
