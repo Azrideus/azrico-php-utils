@@ -35,7 +35,7 @@ abstract class az_wp_settings
 		add_action('admin_menu', [static::class, 'register_settings_page']);
 		add_action('admin_init', [static::class, 'register_settings']);
 	}
-	public static function register_settings_page()
+	protected static function register_settings_page()
 	{
 		add_menu_page(
 			'Gebra Setting',
@@ -46,7 +46,7 @@ abstract class az_wp_settings
 			'dashicons-admin-generic'
 		);
 	}
-	public static function register_settings()
+	protected static function register_settings()
 	{
 		$slug = static::getSettingsSlug();
 		$section = static::getSectionName();
@@ -76,7 +76,7 @@ abstract class az_wp_settings
 			);
 		}
 	}
-	public static function section_description()
+	protected static function section_description()
 	{
 		echo '<p>Configure the main settings for the plugin below.</p>';
 	}
@@ -103,8 +103,7 @@ abstract class az_wp_settings
 		$type    = $field['type'];
 		$field_name    = $field['name'];
 
-		$options = get_option($op_name);
-		$value   = $options[$field] ?? '';
+		$value   = static::get_option($field_name);
 
 		switch ($type) {
 			case 'text':
@@ -125,7 +124,7 @@ abstract class az_wp_settings
 				break;
 		}
 	}
-	public static function sanitize_callback($input)
+	protected static function sanitize_callback($input)
 	{
 		$sanitized = [];
 		$fields = static::getSettingFields();
@@ -143,5 +142,16 @@ abstract class az_wp_settings
 		}
 
 		return $sanitized;
+	}
+	public static function get_option($key)
+	{
+		$fields = static::getSettingFields();
+		foreach ($fields as $field) {
+			if ($field['name'] === $key) {
+				$options = get_option(static::getOptionName());
+				return $options[$key] ?? null;
+			}
+		}
+		throw new \Exception("Option '$key' not found in settings.");
 	}
 }
