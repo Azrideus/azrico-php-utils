@@ -67,7 +67,7 @@ abstract class az_wp_settings
 		$fields = static::getSettingFields();
 		foreach ($fields as $field) {
 			add_settings_field(
-				$field,
+				$field['name'],
 				$field['label'],
 				[static::class, 'render_setting_field'],
 				$slug,
