@@ -1,8 +1,12 @@
 <?php
 
-namespace AzUtils\wp;
+namespace AzUtils;
 
 
+/**
+ * Extend this class to create a settings page for your plugin.
+ * Implement the abstract methods to define the settings title, name, and fields.
+ */
 abstract class az_wp_settings
 {
 	abstract public static function getSettingsTitle();
