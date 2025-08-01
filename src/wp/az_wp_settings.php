@@ -32,21 +32,21 @@ abstract class az_wp_settings
 
 	public static function init()
 	{
-		add_action('admin_menu', [static::class, 'register_settings_page']);
-		add_action('admin_init', [static::class, 'register_settings']);
+		add_action('admin_menu', [static::class, '__register_settings_page']);
+		add_action('admin_init', [static::class, '__register_settings']);
 	}
-	protected static function register_settings_page()
+	public static function __register_settings_page()
 	{
 		add_menu_page(
 			'Gebra Setting',
 			'Gebra Setting',
 			'manage_options',
 			static::getSettingsSlug(),
-			[static::class, 'render_settings_page'],
+			[static::class, '__render_settings_page'],
 			'dashicons-admin-generic'
 		);
 	}
-	protected static function register_settings()
+	public static function __register_settings()
 	{
 		$slug = static::getSettingsSlug();
 		$section = static::getSectionName();
@@ -54,13 +54,13 @@ abstract class az_wp_settings
 		register_setting(
 			static::getOptionGroup(),
 			static::getOptionName(),
-			[static::class, 'sanitize_callback']
+			[static::class, '__sanitize_callback']
 		);
 
 		add_settings_section(
 			$section,
 			'Main Settings',
-			[static::class, 'section_description'],
+			[static::class, '__section_description'],
 			$slug
 		);
 
@@ -69,18 +69,18 @@ abstract class az_wp_settings
 			add_settings_field(
 				$field['name'],
 				$field['label'],
-				[static::class, 'render_setting_field'],
+				[static::class, '__render_setting_field'],
 				$slug,
 				$section,
 				['field' => $field]
 			);
 		}
 	}
-	protected static function section_description()
+	public static function __section_description()
 	{
 		echo '<p>Configure the main settings for the plugin below.</p>';
 	}
-	public static function render_settings_page()
+	public static function __render_settings_page()
 	{
 ?>
 		<div class="wrap">
@@ -95,7 +95,7 @@ abstract class az_wp_settings
 		</div>
 <?php
 	}
-	public static function render_setting_field(array $args)
+	public static function __render_setting_field(array $args)
 	{
 		$op_name = static::getOptionName();
 
@@ -124,7 +124,7 @@ abstract class az_wp_settings
 				break;
 		}
 	}
-	protected static function sanitize_callback(array $input)
+	public static function __sanitize_callback(array $input)
 	{
 		$sanitized = [];
 		$fields = static::getSettingFields();
