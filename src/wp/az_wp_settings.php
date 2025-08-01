@@ -15,25 +15,25 @@ abstract class az_wp_settings
 
 	public static function getSettingsSlug()
 	{
-		return self::getSettingsName() . '_settings';
+		return static::getSettingsName() . '_settings';
 	}
 	public static function getOptionGroup()
 	{
-		return self::getSettingsName() . '_options_group';
+		return static::getSettingsName() . '_options_group';
 	}
 	public static function getOptionName()
 	{
-		return self::getSettingsName() . '_settings';
+		return static::getSettingsName() . '_settings';
 	}
 	public static function getSectionName()
 	{
-		return self::getSettingsName() . '_section';
+		return static::getSettingsName() . '_section';
 	}
 
 	public static function init()
 	{
-		add_action('admin_menu', [self::class, 'register_settings_page']);
-		add_action('admin_init', [self::class, 'register_settings']);
+		add_action('admin_menu', [static::class, 'register_settings_page']);
+		add_action('admin_init', [static::class, 'register_settings']);
 	}
 	public static function register_settings_page()
 	{
@@ -41,35 +41,35 @@ abstract class az_wp_settings
 			'Gebra Setting',
 			'Gebra Setting',
 			'manage_options',
-			self::getSettingsSlug(),
+			static::getSettingsSlug(),
 			[static::class, 'render_settings_page'],
 			'dashicons-admin-generic'
 		);
 	}
 	public static function register_settings()
 	{
-		$slug = self::getSettingsSlug();
-		$section = self::getSectionName();
+		$slug = static::getSettingsSlug();
+		$section = static::getSectionName();
 
 		register_setting(
-			self::getOptionGroup(),
-			self::getOptionName(),
-			[self::class, 'sanitize_callback']
+			static::getOptionGroup(),
+			static::getOptionName(),
+			[static::class, 'sanitize_callback']
 		);
 
 		add_settings_section(
 			$section,
 			'Main Settings',
-			[self::class, 'section_description'],
+			[static::class, 'section_description'],
 			$slug
 		);
 
-		$fields = self::getSettingFields();
+		$fields = static::getSettingFields();
 		foreach ($fields as $field) {
 			add_settings_field(
 				$field,
 				$field['label'],
-				[self::class, 'render_setting_field'],
+				[static::class, 'render_setting_field'],
 				$slug,
 				$section,
 				['field' => $field]
@@ -84,11 +84,11 @@ abstract class az_wp_settings
 	{
 ?>
 		<div class="wrap">
-			<h1><?php echo self::getSettingsTitle() ?></h1>
+			<h1><?php echo static::getSettingsTitle() ?></h1>
 			<form method="post" action="options.php">
 				<?php
-				settings_fields(self::getOptionGroup());
-				do_settings_sections(self::getSettingsSlug());
+				settings_fields(static::getOptionGroup());
+				do_settings_sections(static::getSettingsSlug());
 				submit_button();
 				?>
 			</form>
@@ -97,7 +97,7 @@ abstract class az_wp_settings
 	}
 	public static function render_setting_field($args)
 	{
-		$op_name = self::getOptionName();
+		$op_name = static::getOptionName();
 
 		$field   = $args['field'];
 		$type    = $field['type'];
@@ -128,7 +128,7 @@ abstract class az_wp_settings
 	public static function sanitize_callback($input)
 	{
 		$sanitized = [];
-		$fields = self::getSettingFields();
+		$fields = static::getSettingFields();
 		foreach ($fields as $field) {
 			$type = $field['type'];
 			$name = $field['name'];
