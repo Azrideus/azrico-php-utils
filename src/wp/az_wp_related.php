@@ -21,7 +21,7 @@ trait az_wp_related
 	/**
 	 * Find a list of blog posts for the given post 
 	 */
-	public static function get_blog_siblings($post)
+	public static function get_related_blog_siblings($post)
 	{
 		$post = az_wp::get_post($post);
 		if (empty($post)) return [];
