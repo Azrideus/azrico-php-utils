@@ -79,8 +79,8 @@ class az_assets
 			require_once $file;
 		}
 	}
-	public static function get_url(string $file, string $name)
+	public static function get_url(string $current_file, string $name)
 	{
-		return az_wp::getPluginUrl($file, '/src/assets/' . $name);
+		return az_wp::getPluginUrl($current_file, '/src/assets/' . $name);
 	}
 }
