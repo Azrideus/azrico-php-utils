@@ -96,7 +96,7 @@ abstract class az_wp_settings
 			$field_section = $field['section'] ?? $main_section;
 			add_settings_field(
 				$field['name'],
-				$field['label'],
+				$field['title'],
 				[static::class, '__render_setting_field'],
 				$slug,
 				$field_section,
@@ -129,6 +129,7 @@ abstract class az_wp_settings
 
 		$field   = $args['field'];
 		$type    = $field['type'];
+		$label    = $field['label'] ?? $field['title'] ?? '';
 		$field_name    = $field['name'];
 		$section    = $field['section'] ?? static::getMainSectionName();
 
@@ -150,7 +151,8 @@ abstract class az_wp_settings
 					esc_attr($op_name),
 					esc_attr($field_name),
 					checked($value, 1, false),
-					esc_attr($section)
+					esc_attr($section),
+					esc_attr($label)
 				);
 				break;
 		}
