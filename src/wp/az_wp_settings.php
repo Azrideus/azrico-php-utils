@@ -179,15 +179,9 @@ abstract class az_wp_settings
 	public static function get_option(string $key): mixed
 	{
 		$options = get_option(static::getOptionName());
-		if (!is_array($options))
-			return null; // or throw an exception if you prefer
-
-		return $options[$key] ?? null;
-		// $fields = static::getSettingFields();
-		// foreach ($fields as $field) {
-		// 	if ($field['name'] === $key) {
-		// 	}
-		// }
+		if (!is_array($options)) return null;
+		if (!isset($options[$key])) return null;
+		return $options[$key];
 		throw new \Exception("Option '$key' not found in settings.");
 	}
 	public static function get_option_boolean(string $key): bool
