@@ -71,7 +71,7 @@ trait az_wp_related
 	 * find the primary related `$target_type` of the given post
 	 * (ex. find primary related `product` of given post) 
 	 */
-	public static function get_main_related_of(int|string|WP_Post $search, string $target_type): object|null
+	public static function get_related_main_of(int|string|WP_Post $search, string $target_type): object|null
 	{
 		$current_post = az_wp::get_post($search, 'any');
 		if (empty($current_post)) return null;
