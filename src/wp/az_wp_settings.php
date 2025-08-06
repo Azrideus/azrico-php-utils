@@ -60,6 +60,16 @@ abstract class az_wp_settings
 		);
 		$other_sections = static::getSettingSections();
 		foreach ($other_sections as $section) {
+			$class = $section['class'] ?? '';
+			$defaults = [
+				'name' => '',
+				'title' => '',
+				'desc' => '',
+				'before_section' => "<div class='az-settings-section $class'>",
+				'after_section'  => '</div>',
+				'section_class'  => '',
+			];
+			$section = wp_parse_args($section, $defaults);
 			add_settings_section(
 				$section['name'],
 				$section['title'],
