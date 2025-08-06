@@ -122,7 +122,6 @@ trait az_wp_related
 		$sl = static::get_related_search_array($search, $allowedTypes);
 		$search_array = $sl['search_array'];
 		$cache_key = $sl['cache_key'];
-		$cache_key .= '__' . join(',', $allowedTypes);
 
 
 
@@ -236,7 +235,10 @@ trait az_wp_related
 		if (is_string(($search))) {
 			$searchList = [$search];
 			$cache_key = 'rp_' . $search;
-			return ['search_array' => $searchList, 'cache_key' => $cache_key];
+			return [
+				'search_array' => $searchList,
+				'cache_key' => $cache_key
+			];
 		}
 		/* -------------------------------------------------------------------------- */
 		/*                            get related of a post                           */
@@ -246,47 +248,50 @@ trait az_wp_related
 
 		$postid = az_wp::get_id($currentPost);
 		$cache_key = 'rp_' . $postid;
+		$cache_key .= '__' . join(',', $allowedTypes);
 
 
-		/**
-		 * id of current post and its slug is added to the search list
-		 */
-		$searchList = [];
-		$searchList[] = $postid;
-		$searchList[] = $currentPost->post_name;
-
-		/**
-		 * add related pageids
-		 * find all posts and products that share some of their related ids
-		 * with the current product
-		 */
-		$metaPageids = az_wp::get_meta_comma_array_of($postid, 'paginator_targetpageid');
-		$metaPageids = array_filter($metaPageids);
-		if (empty($metaPageids)) {
+		return  az_cache::get('arr__' . $cache_key, function () use ($postid, $currentPost, $cache_key) {
 			/**
-			 * There is no `paginator_targetpageid` meta for this post
-			 * so we will try to find `paginator_pageid` meta
+			 * id of current post and its slug is added to the search list
 			 */
-			$metaPageids = az_wp::get_meta_comma_array_of($postid, 'paginator_pageid');
+			$searchList = [];
+			$searchList[] = $postid;
+			$searchList[] = $currentPost->post_name;
+
+			/**
+			 * add related pageids
+			 * find all posts and products that share some of their related ids
+			 * with the current product
+			 */
+			$metaPageids = az_wp::get_meta_comma_array_of($postid, 'paginator_targetpageid');
 			$metaPageids = array_filter($metaPageids);
-		}
-		array_push($searchList, ...$metaPageids);
+			if (empty($metaPageids)) {
+				/**
+				 * There is no `paginator_targetpageid` meta for this post
+				 * so we will try to find `paginator_pageid` meta
+				 */
+				$metaPageids = az_wp::get_meta_comma_array_of($postid, 'paginator_pageid');
+				$metaPageids = array_filter($metaPageids);
+			}
+			array_push($searchList, ...$metaPageids);
 
 
-		/* ----------------------- Add data from other plugins ---------------------- */
-		$searchList = \apply_filters('az_related_search_array', $searchList, $currentPost);
+			/* ----------------------- Add data from other plugins ---------------------- */
+			$searchList = \apply_filters('az_related_search_array', $searchList, $currentPost);
 
-		/**
-		 * if post name is `sht35-arduino`
-		 * it should also provide `sht35` as a search key
-		 * in order to do that we remove certain keywords from the post name
-		 */
-		// $simplified_kw = explode("-", $post->post_name);
-		// $simplified_kw = array_diff($simplified_kw, self::$board_keywords);
-		// $searchList[] = join('-', $simplified_kw); 
-		return [
-			'search_array' => array_filter(array_unique($searchList, SORT_STRING)),
-			'cache_key' => $cache_key
-		];
+			/**
+			 * if post name is `sht35-arduino`
+			 * it should also provide `sht35` as a search key
+			 * in order to do that we remove certain keywords from the post name
+			 */
+			// $simplified_kw = explode("-", $post->post_name);
+			// $simplified_kw = array_diff($simplified_kw, self::$board_keywords);
+			// $searchList[] = join('-', $simplified_kw); 
+			return [
+				'search_array' => array_filter(array_unique($searchList, SORT_STRING)),
+				'cache_key' => $cache_key
+			];
+		}, false);
 	}
 }
