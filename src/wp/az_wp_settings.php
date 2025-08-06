@@ -120,24 +120,27 @@ abstract class az_wp_settings
 		$field   = $args['field'];
 		$type    = $field['type'];
 		$field_name    = $field['name'];
+		$section    = $field['section'] ?? static::getMainSectionName();
 
 		$value   = static::get_option($field_name);
 
 		switch ($type) {
 			case 'text':
 				printf(
-					'<input type="text" name="%1$s[%2$s]" value="%3$s" class="regular-text">',
+					'<input type="text" name="%1$s[%2$s]" value="%3$s" data-section="%4$s" class="regular-text">',
 					esc_attr($op_name),
 					esc_attr($field_name),
-					esc_attr($value)
+					esc_attr($value),
+					esc_attr($section)
 				);
 				break;
 			case 'checkbox':
 				printf(
-					'<label><input type="checkbox" name="%1$s[%2$s]" value="1" %3$s> Enable %2$s</label>',
+					'<label><input type="checkbox" name="%1$s[%2$s]" data-section="%4$s" value="1" %3$s> Enable %2$s</label>',
 					esc_attr($op_name),
 					esc_attr($field_name),
-					checked($value, 1, false)
+					checked($value, 1, false),
+					esc_attr($section)
 				);
 				break;
 		}
