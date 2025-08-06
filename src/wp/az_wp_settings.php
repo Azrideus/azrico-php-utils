@@ -12,6 +12,7 @@ abstract class az_wp_settings
 	abstract public static function getSettingsTitle();
 	abstract public static function getSettingsName();
 	abstract public static function getSettingFields();
+	abstract public static function getSettingSections();
 
 	public static function getSettingsSlug()
 	{
@@ -25,7 +26,7 @@ abstract class az_wp_settings
 	{
 		return static::getSettingsName() . '_settings';
 	}
-	public static function getSectionName()
+	public static function getMainSectionName()
 	{
 		return static::getSettingsName() . '_section';
 	}
@@ -46,39 +47,56 @@ abstract class az_wp_settings
 			'dashicons-admin-generic'
 		);
 	}
+	public static function __register_settings_sections()
+	{
+		$slug = static::getSettingsSlug();
+		$main_section = static::getMainSectionName();
+		add_settings_section(
+			$main_section,
+			'Main Settings',
+			[static::class, '__section_description'],
+			$slug,
+			['desc' => 'Main settings for the plugin']
+		);
+		$other_sections = static::getSettingSections();
+		foreach ($other_sections as $section) {
+			add_settings_section(
+				$section['name'],
+				$section['title'],
+				[static::class, '__section_description'],
+				$slug,
+				$section
+			);
+		}
+	}
 	public static function __register_settings()
 	{
 		$slug = static::getSettingsSlug();
-		$section = static::getSectionName();
+		$main_section = static::getMainSectionName();
 
 		register_setting(
 			static::getOptionGroup(),
 			static::getOptionName(),
 			[static::class, '__sanitize_callback']
 		);
-
-		add_settings_section(
-			$section,
-			'Main Settings',
-			[static::class, '__section_description'],
-			$slug
-		);
+		static::__register_settings_sections();
 
 		$fields = static::getSettingFields();
 		foreach ($fields as $field) {
+			$field_section = $field['section'] ?? $main_section;
 			add_settings_field(
 				$field['name'],
 				$field['label'],
 				[static::class, '__render_setting_field'],
 				$slug,
-				$section,
+				$field_section,
 				['field' => $field]
 			);
 		}
 	}
-	public static function __section_description()
+	public static function __section_description($section)
 	{
-		echo '<p>Configure the main settings for the plugin below.</p>';
+		echo '<p>' . $section['desc'] . '</p>';
 	}
 	public static function __render_settings_page()
 	{
