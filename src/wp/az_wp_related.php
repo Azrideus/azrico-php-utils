@@ -17,11 +17,61 @@ trait az_wp_related
 		'page',
 		'attachment'
 	);
+
+	/**
+	 * Find a list of blog posts for the given post 
+	 */
+	public static function get_blog_siblings($post)
+	{
+		$post = az_wp::get_post($post);
+		if (empty($post)) return [];
+		$siblings = [];
+
+		if ($post->post_parent > 0) {
+			/**
+			 * if post is a child of another post, related items are its siblings
+			 */
+			$siblings = az_wp::get_post_list(['post_parent' => $post->post_parent]);
+		} else {
+			/**
+			 * Related posts are posts in same parent category
+			 */
+			$self_category =
+				az_wp::get_primary_category_of($post, true);
+			if (!empty($self_category)) {
+				$sub_cats = az_wp::get_sub_categories($self_category, 'ids');
+
+				$siblings = az_wp::get_post_list(
+					[
+						'category__in' => [$self_category->term_id],
+						'category__not_in' => $sub_cats
+					]
+				);
+			}
+		}
+		return \apply_filters('az_blog_siblings', $siblings, $post);
+	}
+
+
+	public static function get_related_family(int|string|WP_Post $search): array
+	{
+		$members = ['product', 'post', 'project', 'product_doc', 'page'];
+		$all_posts = static::get_related_list_of($search, $members);
+		$family = [];
+		foreach ($all_posts as $post) {
+			if (in_array($post->post_type, $members)) {
+				$family[$post->post_type][] = $post;
+			}
+		}
+		return $family;
+	}
+
+
 	/**
 	 * find the primary related `$target_type` of the given post
 	 * (ex. find primary related `product` of given post) 
 	 */
-	public static function get_main_related_of(string $target_type, $search): object|null
+	public static function get_main_related_of(int|string|WP_Post $search, string $target_type): object|null
 	{
 		$current_post = az_wp::get_post($search, 'any');
 		if (empty($current_post)) return null;
@@ -138,13 +188,12 @@ trait az_wp_related
 
 
 		/* ------------------ Add Related Posts from Other Plugins ------------------ */
-		if (\function_exists('apply_filters')) {
-			$uniqItems = \apply_filters(
-				'az_related_posts',
-				$uniqItems,
-				$currentPost,
-			);
-		}
+
+		$uniqItems = \apply_filters(
+			'az_related_posts',
+			$uniqItems,
+			$currentPost,
+		);
 
 		return $uniqItems;
 	}
@@ -204,9 +253,10 @@ trait az_wp_related
 		}
 		array_push($searchList, ...$metaPageids);
 
-		if (\function_exists('apply_filters')) {
-			$searchList = \apply_filters('az_related_search_array', $searchList, $currentPost);
-		}
+
+		/* ----------------------- Add data from other plugins ---------------------- */
+		$searchList = \apply_filters('az_related_search_array', $searchList, $currentPost);
+
 		/**
 		 * if post name is `sht35-arduino`
 		 * it should also provide `sht35` as a search key
