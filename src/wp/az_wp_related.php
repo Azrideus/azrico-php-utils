@@ -244,15 +244,19 @@ trait az_wp_related
 		/* -------------------------------------------------------------------------- */
 		/*                            get related of a post                           */
 		/* -------------------------------------------------------------------------- */
-		$currentPost = az_wp::get_post($search, $allowedTypes);
-		if (empty($currentPost)) return [];
+		$currentPost = az_wp::get_post($search, 'any');
+		if (empty($currentPost)) {
+			return [
+				'search_array' => [],
+				'cache_key' => 'rp_empty_post'
+			];
+		}
 
 		$postid = az_wp::get_id($currentPost);
 		$cache_key = 'rp_' . $postid;
 		$cache_key .= '__' . join(',', $allowedTypes);
 
-
-		return  az_cache::get('arr__' . $cache_key, function () use ($postid, $currentPost, $cache_key) {
+		return  az_cache::get('rp_list_' . $cache_key, function () use ($postid, $currentPost, $cache_key) {
 			/**
 			 * id of current post and its slug is added to the search list
 			 */
@@ -289,6 +293,7 @@ trait az_wp_related
 			// $simplified_kw = explode("-", $post->post_name);
 			// $simplified_kw = array_diff($simplified_kw, self::$board_keywords);
 			// $searchList[] = join('-', $simplified_kw); 
+
 			return [
 				'search_array' => array_filter(array_unique($searchList, SORT_STRING)),
 				'cache_key' => $cache_key
