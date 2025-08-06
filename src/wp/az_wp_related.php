@@ -19,6 +19,25 @@ trait az_wp_related
 	);
 
 	/**
+	 * Replace tokens like `product_link,post_link,...` with their permalink
+	 * uses `get_related_family`
+	 */
+	public static function parse_related_tokens($post, $link_str)
+	{
+		$related_family = az_wp::get_related_family($post);
+		foreach ($related_family as $type => $related_post) {
+			$repl = "{{$type}_link}";
+			$link_str = str_replace($repl, get_permalink($related_post->ID), $link_str);
+
+			$repl = "{{$type}_id}";
+			$link_str = str_replace($repl, $related_post->ID, $link_str);
+
+			$repl = "{{$type}_name}";
+			$link_str = str_replace($repl, $related_post->name, $link_str);
+		}
+		return $link_str;
+	}
+	/**
 	 * Find a list of blog posts for the given post 
 	 */
 	public static function get_related_blog_siblings($post)
