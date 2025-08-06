@@ -228,7 +228,7 @@ trait az_wp_post
 		/* -------------------------------------------------------------------------- */
 		/*                                pageid search                               */
 		/* -------------------------------------------------------------------------- */
-		if (array_key_exists('pageid', $input)) {
+		if (!empty($input['pageid'])) {
 			$searchRgx = static::build_post_pageid_regex($input['pageid']);
 			$final_search = array(
 				'meta_query'     => array(
