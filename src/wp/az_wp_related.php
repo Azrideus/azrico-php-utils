@@ -149,6 +149,8 @@ trait az_wp_related
 		if (empty($search)) return [];
 		if (empty($allowedTypes)) $allowedTypes = self::$validRelatedTypes;
 		$allowedTypes = az_object::comma_array($allowedTypes);
+		$currentPost = az_wp::get_post($search, 'any');
+
 
 		/* -------------------------------------------------------------------------- */
 		/*                            Populate Search List                            */
@@ -171,8 +173,8 @@ trait az_wp_related
 			);
 		} else {
 
+
 			/* ------------------------ link by primary category ------------------------ */
-			$currentPost = az_wp::get_post($search, $allowedTypes);
 			if (
 				!empty($currentPost)
 				&& az_wp::get_meta_bool_of($currentPost, 'paginator_autolinkcategory')
