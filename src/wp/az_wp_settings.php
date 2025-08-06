@@ -184,8 +184,21 @@ abstract class az_wp_settings
 		return $options[$key];
 		throw new \Exception("Option '$key' not found in settings.");
 	}
+	public static function get_option_string(string $key): bool
+	{
+		return \strval(static::get_option($key));
+	}
 	public static function get_option_boolean(string $key): bool
 	{
 		return \filter_var(static::get_option($key), FILTER_VALIDATE_BOOLEAN);
+	}
+
+	public static function get_public_post_types()
+	{
+		return get_post_types(['public' => true], 'objects');
+	}
+	public static function op_name($arr)
+	{
+		return join('__', $arr);
 	}
 }
