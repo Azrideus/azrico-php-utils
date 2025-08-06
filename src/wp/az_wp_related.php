@@ -77,11 +77,15 @@ trait az_wp_related
 		$members = ['product', 'post', 'project', 'product_doc', 'page'];
 		$all_posts = static::get_related_list_of($search, $members);
 		$family = [];
-		foreach ($all_posts as $post) {
-			if (in_array($post->post_type, $members)) {
+
+		if (!empty($all_posts)) {
+			foreach ($all_posts as $post) {
+				if (empty($post) || !($post instanceof WP_Post)) continue;
+				if (!in_array($post->post_type, $members)) continue;
 				$family[$post->post_type][] = $post;
 			}
 		}
+
 		return $family;
 	}
 
@@ -111,7 +115,7 @@ trait az_wp_related
 	public static function get_related_list_of(
 		int|string|WP_Post $search,
 		array|string|null $allowedTypes = null,
-	) {
+	): array {
 		if (empty($search)) return [];
 		if (empty($allowedTypes)) $allowedTypes = self::$validRelatedTypes;
 		$allowedTypes = az_object::comma_array($allowedTypes);
