@@ -4,6 +4,7 @@ namespace AzUtils\wp;
 
 use AzUtils\az_cache;
 use AzUtils\az_object;
+use AzUtils\az_string;
 use AzUtils\az_wp;
 use WP_Post;
 
@@ -36,6 +37,25 @@ trait az_wp_related
 			$link_str = str_replace($repl, $related_post->name, $link_str);
 		}
 		return $link_str;
+	}
+	/**
+	 * Returns true if all posts in the given array are directly related posts
+	 * Meaning their SLUG/url is the same 
+	 */
+	public static function check_posts_directly_related(array $posts)
+	{
+		$check_slug = '';
+		foreach ($posts as $post) {
+			$post_obj = az_wp::get_post($post);
+			if (empty($post_obj)) continue;
+			$post_slug = $post_obj->post_name;
+			if (empty($check_slug)) $check_slug = $post_slug;
+			else if (!az_string::eq($check_slug, $post_slug)) {
+				//if slug is not the same, they are not primary related
+				return false;
+			}
+		}
+		return true;
 	}
 	/**
 	 * Find a list of blog posts for the given post 
@@ -72,17 +92,27 @@ trait az_wp_related
 	}
 
 
-	public static function get_related_family(int|string|WP_Post $search): array
+	/** 
+	 * for the given post returns the directly related post of each type
+	 * 
+	 * directly related means that the post slug is the same across different post types
+	 * @return WP_Post[]
+	 */
+	public static function get_related_family(int|string|WP_Post $search)
 	{
 		$members = ['product', 'post', 'project', 'product_doc', 'page'];
-		$all_posts = static::get_related_list_of($search, $members);
+
+		$current_post = az_wp::get_post($search, 'any');
+		$all_posts = static::get_related_list_of($current_post, $members);
+
 		$family = [];
 
 		if (!empty($all_posts)) {
 			foreach ($all_posts as $post) {
 				if (empty($post) || !($post instanceof WP_Post)) continue;
 				if (!in_array($post->post_type, $members)) continue;
-				$family[$post->post_type][] = $post;
+				if (!static::check_posts_directly_related([$current_post, $post])) continue;
+				$family[$post->post_type] = $post;
 			}
 		}
 
