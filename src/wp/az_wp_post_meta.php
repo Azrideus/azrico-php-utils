@@ -80,6 +80,19 @@ trait az_wp_post_meta
 		if (is_numeric($meta_value)) return intval($meta_value);
 		return $default;
 	}
+	/**
+	 * get meta string then explode by comma and return as array
+	 */
+	static function get_meta_comma_array_of($search, string $key, array $default = []): array
+	{
+		$meta_value = static::get_meta_of(
+			$search,
+			$key
+		);
+		if (empty($meta_value)) return $default;
+		if (!is_string($meta_value)) return $default;
+		return explode(',', $meta_value);
+	}
 
 	static function get_meta_of($search, string $key)
 	{

@@ -12,6 +12,7 @@ use AzUtils\wp\az_wp_orders;
 use AzUtils\wp\az_wp_links;
 use AzUtils\wp\az_wp_error;
 use AzUtils\wp\az_wp_searchquery;
+use AzUtils\wp\az_wp_related;
 
 class az_wp
 {
@@ -24,6 +25,7 @@ class az_wp
 	use az_wp_links;
 	use az_wp_orders;
 	use az_wp_error;
+	use az_wp_related;
 
 	private static $cached_dirs = [];
 

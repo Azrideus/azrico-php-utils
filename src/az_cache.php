@@ -3,14 +3,17 @@
 namespace AzUtils;
 
 
-abstract class az_cache
+class az_cache
 {
 	static $cache = [];
 
 	/**
 	 * name of the cache group
 	 */
-	abstract public static function getCacheGroup();
+	public static function getCacheGroup()
+	{
+		return 'az_cache';
+	}
 
 	static function init()
 	{

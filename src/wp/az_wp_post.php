@@ -112,12 +112,14 @@ trait az_wp_post
 	 */
 	static function get_post($search, string|array $allowedTypes = 'any'): \WP_Post|null
 	{
+		if (empty($search)) return null;
 		$postlist = static::get_post_list($search, $allowedTypes, 1);
 		if (empty($postlist)) return null;
 		return end($postlist);
 	}
 	/**
 	 * search for a list of posts
+	 * this function can also load attachments
 	 *
 	 * @return \WP_Post[]
 	 */
@@ -180,18 +182,13 @@ trait az_wp_post
 			}
 			$allowedTypes =  get_post_types();
 		}
-
 		$allowedTypes = az_object::comma_array($allowedTypes);
-
-
 		/**
 		 * we cant search for posts and attachments at the same time
 		 * so we have to seperate the searches
 		 */
 		if (in_array('attachment', $allowedTypes) && sizeof($allowedTypes) > 1) {
-
 			$allowedTypesExclAttachment = array_diff($allowedTypes, ['attachment']);
-
 			if (true === $debug) {
 				error_log("[az_wp_post] seperate search of attachment and posts");
 			}
@@ -200,16 +197,13 @@ trait az_wp_post
 				static::get_post_list($input, $allowedTypesExclAttachment, $limit)
 			);
 		}
-
-
 		/**
 		 * when searching for attachments, we search for status of inherit
 		 */
 		$postStatus = in_array('attachment', $allowedTypes) ? "inherit" : "publish";
-
-
-
-		/* ----------------------------- get post by id ----------------------------- */
+		/* -------------------------------------------------------------------------- */
+		/*                               get post by id                               */
+		/* -------------------------------------------------------------------------- */
 		if (is_numeric($input)) {
 			$foundPost = get_post($input);
 			$foundPostTypeMatch = static::filter_post_array_by_type($foundPost, $allowedTypes);
@@ -219,7 +213,9 @@ trait az_wp_post
 			}
 			return $foundPostTypeMatch;
 		}
-		/* ---------------------------- get post by slug ---------------------------- */
+		/* -------------------------------------------------------------------------- */
+		/*                              get post by slug                              */
+		/* -------------------------------------------------------------------------- */
 		if (is_string($input)) {
 			$input = array(
 				'name'           => trim($input),
@@ -229,8 +225,9 @@ trait az_wp_post
 			);
 		}
 		if (!is_array($input)) return [];
-
-		/* ------------------------------ pageid search ----------------------------- */
+		/* -------------------------------------------------------------------------- */
+		/*                                pageid search                               */
+		/* -------------------------------------------------------------------------- */
 		if (array_key_exists('pageid', $input)) {
 			$searchRgx = static::build_post_pageid_regex($input['pageid']);
 			$final_search = array(
