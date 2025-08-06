@@ -126,7 +126,7 @@ trait az_wp_related
 
 
 		$cached_ids = az_cache::get($cache_key, null, true);
-
+		$foundPosts = [];
 
 		if (is_array($cached_ids) && !empty($cached_ids)) {
 			/* ----------------------------- Found in Cache ----------------------------- */
@@ -136,6 +136,7 @@ trait az_wp_related
 				100
 			);
 		} else {
+
 			/* ------------------------ link by primary category ------------------------ */
 			$currentPost = az_wp::get_post($search, $allowedTypes);
 			if (
