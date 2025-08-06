@@ -2,6 +2,8 @@
 
 namespace AzUtils\wp;
 
+use AzUtils\az_view;
+
 
 /**
  * Extend this class to create a settings page for your plugin.
@@ -137,22 +139,22 @@ abstract class az_wp_settings
 
 		switch ($type) {
 			case 'text':
-				printf(
+				az_view::esc_attr_printf(
 					'<input type="text" name="%1$s[%2$s]" value="%3$s" data-section="%4$s" class="regular-text">',
-					esc_attr($op_name),
-					esc_attr($field_name),
-					esc_attr($value),
-					esc_attr($section)
+					($op_name),
+					($field_name),
+					($value),
+					($section)
 				);
 				break;
 			case 'checkbox':
-				printf(
+				az_view::esc_attr_printf(
 					'<label><input type="checkbox" name="%1$s[%2$s]" data-section="%4$s" value="1" %3$s> Enable %2$s</label>',
-					esc_attr($op_name),
-					esc_attr($field_name),
+					($op_name),
+					($field_name),
 					checked($value, 1, false),
-					esc_attr($section),
-					esc_attr($label)
+					($section),
+					($label)
 				);
 				break;
 		}

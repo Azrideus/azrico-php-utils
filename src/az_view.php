@@ -174,6 +174,17 @@ abstract class az_view
 	}
 
 
+	static function esc_attr_sprintf($format, ...$values)
+	{
+		foreach ($values as $key => $v) {
+			$values[$key] = is_string($v) ? esc_attr($v) : $v;
+		}
+		return sprintf($format, $values);
+	}
+	static function esc_attr_printf($format, ...$values)
+	{
+		echo static::esc_attr_sprintf($format, ...$values);
+	}
 	static function clsx(...$params)
 	{
 		$final_class = [];
