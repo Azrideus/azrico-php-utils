@@ -4,7 +4,7 @@ namespace AzUtils;
 
 use AzUtils\az_wp;
 
-abstract class az_assets
+class az_assets
 {
 	static function compress_css($input)
 	{
