@@ -33,7 +33,7 @@ trait az_wp_external_post
 	 * works for internal posts and external links such as youtube videos 
 	 * @param [type] $post
 	 */
-	static function getImageLink(object $post): string|false
+	static function get_post_image_link(object $post): string|false
 	{
 		$itemid = $post->ID;
 		if ($itemid >= 0)
