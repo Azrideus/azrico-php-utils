@@ -99,7 +99,7 @@ trait az_wp_related
 	 * directly related means that the post slug is the same across different post types
 	 * @return WP_Post[]
 	 */
-	public static function get_related_family(int|string|WP_Post $search)
+	public static function get_related_family(int|string|object $search)
 	{
 		$members = ['product', 'post', 'project', 'product_doc', 'page'];
 
@@ -125,7 +125,7 @@ trait az_wp_related
 	 * find the primary related `$target_type` of the given post
 	 * (ex. find primary related `product` of given post) 
 	 */
-	public static function get_related_main_of(int|string|WP_Post $search, string $target_type): object|null
+	public static function get_related_main_of(int|string|object $search, string $target_type): object|null
 	{
 		$current_post = az_wp::get_post($search, 'any');
 		if (empty($current_post)) return null;
@@ -144,7 +144,7 @@ trait az_wp_related
 	 * @return \WP_Post[]
 	 */
 	public static function get_related_list_of(
-		int|string|WP_Post $search,
+		int|string|object $search,
 		array|string|null $allowedTypes = null,
 	): array {
 		if (empty($search)) return [];
@@ -169,7 +169,7 @@ trait az_wp_related
 			/* ----------------------------- Found in Cache ----------------------------- */
 			$foundPosts = az_wp::get_post_list(
 				['post__in' => $cached_ids],
-				$allowedTypes,
+				'any',
 				100
 			);
 		} else {
