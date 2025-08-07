@@ -16,7 +16,8 @@ trait az_wp_related
 		'project',
 		"product_doc",
 		'page',
-		'attachment'
+		'attachment',
+		'external'
 	);
 
 	/**
@@ -248,6 +249,7 @@ trait az_wp_related
 			'az_related_posts',
 			$uniqItems,
 			$currentPost,
+			$allowedTypes,
 		);
 
 		return $uniqItems;
