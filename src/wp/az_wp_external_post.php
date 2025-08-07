@@ -13,11 +13,17 @@ trait az_wp_external_post
 	 */
 	static function get_post_link(object $post): string
 	{
-		$itemid = $post->ID;
+		if ($post instanceof WC_Product)
+			return $post->get_permalink();
+		if (is_int($post))
+			$itemid = $post->ID;
+		if ($post instanceof \WP_Post)
+			$itemid = $post->ID;
 
+		if (empty($itemid))
+			return '';
 		if ($itemid >= 0)
 			return get_permalink($itemid);
-
 		if ($itemid < -2) //external post
 			return $post->post_content;
 		return '';
