@@ -2,6 +2,10 @@
 
 namespace AzUtils\wp;
 
+use AzUtils\az_wp;
+
+use function Avifinfo\read;
+
 trait az_wp_external_post
 {
 
@@ -16,16 +20,28 @@ trait az_wp_external_post
 		if ($post instanceof \WC_Product)
 			return $post->get_permalink();
 		if (is_int($post))
-			$itemid = $post->ID;
-		if ($post instanceof \WP_Post)
-			$itemid = $post->ID;
+			$post = az_wp::get_post($post);
 
-		if (empty($itemid))
-			return '';
-		if ($itemid >= 0)
-			return get_permalink($itemid);
-		if ($itemid < -2) //external post
-			return $post->post_content;
+		if (
+			is_object($post)
+			&& property_exists($post, 'post_type')
+
+		) {
+			$type = $post->post_type;
+			if (
+				in_array($type, ['external', 'youtube', 'github', 'external_post', 'external_link'])
+				&& property_exists($post, 'post_content')
+			) {
+				/**
+				 * For external posts, their link is the post content.
+				 */
+				return $post->post_content;
+			}
+		}
+
+		if ($post instanceof \WP_Post) {
+			return get_permalink($post->ID);
+		}
 		return '';
 	}
 	/**
