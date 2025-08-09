@@ -83,4 +83,16 @@ class az_assets
 	{
 		return az_wp::getPluginUrl($current_file, '/src/assets/' . $name);
 	}
+	public static function get_webp_url(string $current_file, string $name)
+	{
+		return static::get_url($current_file, $name . ".webp");
+	}
+	public static function get_svg_url(string $current_file, string $name)
+	{
+		return static::get_url($current_file, $name . ".svg");
+	}
+	public static function get_png_url(string $current_file, string $name)
+	{
+		return static::get_url($current_file, $name . ".png");
+	}
 }
