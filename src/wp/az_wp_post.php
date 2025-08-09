@@ -273,7 +273,7 @@ trait az_wp_post
 	 * check if post type of post_A matches post_B
 	 * inputs can be posts or array or strings 
 	 */
-	static function post_type_matches(mixed $input_A, mixed $input_B)
+	static function post_type_matches(mixed $input_A, mixed $input_B): bool
 	{
 		$input_A = static::get_post_types_of($input_A);
 		$input_B = static::get_post_types_of($input_B);
@@ -293,9 +293,14 @@ trait az_wp_post
 			return ['post'];
 		else if (is_string($input))
 			return [$input];
-		else if (\is_array($input))
-			return [$input];
-		else if (\is_int($input))
+		else if (\is_array($input)) {
+			$mapped = \array_map([static::class, 'get_post_types_of'], \array_values($input));
+			$return = array();
+			array_walk_recursive($mapped, function ($a) use (&$return) {
+				$return[] = $a;
+			});
+			return $return;
+		} else if (\is_int($input))
 			return static::get_post_types_of(static::get_post($input));
 		else return [];
 	}
