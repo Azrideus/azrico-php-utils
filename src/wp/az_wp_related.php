@@ -169,7 +169,7 @@ trait az_wp_related
 			/* ----------------------------- Found in Cache ----------------------------- */
 			$foundPosts = az_wp::get_post_list(
 				['post__in' => $cached_ids],
-				'any',
+				$allowedTypes,
 				100
 			);
 		} else {
