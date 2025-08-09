@@ -270,29 +270,37 @@ trait az_wp_post
 	}
 
 	/**
-	 * check if post type of input matches one of the allowedTypes
-	 *
-	 * @param [type] $input
-	 * @param array|string $allowedTypes 
+	 * check if post type of post_A matches post_B
+	 * inputs can be posts or array or strings 
 	 */
-	static function post_type_matches(mixed $input, array|string $allowedTypes)
+	static function post_type_matches(mixed $input_A, mixed $input_B)
 	{
-		$type = '';
+		$input_A = static::get_post_types_of($input_A);
+		$input_B = static::get_post_types_of($input_B);
+		if (in_array('any', $input_A) || in_array('any', $input_B)) return true;
+		$intersection = array_intersect($input_A, $input_B);
+		if (empty($intersection)) return false;
+		return true;
+	}
+	static function get_post_types_of(mixed $input): array
+	{
+		if (empty($input)) return [];
 		if (is_object($input) && property_exists($input, 'post_type'))
-			$type = $input->post_type;
+			return [$input->post_type];
 		else if ($input instanceof \WC_Product)
-			$type = 'product';
+			return ['product'];
 		else if ($input instanceof \WP_Post)
-			$type = 'post';
-		else return false;
-
-		$allowedTypes = (array)$allowedTypes;
-		if (count($allowedTypes) === 0) return false;
-		if (in_array('any', $allowedTypes)) return true;
-		return in_array(strval($type), $allowedTypes);
+			return ['post'];
+		else if (is_string($input))
+			return [$input];
+		else if (\is_array($input))
+			return [$input];
+		else if (\is_int($input))
+			return static::get_post_types_of(static::get_post($input));
+		else return [];
 	}
 	/**
-	 * if the post type of the input matches one of the allowedTypes return the input 
+	 * if the post type of the input matches one of the `allowedTypes` return the input 
 	 */
 	static function get_post_if_type_matches(mixed $input, array|string $allowedTypes)
 	{
@@ -302,7 +310,7 @@ trait az_wp_post
 		return null;
 	}
 	/**
-	 * if the post type of the input matches one of the allowedTypes return the input 
+	 * if the post type of the input matches one of the `allowedTypes` return the input 
 	 */
 	static function filter_post_array_by_type(mixed $input, array|string $allowedTypes): array
 	{
