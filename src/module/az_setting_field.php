@@ -50,7 +50,7 @@ class az_setting_field extends plugin_object
 	}
 	public function getValue()
 	{
-		return az_wp_settings::get_option($this->plugin_name, $this->field_name);
+		return az_wp_settings::get_plugin_option($this->plugin_name, $this->field_name);
 	}
 	public function render_setting_field()
 	{

@@ -18,4 +18,16 @@ class plugin_object
 		$this->plugin_name = $plugin_name;
 		$this->plugin_name_slug = az_string::slugify($this->plugin_name);
 	}
+	public  function get_plugin_option(string $key): mixed
+	{
+		return az_wp_settings::get_plugin_option($this->plugin_name, $key);
+	}
+	public  function get_plugin_option_string(string $key): bool
+	{
+		return az_wp_settings::get_plugin_option_string($this->plugin_name, $key);
+	}
+	public  function get_plugin_option_boolean(string $key): bool
+	{
+		return az_wp_settings::get_plugin_option_boolean($this->plugin_name, $key);
+	}
 }

@@ -2,6 +2,7 @@
 
 namespace AzUtils\wp;
 
+use AzUtils\az_string;
 use AzUtils\module\az_module;
 
 /**
@@ -127,21 +128,21 @@ class az_wp_settings
 
 		return $sanitized;
 	}
-	public static function get_option(string $plugin_name, string $key): mixed
+	public static function get_plugin_option(string $plugin_name, string $key): mixed
 	{
-		$options = get_option($plugin_name);
+		$options = get_option(az_string::slugify($plugin_name));
 		if (!is_array($options)) return null;
 		if (!isset($options[$key])) return null;
 		return $options[$key];
 		throw new \Exception("Option '$key' not found in settings.");
 	}
-	public static function get_option_string(string $plugin_name, string $key): bool
+	public static function get_plugin_option_string(string $plugin_name, string $key): bool
 	{
-		return \strval(static::get_option($plugin_name, $key));
+		return \strval(static::get_plugin_option($plugin_name, $key));
 	}
-	public static function get_option_boolean(string $plugin_name, string $key): bool
+	public static function get_plugin_option_boolean(string $plugin_name, string $key): bool
 	{
-		return \filter_var(static::get_option($plugin_name, $key), FILTER_VALIDATE_BOOLEAN);
+		return \filter_var(static::get_plugin_option($plugin_name, $key), FILTER_VALIDATE_BOOLEAN);
 	}
 
 	public static function get_public_post_types()
