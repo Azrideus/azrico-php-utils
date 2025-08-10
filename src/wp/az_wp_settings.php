@@ -15,7 +15,6 @@ class az_wp_settings
 {
 	private static $page_created = false;
 	private static $registred_modules = [];
-	private static $registred_plugins = [];
 
 
 	public static function getSettingPageSlug(): string
@@ -53,36 +52,22 @@ class az_wp_settings
 			'dashicons-admin-generic'
 		);
 	}
-	public static function register_plugin_settings(az_module $module)
-	{
-		if (isset(static::$registred_plugins[$module->plugin_name_slug])) {
-			return false; // Plugin already registered
-		}
-		register_setting(
-			$module->plugin_name_slug,
-			$module->plugin_name_slug,
-			[
-				'sanitize_callback' => function ($input) use ($module) {
-					return \AzUtils\wp\az_wp_settings::__sanitize_callback($module, (array) $input);
-				}
-			]
-		);
-	}
+
 	/** 
 	 * Register a module settings page by adding it under the `az` settings
 	 * Each Module has its own settings page under the main `az` settings page.
 	 */
-	public static function register_module_setting_pages(az_module $module)
+	public static function register_module_settings(az_module $module)
 	{
 		$module = static::getModule($module);
-		static::register_plugin_settings($module);
+
 		/* ---------------------- Add the Module Settings Page ---------------------- */
 		add_submenu_page(
-			static::getSettingPageSlug(),                		// Parent slug (must match top-level menu slug)
-			$module->module_name,                  			// Page title
-			$module->module_name,                  			// Menu title
-			'manage_options',             						// Capability
-			$module->module_settings_page_slug,         					// Menu slug
+			static::getSettingPageSlug(),       // Parent slug (must match top-level menu slug)
+			$module->module_name,               // Page title
+			$module->module_name,               // Menu title
+			'manage_options',             		// Capability
+			$module->module_settings_page_slug, // Menu slug
 			function () use ($module) {
 				return az_wp_settings::__render_settings_page($module);
 			},
@@ -93,8 +78,22 @@ class az_wp_settings
 	{
 		$count = 0;
 		$module = static::getModule($module);
-		/* ------------------------------ MAIN SECTION ------------------------------ */
 
+		/* ------------------------ Register Module Settings ------------------------ */
+		/**
+		 * Even though we register for each module, 
+		 * all settings of plugin are stored under the plugin slug.
+		 */
+		register_setting(
+			$module->module_settings_group_slug, // Group Name
+			$module->plugin_name_slug,			 // Option Name (plugin slug)
+			[
+				'sanitize_callback' => function ($input) use ($module) {
+					return \AzUtils\wp\az_wp_settings::__sanitize_callback($module, (array) $input);
+				}
+			]
+		);
+		/* ------------------------------ MAIN SECTION ------------------------------ */
 		$main_section = new az_setting_section($module, [
 			'name' => 'main_section',
 			'title' => 'Core Settings',
@@ -110,8 +109,6 @@ class az_wp_settings
 				'type' => 'checkbox',
 			]
 		));
-
-
 		/* ---------------------------- Register Sections --------------------------- */
 		$other_sections = $module->get_setting_sections() ?? [];
 		if (empty($other_sections)) return 	$count;
@@ -155,23 +152,29 @@ class az_wp_settings
 			<h1><?php echo "Settings for " . $module->module_name ?></h1>
 			<form method="post" action="options.php">
 				<?php
-				settings_fields($module->plugin_name_slug);
-				do_settings_sections($module->module_name_slug);
+				settings_fields($module->module_settings_group_slug); 	// GROUP for this page
+				do_settings_sections($module->module_settings_page_slug);  // PAGE slug for this page
 				submit_button();
 				?>
 			</form>
 		</div>
 <?php
 	}
-
-
 	public static function __sanitize_callback(az_module $module, array $input)
 	{
 		$sanitized = [];
 		$fields = $module->get_setting_fields();
 		foreach ($fields as $field) {
+
 			$type = $field->type;
 			$name = $field->field_name;
+			if (!isset($input[$name])) {
+				/**
+				 * make sure we dont remove fields in this plugin that are not in current module
+				 * prevent removing fields that are not in the current module
+				 */
+				continue;
+			}
 			switch ($type) {
 				case 'text':
 					$sanitized[$name] = sanitize_text_field($input[$name] ?? '');
@@ -181,7 +184,6 @@ class az_wp_settings
 					break;
 			}
 		}
-
 		return $sanitized;
 	}
 	public static function get_plugin_option(string $plugin_name, string $key): mixed
@@ -190,21 +192,16 @@ class az_wp_settings
 		if (!is_array($options)) return null;
 		if (!isset($options[$key])) return null;
 		return $options[$key];
-		throw new \Exception("Option '$key' not found in settings.");
 	}
-	public static function get_plugin_option_string(string $plugin_name, string $key): bool
+	public static function get_plugin_option_string(string $plugin_name, string $key)
 	{
 		return \strval(static::get_plugin_option($plugin_name, $key));
 	}
-	public static function get_plugin_option_boolean(string $plugin_name, string $key): bool
+	public static function get_plugin_option_boolean(string $plugin_name, string $key)
 	{
 		return \filter_var(static::get_plugin_option($plugin_name, $key), FILTER_VALIDATE_BOOLEAN);
 	}
 
-	public static function get_public_post_types()
-	{
-		return get_post_types(['public' => true], 'objects');
-	}
 	public static function op_name($arr)
 	{
 		return join('__', $arr);

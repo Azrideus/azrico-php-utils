@@ -353,4 +353,8 @@ trait az_wp_post
 		$anyOfRegex = preg_replace("/^\|/", '', $anyOfRegex);
 		return "($anyOfRegex)";
 	}
+	public static function get_public_post_types()
+	{
+		return get_post_types(['public' => true], 'objects');
+	}
 }

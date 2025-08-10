@@ -12,21 +12,23 @@ class plugin_object
 {
 	readonly string $plugin_name;
 	readonly string $plugin_name_slug;
+	readonly string $plugin_settings_slug;
 
 	public function __construct(string $plugin_name)
 	{
 		$this->plugin_name = $plugin_name;
 		$this->plugin_name_slug = az_string::slugify($this->plugin_name);
+		$this->plugin_settings_slug = $this->plugin_name_slug;
 	}
-	public  function get_plugin_option(string $key): mixed
+	public  function get_plugin_option(string $key)
 	{
 		return az_wp_settings::get_plugin_option($this->plugin_name, $key);
 	}
-	public  function get_plugin_option_string(string $key): bool
+	public  function get_plugin_option_string(string $key)
 	{
 		return az_wp_settings::get_plugin_option_string($this->plugin_name, $key);
 	}
-	public  function get_plugin_option_boolean(string $key): bool
+	public  function get_plugin_option_boolean(string $key)
 	{
 		return az_wp_settings::get_plugin_option_boolean($this->plugin_name, $key);
 	}
