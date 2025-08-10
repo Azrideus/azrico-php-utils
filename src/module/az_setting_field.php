@@ -5,10 +5,8 @@ namespace AzUtils\module;
 use AzUtils\az_view;
 use AzUtils\wp\az_wp_settings;
 
-class az_setting_field extends plugin_object
+class az_setting_field extends plugin_module_object
 {
-
-	readonly string $module_name;
 	readonly string $section_name;
 
 	readonly string $field_name;
@@ -21,8 +19,8 @@ class az_setting_field extends plugin_object
 		az_setting_section $section,
 		array $data
 	) {
-		parent::__construct($section->plugin_name);
-		$this->module_name = $section->module_name;
+		parent::__construct($section->plugin_name, $section->module_name);
+
 		$this->section_name = $section->name;
 
 		$this->field_name = $data['name'] ?? $data['field_name'];
@@ -43,7 +41,7 @@ class az_setting_field extends plugin_object
 			$this->field_name,
 			$this->title,
 			[$this, 'render_setting_field'],
-			$this->module_name,
+			$this->module_settings_page,
 			$this->section_name,
 			['field' => $this]
 		);

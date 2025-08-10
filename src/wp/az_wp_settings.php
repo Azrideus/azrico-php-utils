@@ -81,7 +81,9 @@ class az_wp_settings
 			$module->module_name,                  			// Menu title
 			'manage_options',             						// Capability
 			$module->module_name_slug,         					// Menu slug
-			[static::class, '__render_base_settings_page']      // Callback
+			function () use ($module) {
+				return az_wp_settings::__render_settings_page($module);
+			},
 		);
 
 		/* ------------------------------ MAIN SECTION ------------------------------ */
@@ -89,7 +91,7 @@ class az_wp_settings
 			$module->module_name_slug,
 			$module->plugin_name,
 			[static::class, '__section_description'],
-			$module->plugin_name_slug,
+			$module->module_settings_page,
 			['desc' => 'Settings for ' . $module->plugin_name]
 		);
 
@@ -122,8 +124,25 @@ class az_wp_settings
 			<h1><?php echo "This is the landing page for all az based wordpress plugins" ?></h1>
 			<h2><?php echo "to access other plugins use the menu and click on the plugin's name" ?></h2>
 		</div>
+	<?php
+	}
+	public static function __render_settings_page(az_module $module)
+	{
+	?>
+		<div class="wrap">
+			<h1><?php echo "Settings for " . $module->module_name ?></h1>
+			<form method="post" action="options.php">
+				<?php
+				settings_fields($module->module_name_slug);
+				do_settings_sections($module->module_name_slug);
+				submit_button();
+				?>
+			</form>
+		</div>
 <?php
 	}
+
+
 	public static function __sanitize_callback(az_module $module, array $input)
 	{
 		$sanitized = [];

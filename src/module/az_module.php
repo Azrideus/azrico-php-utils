@@ -5,25 +5,18 @@ namespace AzUtils\module;
 use AzUtils\wp\az_wp_settings;
 use AzUtils\az_string;
 
-abstract class az_module extends plugin_object
+abstract class az_module extends plugin_module_object
 {
 	private static $all_modules = [];
 	private static $action_registred = false;
-	readonly string $module_name;
-	readonly string $module_name_slug;
-	readonly string $setting_page_name;
-	readonly string $setting_name;
+
 	readonly string $settings_title;
 	readonly array $setting_fields;
 
 	public function __construct(string $plugin_name, string $module_name)
 	{
-		parent::__construct($plugin_name);
-		$this->module_name = $module_name;
+		parent::__construct($plugin_name, $module_name);
 		$this->settings_title = \ucfirst($plugin_name);
-		$this->module_name_slug = $this->plugin_name_slug . '__' . az_string::slugify($this->module_name);
-
-		$this->setting_name = \str_replace(' ', '_', strtolower($this->plugin_name . '_' . $this->module_name));
 		$this->setting_fields = [];
 	}
 	/* -------------------------------------------------------------------------- */
