@@ -30,9 +30,22 @@ class az_setting_section extends plugin_module_object
 		$this->before_section = "<div class='az-settings-section {$this->class}'>";
 		$this->after_section = '</div>';
 	}
-	public function getSettingFields()
+	public function get_fields()
 	{
 		return $this->fields;
+	}
+	public function push_field(az_setting_field $field)
+	{
+		/**
+		 * if field does not exist, add it to the section
+		 */
+		if (isset($this->fields[$field->field_name]))
+			return; // Field already exists
+		foreach ($this->fields as $f) {
+			if ($f->field_name === $field->field_name)
+				return; // Field already exists 
+		}
+		$this->fields[$field->field_name] = $field;
 	}
 	public function register()
 	{

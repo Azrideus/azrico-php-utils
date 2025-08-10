@@ -120,7 +120,7 @@ class az_wp_settings
 		foreach ($all_sections as $section) {
 			$section->register();
 			/* ----------------------------- Register Fields ---------------------------- */
-			$fields = $section->getSettingFields();
+			$fields = $section->get_fields();
 			foreach ($fields as $field) {
 				$field->register();
 			}

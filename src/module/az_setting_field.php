@@ -27,6 +27,7 @@ class az_setting_field extends plugin_module_object
 		$this->title = $data['title'] ?? '';
 		$this->label = $data['label'] ?? $this->title  ?? '';
 		$this->type = $data['type'] ?? 'text';
+		$section->push_field($this);
 	}
 	public function register()
 	{
