@@ -45,7 +45,7 @@ class az_setting_section extends plugin_module_object
 			$this->name,
 			$this->title,
 			[$this, 'section_description'],
-			$this->module_settings_page,
+			$this->module_settings_page_slug,
 			[
 				'class' => $this->class,
 				'before_section' => $this->before_section,

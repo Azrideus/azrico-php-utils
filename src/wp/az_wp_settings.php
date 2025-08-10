@@ -80,7 +80,7 @@ class az_wp_settings
 			$module->module_name,                  			// Page title
 			$module->module_name,                  			// Menu title
 			'manage_options',             						// Capability
-			$module->module_name_slug,         					// Menu slug
+			$module->module_settings_page_slug,         					// Menu slug
 			function () use ($module) {
 				return az_wp_settings::__render_settings_page($module);
 			},
@@ -90,9 +90,9 @@ class az_wp_settings
 		add_settings_section(
 			$module->module_name_slug,
 			$module->plugin_name,
-			[static::class, '__section_description'],
-			$module->module_settings_page,
-			['desc' => 'Settings for ' . $module->plugin_name]
+			[static::class, '__module_page_description'],
+			$module->module_settings_page_slug,
+			['module' => $module]
 		);
 
 		return true;
@@ -117,9 +117,19 @@ class az_wp_settings
 	}
 
 
+	public static function __module_page_description($args)
+	{
+		$module = $args['module'] ?? null;
+		if (!$module) return;
+?>
+		<div class="wrap">
+			<h1><?php echo "Settings for " . $module->module_name ?></h1>
+		</div>
+	<?php
+	}
 	public static function __render_base_settings_page()
 	{
-?>
+	?>
 		<div class="wrap">
 			<h1><?php echo "This is the landing page for all az based wordpress plugins" ?></h1>
 			<h2><?php echo "to access other plugins use the menu and click on the plugin's name" ?></h2>

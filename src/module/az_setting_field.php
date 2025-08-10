@@ -41,7 +41,7 @@ class az_setting_field extends plugin_module_object
 			$this->field_name,
 			$this->title,
 			[$this, 'render_setting_field'],
-			$this->module_settings_page,
+			$this->module_settings_page_slug,
 			$this->section_name,
 			['field' => $this]
 		);
