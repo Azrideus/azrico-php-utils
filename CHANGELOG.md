@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.122](https://github.com/Azrideus/azrico-php-utils/compare/v1.1.121...v1.1.122) (2025-08-10)
+
 ### [1.1.121](https://github.com/Azrideus/azrico-php-utils/compare/v1.1.120...v1.1.121) (2025-08-10)
 
 ### [1.1.120](https://github.com/Azrideus/azrico-php-utils/compare/v1.1.119...v1.1.120) (2025-08-10)
