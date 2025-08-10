@@ -4,6 +4,8 @@ namespace AzUtils\wp;
 
 use AzUtils\az_string;
 use AzUtils\module\az_module;
+use AzUtils\module\az_setting_section;
+use AzUtils\module\az_setting_field;
 
 /**
  * Extend this class to create a settings page for your plugin.
@@ -70,7 +72,7 @@ class az_wp_settings
 	 * Register a module settings page by adding it under the `az` settings
 	 * Each Module has its own settings page under the main `az` settings page.
 	 */
-	public static function register_module_settings(az_module $module)
+	public static function register_module_setting_pages(az_module $module)
 	{
 		$module = static::getModule($module);
 		static::register_plugin_settings($module);
@@ -85,26 +87,36 @@ class az_wp_settings
 				return az_wp_settings::__render_settings_page($module);
 			},
 		);
-
-		/* ------------------------------ MAIN SECTION ------------------------------ */
-		add_settings_section(
-			$module->module_name_slug,
-			$module->plugin_name,
-			[static::class, '__module_page_description'],
-			$module->module_settings_page_slug,
-			['module' => $module]
-		);
-
 		return true;
 	}
 	public static function register_module_setting_fields(az_module $module)
 	{
 		$count = 0;
 		$module = static::getModule($module);
+		/* ------------------------------ MAIN SECTION ------------------------------ */
+
+		$main_section = new az_setting_section($module, [
+			'name' => 'main_section',
+			'title' => 'Core Settings',
+			'desc' => '',
+			'class' => 'az-settings-main-section',
+		]);
+		$main_fields = [new az_setting_field(
+			$main_section,
+			[
+				'name' => $module->module_name_slug . '__enabled',
+				'title' => $module->module_name . 'Enabled',
+				'label' => $module->module_name . 'Enabled',
+				'type' => 'checkbox',
+			]
+		)];
+		$main_section->fields = $main_fields;
+
+
 		/* ---------------------------- Register Sections --------------------------- */
-		$other_sections = $module->getSettingSections();
-		if (empty($other_sections)) return 	$count;
-		foreach ($other_sections as $section) {
+		$all_sections = [$main_section, ...$module->getSettingSections()];
+		if (empty($all_sections)) return 	$count;
+		foreach ($all_sections as $section) {
 			$section->register();
 			/* ----------------------------- Register Fields ---------------------------- */
 			$fields = $section->getSettingFields();

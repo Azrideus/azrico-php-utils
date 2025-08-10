@@ -80,7 +80,7 @@ abstract class az_module extends plugin_module_object
 	public static function __init_settings()
 	{
 		foreach (static::$all_modules as $module)
-			az_wp_settings::register_module_settings($module);
+			az_wp_settings::register_module_setting_pages($module);
 	}
 	public static function __init_setting_fields()
 	{

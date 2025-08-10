@@ -12,7 +12,7 @@ class az_setting_section extends plugin_module_object
 	readonly string $class;
 	readonly string $before_section;
 	readonly string $after_section;
-	readonly array $fields;
+	public array $fields;
 	private bool $registered = false;
 
 
