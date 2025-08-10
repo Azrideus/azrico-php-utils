@@ -83,5 +83,8 @@ abstract class az_module extends plugin_object
 			$module->init();
 			az_wp_settings::register_module($module);
 		}
+		if (\WP_DEBUG_LOG) {
+			\error_log('Registered modules: ' . \implode(', ', \array_keys(static::$all_modules)));
+		}
 	}
 }

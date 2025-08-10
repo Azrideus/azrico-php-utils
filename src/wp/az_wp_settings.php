@@ -96,6 +96,10 @@ class az_wp_settings
 				$field->register();
 			}
 		}
+
+		if (\WP_DEBUG_LOG) {
+			\error_log('Registered module settings: ' . $module->module_name_slug);
+		}
 		return true;
 	}
 
