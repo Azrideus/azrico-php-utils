@@ -34,6 +34,10 @@ abstract class az_module extends plugin_module_object
 	{
 		$sections = $this->getSettingSections();
 		$fields = [];
+
+		if (empty($sections) || !\is_array($sections))
+			return $fields; // No sections, no fields 
+
 		foreach ($sections as $section) {
 			foreach ($section->get_fields() as $f) {
 				$fields[] = $f;
