@@ -25,14 +25,14 @@ abstract class az_module extends plugin_module_object
 	/** 
 	 * @return az_setting_section[]
 	 */
-	public abstract function getSettingSections();
+	public abstract function get_setting_sections();
 
 	/** 
 	 * @return az_setting_field[]
 	 */
-	public function getSettingFields()
+	public function get_setting_fields()
 	{
-		$sections = $this->getSettingSections();
+		$sections = $this->get_setting_sections();
 		$fields = [];
 
 		if (empty($sections) || !\is_array($sections))
@@ -45,14 +45,16 @@ abstract class az_module extends plugin_module_object
 		}
 		return $fields;
 	}
-	public function getSection(string $section_name): az_setting_section
+	public function get_section(string $section_name): az_setting_section|null
 	{
-		$sections = $this->getSettingSections();
+		$sections = $this->get_setting_sections();
+		if (empty($sections) || !\is_array($sections))
+			return null;
 		foreach ($sections as $section) {
 			if ($section->name === $section_name)
 				return $section;
 		}
-		throw new \Exception("Section {$section_name} not found in module {$this->module_name}");
+		return null; // Section not found
 	}
 
 	/* -------------------------------------------------------------------------- */

@@ -113,7 +113,7 @@ class az_wp_settings
 
 
 		/* ---------------------------- Register Sections --------------------------- */
-		$other_sections = $module->getSettingSections() ?? [];
+		$other_sections = $module->get_setting_sections() ?? [];
 		if (empty($other_sections)) return 	$count;
 		$all_sections = [$main_section, ...$other_sections];
 		foreach ($all_sections as $section) {
@@ -168,7 +168,7 @@ class az_wp_settings
 	public static function __sanitize_callback(az_module $module, array $input)
 	{
 		$sanitized = [];
-		$fields = $module->getSettingFields();
+		$fields = $module->get_setting_fields();
 		foreach ($fields as $field) {
 			$type = $field['type'];
 			$name = $field['name'];
