@@ -11,7 +11,7 @@ use AzUtils\module\az_module;
 class az_wp_settings
 {
 	private static $page_created = false;
-	private static $registred_pages = [];
+	private static $registred_modules = [];
 
 
 	public static function getSettingPageSlug(): string
@@ -21,10 +21,10 @@ class az_wp_settings
 	public static function getModule(string|az_module $s): az_module|null
 	{
 		if ($s instanceof az_module) {
-			static::$registred_pages[$s->plugin_name_slug] = $s;
+			static::$registred_modules[$s->module_name_slug] = $s;
 			return $s;
 		}
-		if (isset(static::$registred_pages[$s])) return static::$registred_pages[$s];
+		if (isset(static::$registred_modules[$s])) return static::$registred_modules[$s];
 		return null;
 	}
 
@@ -55,8 +55,8 @@ class az_wp_settings
 	 */
 	public static function register_module(az_module $module)
 	{
-		if (isset(static::$registred_pages[$module->plugin_name_slug])) {
-			throw new \Exception("Module with slug {$module->plugin_name_slug} is already registered.");
+		if (isset(static::$registred_modules[$module->module_name_slug])) {
+			throw new \Exception("Module with slug {$module->module_name_slug} is already registered.");
 		}
 		$module = static::getModule($module);
 
@@ -95,6 +95,7 @@ class az_wp_settings
 				$field->register();
 			}
 		}
+		return true;
 	}
 
 

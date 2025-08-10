@@ -5,11 +5,10 @@ namespace AzUtils\module;
 use AzUtils\wp\az_wp_settings;
 use AzUtils\az_string;
 
-abstract class az_module
+abstract class az_module extends plugin_object
 {
-	readonly string $plugin_name;
-	readonly string $plugin_name_slug;
 	readonly string $module_name;
+	readonly string $module_name_slug;
 	readonly string $setting_page_name;
 	readonly string $setting_name;
 	readonly string $settings_title;
@@ -17,11 +16,10 @@ abstract class az_module
 
 	public function __construct(string $plugin_name, string $module_name)
 	{
-		$this->plugin_name = $plugin_name;
+		parent::__construct($plugin_name);
 		$this->module_name = $module_name;
 		$this->settings_title = \ucfirst($plugin_name);
-
-		$this->plugin_name_slug = az_string::slugify($this->plugin_name);
+		$this->module_name_slug = $this->plugin_name_slug . '__' . az_string::slugify($this->module_name);
 		$this->setting_page_name = $this->plugin_name_slug . '_settings';
 		$this->setting_name = \str_replace(' ', '_', strtolower($this->plugin_name . '_' . $this->module_name));
 		$this->setting_fields = [];
@@ -64,11 +62,16 @@ abstract class az_module
 	 */
 	public static function register_modules(array $module_list)
 	{
+		$count = 0;
 		foreach ($module_list as $module) {
 			if ($module instanceof az_module) {
 				$module->init();
-				az_wp_settings::register_module($module);
+				if (az_wp_settings::register_module($module)) {
+
+					$count++;
+				}
 			}
 		}
+		return $count;
 	}
 }

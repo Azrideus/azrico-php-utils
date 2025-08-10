@@ -3,9 +3,8 @@
 namespace AzUtils\module;
 
 
-class az_setting_section
+class az_setting_section extends plugin_object
 {
-	readonly string $plugin_name;
 	readonly string $module_name;
 	readonly string $name;
 
@@ -20,8 +19,8 @@ class az_setting_section
 
 	public function __construct(az_module $module, array $data, array $fields = [])
 	{
+		parent::__construct($module->plugin_name);
 
-		$this->plugin_name = $module->plugin_name;
 		$this->module_name = $module->module_name;
 
 		$this->name = $data['name'] ?? $data['section_name'] ?? '';
