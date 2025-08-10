@@ -105,8 +105,8 @@ class az_wp_settings
 			$main_section,
 			[
 				'name' => $module->module_name_slug . '__enabled',
-				'title' => $module->module_name . 'Enabled',
-				'label' => $module->module_name . 'Enabled',
+				'title' => $module->module_name . ' Enabled',
+				'label' => $module->module_name . ' Enabled',
 				'type' => 'checkbox',
 			]
 		));
@@ -155,7 +155,7 @@ class az_wp_settings
 			<h1><?php echo "Settings for " . $module->module_name ?></h1>
 			<form method="post" action="options.php">
 				<?php
-				settings_fields($module->module_name_slug);
+				settings_fields($module->plugin_name_slug);
 				do_settings_sections($module->module_name_slug);
 				submit_button();
 				?>
