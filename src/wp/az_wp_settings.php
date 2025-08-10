@@ -13,6 +13,7 @@ class az_wp_settings
 {
 	private static $page_created = false;
 	private static $registred_modules = [];
+	private static $registred_plugins = [];
 
 
 	public static function getSettingPageSlug(): string
@@ -50,43 +51,48 @@ class az_wp_settings
 			'dashicons-admin-generic'
 		);
 	}
-
-	/** 
-	 * Register a module settings page by adding it under the `az` settings
-	 */
-	public static function register_module_settings(az_module $module)
+	public static function register_plugin_settings(az_module $module)
 	{
-		$module = static::getModule($module);
-		/* ---------------------- Add the Module Settings Page ---------------------- */
-		add_submenu_page(
-			static::getSettingPageSlug(),                		// Parent slug (must match top-level menu slug)
-			$module->module_name,                  			// Page title
-			$module->module_name,                  			// Menu title
-			'manage_options',             						// Capability
-			$module->plugin_name_slug,         					// Menu slug
-			[static::class, '__render_base_settings_page']      // Callback
-		);
+		if (isset(static::$registred_plugins[$module->plugin_name_slug])) {
+			return false; // Plugin already registered
+		}
 		register_setting(
-			$module->setting_page_name,
-			$module->setting_page_name,
+			$module->plugin_name_slug,
+			$module->plugin_name_slug,
 			[
 				'sanitize_callback' => function ($input) use ($module) {
 					return \AzUtils\wp\az_wp_settings::__sanitize_callback($module, (array) $input);
 				}
 			]
 		);
+	}
+	/** 
+	 * Register a module settings page by adding it under the `az` settings
+	 * Each Module has its own settings page under the main `az` settings page.
+	 */
+	public static function register_module_settings(az_module $module)
+	{
+		$module = static::getModule($module);
+		static::register_plugin_settings($module);
+		/* ---------------------- Add the Module Settings Page ---------------------- */
+		add_submenu_page(
+			static::getSettingPageSlug(),                		// Parent slug (must match top-level menu slug)
+			$module->module_name,                  			// Page title
+			$module->module_name,                  			// Menu title
+			'manage_options',             						// Capability
+			$module->module_name_slug,         					// Menu slug
+			[static::class, '__render_base_settings_page']      // Callback
+		);
+
+		/* ------------------------------ MAIN SECTION ------------------------------ */
 		add_settings_section(
-			$module->setting_page_name,
+			$module->module_name_slug,
 			$module->plugin_name,
 			[static::class, '__section_description'],
 			$module->plugin_name_slug,
 			['desc' => 'Settings for ' . $module->plugin_name]
 		);
 
-
-		if (\WP_DEBUG_LOG) {
-			\error_log('Registered module settings: ' . $module->module_name_slug);
-		}
 		return true;
 	}
 	public static function register_module_setting_fields(az_module $module)
