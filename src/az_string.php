@@ -235,4 +235,9 @@ class az_string
 		}
 		return $haysack;
 	}
+
+	static function slugify(string $s1): string
+	{
+		return preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($s1)));
+	}
 }
