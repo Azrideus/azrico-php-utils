@@ -35,7 +35,7 @@ abstract class az_module extends plugin_module_object
 		$sections = $this->getSettingSections();
 		$fields = [];
 		foreach ($sections as $section) {
-			foreach ($section->fields as $f) {
+			foreach ($section->get_fields() as $f) {
 				$fields[] = $f;
 			}
 		}
