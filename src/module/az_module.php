@@ -7,6 +7,8 @@ use AzUtils\az_string;
 
 abstract class az_module extends plugin_object
 {
+	private static $all_modules = [];
+	private static $action_registred = false;
 	readonly string $module_name;
 	readonly string $module_name_slug;
 	readonly string $setting_page_name;
@@ -62,16 +64,24 @@ abstract class az_module extends plugin_object
 	 */
 	public static function register_modules(array $module_list)
 	{
-		$count = 0;
-		foreach ($module_list as $module) {
-			if ($module instanceof az_module) {
-				$module->init();
-				if (az_wp_settings::register_module($module)) {
+		foreach ($module_list as $module)
+			if ($module instanceof az_module)
+				static::$all_modules[$module->module_name_slug] = $module;
 
-					$count++;
-				}
+		if (!static::$action_registred) {
+			if (\did_action('init')) {
+				static::__init_modules();
+			} else {
+				add_action('init', [static::class, '__init_modules'], 999);
 			}
+			static::$action_registred = true;
 		}
-		return $count;
+	}
+	public static function __init_modules()
+	{
+		foreach (static::$all_modules as $module) {
+			$module->init();
+			az_wp_settings::register_module($module);
+		}
 	}
 }
