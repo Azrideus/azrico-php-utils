@@ -101,7 +101,7 @@ class az_wp_settings
 			'desc' => '',
 			'class' => 'az-settings-main-section',
 		]);
-		$main_fields = [new az_setting_field(
+		$main_section->push_field(new az_setting_field(
 			$main_section,
 			[
 				'name' => $module->module_name_slug . '__enabled',
@@ -109,8 +109,7 @@ class az_wp_settings
 				'label' => $module->module_name . 'Enabled',
 				'type' => 'checkbox',
 			]
-		)];
-		$main_section->fields = $main_fields;
+		));
 
 
 		/* ---------------------------- Register Sections --------------------------- */
