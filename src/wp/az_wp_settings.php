@@ -54,13 +54,9 @@ class az_wp_settings
 	/** 
 	 * Register a module settings page by adding it under the `az` settings
 	 */
-	public static function register_module(az_module $module)
+	public static function register_module_settings(az_module $module)
 	{
-		if (isset(static::$registred_modules[$module->module_name_slug])) {
-			throw new \Exception("Module with slug {$module->module_name_slug} is already registered.");
-		}
 		$module = static::getModule($module);
-
 		/* ---------------------- Add the Module Settings Page ---------------------- */
 		add_submenu_page(
 			static::getSettingPageSlug(),                		// Parent slug (must match top-level menu slug)
@@ -86,6 +82,16 @@ class az_wp_settings
 			$module->plugin_name_slug,
 			['desc' => 'Settings for ' . $module->plugin_name]
 		);
+
+
+		if (\WP_DEBUG_LOG) {
+			\error_log('Registered module settings: ' . $module->module_name_slug);
+		}
+		return true;
+	}
+	public static function register_module_setting_fields(az_module $module)
+	{
+		$module = static::getModule($module);
 		/* ---------------------------- Register Sections --------------------------- */
 		$other_sections = $module->getSettingSections();
 		foreach ($other_sections as $section) {
@@ -96,11 +102,6 @@ class az_wp_settings
 				$field->register();
 			}
 		}
-
-		if (\WP_DEBUG_LOG) {
-			\error_log('Registered module settings: ' . $module->module_name_slug);
-		}
-		return true;
 	}
 
 

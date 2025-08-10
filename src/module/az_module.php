@@ -79,12 +79,19 @@ abstract class az_module extends plugin_object
 	}
 	public static function __init_modules()
 	{
-		foreach (static::$all_modules as $module) {
+		add_action('admin_menu', [static::class, '__init_settings']);
+		add_action('admin_init', [static::class, '__init_setting_fields']);
+		foreach (static::$all_modules as $module)
 			$module->init();
-			az_wp_settings::register_module($module);
-		}
-		if (\WP_DEBUG_LOG) {
-			\error_log('Registered modules: ' . \implode(', ', \array_keys(static::$all_modules)));
-		}
+	}
+	public static function __init_settings()
+	{
+		foreach (static::$all_modules as $module)
+			az_wp_settings::register_module_settings($module);
+	}
+	public static function __init_setting_fields()
+	{
+		foreach (static::$all_modules as $module)
+			az_wp_settings::register_module_setting_fields($module);
 	}
 }
