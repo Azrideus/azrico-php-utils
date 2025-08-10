@@ -60,8 +60,8 @@ class az_wp_settings
 		/* ---------------------- Add the Module Settings Page ---------------------- */
 		add_submenu_page(
 			static::getSettingPageSlug(),                		// Parent slug (must match top-level menu slug)
-			$module->settings_title,                  			// Page title
-			$module->settings_title,                  			// Menu title
+			$module->module_name,                  			// Page title
+			$module->module_name,                  			// Menu title
 			'manage_options',             						// Capability
 			$module->plugin_name_slug,         					// Menu slug
 			[static::class, '__render_base_settings_page']      // Callback
@@ -91,9 +91,11 @@ class az_wp_settings
 	}
 	public static function register_module_setting_fields(az_module $module)
 	{
+		$count = 0;
 		$module = static::getModule($module);
 		/* ---------------------------- Register Sections --------------------------- */
 		$other_sections = $module->getSettingSections();
+		if (empty($other_sections)) return 	$count;
 		foreach ($other_sections as $section) {
 			$section->register();
 			/* ----------------------------- Register Fields ---------------------------- */
@@ -101,7 +103,9 @@ class az_wp_settings
 			foreach ($fields as $field) {
 				$field->register();
 			}
+			$count++;
 		}
+		return $count;
 	}
 
 
