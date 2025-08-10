@@ -114,8 +114,9 @@ class az_wp_settings
 
 
 		/* ---------------------------- Register Sections --------------------------- */
-		$all_sections = [$main_section, ...$module->getSettingSections()];
-		if (empty($all_sections)) return 	$count;
+		$other_sections = $module->getSettingSections() ?? [];
+		if (empty($other_sections)) return 	$count;
+		$all_sections = [$main_section, ...$other_sections];
 		foreach ($all_sections as $section) {
 			$section->register();
 			/* ----------------------------- Register Fields ---------------------------- */
