@@ -33,6 +33,21 @@ abstract class az_module
 	 * @return az_setting_section[]
 	 */
 	public abstract function getSettingSections();
+
+	/** 
+	 * @return az_setting_field[]
+	 */
+	public function getSettingFields()
+	{
+		$sections = $this->getSettingSections();
+		$fields = [];
+		foreach ($sections as $section) {
+			foreach ($section->fields as $f) {
+				$fields[] = $f;
+			}
+		}
+		return $fields;
+	}
 	public function getSection(string $section_name): az_setting_section
 	{
 		$sections = $this->getSettingSections();

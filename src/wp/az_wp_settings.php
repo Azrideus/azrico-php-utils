@@ -2,11 +2,7 @@
 
 namespace AzUtils\wp;
 
-use AzUtils\az_module;
-use AzUtils\az_setting_field;
-use AzUtils\az_string;
-use AzUtils\az_view;
-
+use AzUtils\module\az_module;
 
 /**
  * Extend this class to create a settings page for your plugin.
@@ -76,7 +72,11 @@ class az_wp_settings
 		register_setting(
 			$module->setting_page_name,
 			$module->setting_page_name,
-			[static::class, '__sanitize_callback']
+			[
+				'sanitize_callback' => function ($input) use ($module) {
+					return \AzUtils\wp\az_wp_settings::__sanitize_callback($module, (array) $input);
+				}
+			]
 		);
 		add_settings_section(
 			$module->setting_page_name,
@@ -107,10 +107,10 @@ class az_wp_settings
 		</div>
 <?php
 	}
-	public static function __sanitize_callback(array $input)
+	public static function __sanitize_callback(az_module $module, array $input)
 	{
 		$sanitized = [];
-		$fields = static::getSettingFields();
+		$fields = $module->getSettingFields();
 		foreach ($fields as $field) {
 			$type = $field['type'];
 			$name = $field['name'];
