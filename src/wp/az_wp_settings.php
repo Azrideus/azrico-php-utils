@@ -170,8 +170,8 @@ class az_wp_settings
 		$sanitized = [];
 		$fields = $module->get_setting_fields();
 		foreach ($fields as $field) {
-			$type = $field['type'];
-			$name = $field['name'];
+			$type = $field->type;
+			$name = $field->field_name;
 			switch ($type) {
 				case 'text':
 					$sanitized[$name] = sanitize_text_field($input[$name] ?? '');
