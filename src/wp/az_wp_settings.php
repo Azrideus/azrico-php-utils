@@ -15,6 +15,7 @@ class az_wp_settings
 {
 	private static $page_created = false;
 	private static $registred_modules = [];
+	private static $registred_plugins = [];
 
 
 	public static function getSettingPageSlug(): string
@@ -53,6 +54,24 @@ class az_wp_settings
 		);
 	}
 
+	public static function register_plugin_settings(az_module $module)
+	{
+		$plugin_name = $module->plugin_name_slug;
+		if (isset(static::$registred_plugins[$plugin_name]))
+			return false; // Plugin already registered
+		static::$registred_plugins[$plugin_name] = $plugin_name;
+
+		/* -------------------------- register the setting -------------------------- */
+		register_setting(
+			$module->plugin_settings_slug,  // Group Name
+			$module->plugin_settings_slug,	// Option Name (plugin slug)
+			[
+				'sanitize_callback' => [static::class, '__sanitize_callback'],
+				'args' => ['plugin_name' => $module->plugin_settings_slug]
+			]
+		);
+		return true;
+	}
 	/** 
 	 * Register a module settings page by adding it under the `az` settings
 	 * Each Module has its own settings page under the main `az` settings page.
@@ -60,6 +79,7 @@ class az_wp_settings
 	public static function register_module_settings(az_module $module)
 	{
 		$module = static::getModule($module);
+
 
 		/* ---------------------- Add the Module Settings Page ---------------------- */
 		add_submenu_page(
@@ -111,7 +131,17 @@ class az_wp_settings
 		return $count;
 	}
 
-
+	public function __sanitize_callback($input, $option)
+	{
+		if (!is_array($input))
+			$input = [];
+		$plugin_name = $option->args['plugin_name'] ?? '';
+		if (!$plugin_name) {
+			error_log("No plugin name provided for sanitization");
+			return $input;
+		}
+		return null;
+	}
 	public static function __module_page_description($args)
 	{
 		$module = $args['module'] ?? null;

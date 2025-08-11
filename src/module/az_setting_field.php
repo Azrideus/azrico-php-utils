@@ -36,15 +36,6 @@ class az_setting_field extends plugin_module_object
 		if ($this->registered)
 			throw new \Exception("Field {$this->plugin_name}->{$this->module_name}->{$this->section_name}->{$this->field_name} is already registered.");
 		$this->registered = true;
-
-		/* -------------------------- register the setting -------------------------- */
-		register_setting(
-			$this->module_settings_group_slug,  // Group Name
-			$this->field_name,			 		// Option Name (plugin slug)
-			[
-				'sanitize_callback' => [$this, '__sanitize_callback'],
-			]
-		);
 		/* --------------------------- register the field --------------------------- */
 		add_settings_field(
 			$this->field_name,
@@ -66,7 +57,7 @@ class az_setting_field extends plugin_module_object
 		return  $this->get_plugin_option($this->field_name);
 	}
 
-	public function __sanitize_callback($input)
+	public function sanitize($input)
 	{
 		switch ($this->type) {
 			case 'text':
