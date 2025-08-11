@@ -57,6 +57,7 @@ abstract class az_module extends plugin_module_object
 		return null; // Section not found
 	}
 
+
 	/* -------------------------------------------------------------------------- */
 	/**
 	 * Register a list of modules that implement the az_module interface. 

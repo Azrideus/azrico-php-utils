@@ -67,7 +67,6 @@ class az_wp_settings
 			$module->plugin_settings_slug,	// Option Name (plugin slug)
 			[
 				'sanitize_callback' => [static::class, '__sanitize_callback'],
-				'args' => ['plugin_name' => $module->plugin_settings_slug]
 			]
 		);
 		return true;
@@ -80,7 +79,7 @@ class az_wp_settings
 	{
 		$module = static::getModule($module);
 
-
+		static::register_plugin_settings($module);
 		/* ---------------------- Add the Module Settings Page ---------------------- */
 		add_submenu_page(
 			static::getSettingPageSlug(),       // Parent slug (must match top-level menu slug)
@@ -131,16 +130,27 @@ class az_wp_settings
 		return $count;
 	}
 
-	public function __sanitize_callback($input, $option)
+	public static function __sanitize_callback($input)
 	{
+		$all_modules = static::$registred_modules;
+		$all_fields = array_map(function ($module) {
+			return $module->get_setting_fields();
+		}, $all_modules);
+		$all_fields = array_merge(...\array_values($all_fields));
+
 		if (!is_array($input))
 			$input = [];
-		$plugin_name = $option->args['plugin_name'] ?? '';
-		if (!$plugin_name) {
-			error_log("No plugin name provided for sanitization");
-			return $input;
+
+		$output = [];
+		foreach ($input as $key => $value) {
+			$field = $all_fields[$key] ?? null;
+			if (empty($field) || !($field instanceof az_setting_field)) continue;
+			$output[$key] = $field->sanitize($input[$key] ?? null);
 		}
-		return null;
+		error_log("input = " . print_r($input, true));
+		error_log("output = " . print_r($output, true));
+
+		return $output;
 	}
 	public static function __module_page_description($args)
 	{
@@ -163,14 +173,12 @@ class az_wp_settings
 	}
 	public static function __render_settings_page(az_module $module)
 	{
-
-
 	?>
 		<div class="wrap">
 			<h1><?php echo "Settings for " . $module->module_name ?></h1>
 			<form method="post" action="options.php">
 				<?php
-				settings_fields($module->module_settings_group_slug); 	// GROUP for this page
+				settings_fields($module->plugin_settings_slug); 	// GROUP for this page
 				do_settings_sections($module->module_settings_page_slug);  // PAGE slug for this page
 				submit_button();
 				?>
@@ -181,7 +189,19 @@ class az_wp_settings
 
 	public static function get_plugin_option(string $plugin_name, string $key): mixed
 	{
-		return get_option(static::op_name([$plugin_name, $key]));
+		$ops = get_option(az_string::slugify($plugin_name), []);
+		if (empty($ops))
+			return null; 		// No options set 
+
+		if (isset($ops[$key]))
+			return $ops[$key]; 	// Empty string is not a valid option
+
+		$key = az_string::slugify($key);
+
+		if (isset($ops[$key]))
+			return $ops[$key]; // Empty string is not a valid option
+
+		return $ops[$key] ?? null;
 	}
 	public static function get_plugin_option_string(string $plugin_name, string $key)
 	{
@@ -190,13 +210,5 @@ class az_wp_settings
 	public static function get_plugin_option_boolean(string $plugin_name, string $key)
 	{
 		return \filter_var(static::get_plugin_option($plugin_name, $key), FILTER_VALIDATE_BOOLEAN);
-	}
-
-	public static function op_name($arr)
-	{
-		foreach ($arr as $key => $value) {
-			$arr[$key] = az_string::slugify($value);
-		}
-		return join('__', $arr);
 	}
 }

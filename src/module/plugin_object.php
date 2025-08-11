@@ -22,7 +22,11 @@ class plugin_object
 	}
 	public  function get_plugin_option(string $key)
 	{
-		return az_wp_settings::get_plugin_option($this->plugin_name, $key);
+		$options = get_option($this->plugin_settings_slug, []);
+		if (isset($options[$key]))
+			return $options[$key];
+
+		return null;
 	}
 	public  function get_plugin_option_string(string $key)
 	{

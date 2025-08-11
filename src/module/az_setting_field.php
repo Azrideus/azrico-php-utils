@@ -2,6 +2,7 @@
 
 namespace AzUtils\module;
 
+use AzUtils\az_string;
 use AzUtils\az_view;
 use AzUtils\wp\az_wp_settings;
 
@@ -22,7 +23,7 @@ class az_setting_field extends plugin_module_object
 		parent::__construct($section->plugin_name, $section->module_name);
 
 		$this->section_name = $section->name;
-		$this->field_name = az_wp_settings::op_name([$this->plugin_name_slug, ($data['name'] ?? $data['field_name'])]);
+		$this->field_name = az_string::slugify($data['name'] ?? $data['field_name']);
 
 		$this->title = $data['title'] ?? '';
 		$this->label = $data['label'] ?? $this->title  ?? '';
@@ -69,22 +70,22 @@ class az_setting_field extends plugin_module_object
 	}
 	public function render_setting_field()
 	{
+		error_log("Value of field: {$this->field_name}: ");
+		error_log(print_r($this->getValue(), true));
 		switch ($this->type) {
 			case 'text':
 				az_view::esc_attr_printf(
-					'<input type="text" name="%s" data-section="%s" value="%s" class="regular-text">',
+					'<input type="text" name="%s[%s]" data-section="%s" value="%s" class="regular-text">',
+					($this->plugin_settings_slug),
 					($this->field_name),
 					($this->section_name),
-					($this->getValue()),
+					($this->getValue())
 				);
 				break;
 			case 'checkbox':
 				az_view::esc_attr_printf(
-					'<input type="hidden" name="%s" value="0">',
-					($this->field_name),
-				);
-				az_view::esc_attr_printf(
-					'<label><input type="checkbox" name="%s" data-section="%s" value="1" %s> Enable %s</label>',
+					'<label><input type="checkbox" name="%s[%s]" data-section="%s" value="1" %s> Enable %s</label>',
+					($this->plugin_settings_slug),
 					($this->field_name),
 					($this->section_name),
 					checked($this->getValue(), true, false),
