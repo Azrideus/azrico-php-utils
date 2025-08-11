@@ -90,7 +90,7 @@ class az_wp_settings
 		$main_section->push_field(new az_setting_field(
 			$main_section,
 			[
-				'name' => $module->module_name_slug . '__enabled',
+				'name' => 'enabled',
 				'title' => $module->module_name . ' Enabled',
 				'label' => $module->module_name . ' Enabled',
 				'type' => 'checkbox',
@@ -98,7 +98,6 @@ class az_wp_settings
 		));
 		/* ---------------------------- Register Sections --------------------------- */
 		$other_sections = $module->get_setting_sections() ?? [];
-		if (empty($other_sections)) return 	$count;
 		$all_sections = [$main_section, ...$other_sections];
 		foreach ($all_sections as $section) {
 			$section->register();
@@ -152,10 +151,7 @@ class az_wp_settings
 
 	public static function get_plugin_option(string $plugin_name, string $key): mixed
 	{
-		$options = get_option(az_string::slugify($plugin_name));
-		if (!is_array($options)) return null;
-		if (!isset($options[$key])) return null;
-		return $options[$key];
+		return get_option(static::op_name([$plugin_name, $key]));
 	}
 	public static function get_plugin_option_string(string $plugin_name, string $key)
 	{
@@ -168,6 +164,9 @@ class az_wp_settings
 
 	public static function op_name($arr)
 	{
+		foreach ($arr as $key => $value) {
+			$arr[$key] = az_string::slugify($value);
+		}
 		return join('__', $arr);
 	}
 }
