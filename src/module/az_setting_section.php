@@ -40,7 +40,7 @@ class az_setting_section extends plugin_module_object
 	/** 
 	 * @return az_setting_field[]
 	 */
-	public function push_field(az_setting_field $field)
+	public function add_field(az_setting_field $field)
 	{
 		/**
 		 * if field does not exist, add it to the section

@@ -26,7 +26,7 @@ abstract class az_module extends plugin_module_object
 			'desc' => '',
 			'class' => 'az-settings-main-section',
 		]);
-		$main_section->push_field(new az_setting_field(
+		$main_section->add_field(new az_setting_field(
 			$main_section,
 			[
 				'name' => $this->module_name_slug . '__enabled',
@@ -44,9 +44,14 @@ abstract class az_module extends plugin_module_object
 	/** 
 	 * @return az_setting_section[]
 	 */
-	public function add_section(az_setting_section $s)
+	public function add_section(az_setting_section|array $sections_to_add)
 	{
-		$this->setting_sections[$s->name] = $s;
+		if (\is_array($sections_to_add)) {
+			foreach ($sections_to_add as $s)
+				$this->add_section($s);
+			return $this->get_setting_sections();
+		}
+		$this->setting_sections[$sections_to_add->name] = $sections_to_add;
 		return $this->get_setting_sections();
 	}
 
