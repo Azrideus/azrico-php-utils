@@ -78,8 +78,8 @@ abstract class az_module extends plugin_module_object
 	}
 	public static function __init_modules()
 	{
-		add_action('admin_menu', [static::class, '__init_settings']);
-		add_action('admin_init', [static::class, '__init_setting_fields']);
+		add_action('admin_menu', [static::class, '__init_settings'], 100);
+		add_action('admin_init', [static::class, '__init_setting_fields'], 100);
 		foreach (static::$all_modules as $module)
 			$module->init();
 	}

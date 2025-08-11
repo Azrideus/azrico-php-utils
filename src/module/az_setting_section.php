@@ -72,6 +72,7 @@ class az_setting_section extends plugin_module_object
 				'after_section' => $this->after_section
 			]
 		);
+		$this->registered = true;
 	}
 	public function section_description()
 	{

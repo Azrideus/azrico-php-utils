@@ -22,11 +22,11 @@ class az_setting_field extends plugin_module_object
 		parent::__construct($section->plugin_name, $section->module_name);
 
 		$this->section_name = $section->name;
-		$this->field_name = $this->plugin_name_slug . '__' . ($data['name'] ?? $data['field_name']);
+		$this->field_name = az_wp_settings::op_name([$this->plugin_name_slug, ($data['name'] ?? $data['field_name'])]);
 
 		$this->title = $data['title'] ?? '';
 		$this->label = $data['label'] ?? $this->title  ?? '';
-		$this->type = $data['type'] ?? 'text';
+		$this->type = $this->getInputType($data['type'] ?? 'text');
 		$section->push_field($this);
 	}
 	public function register()
@@ -39,8 +39,8 @@ class az_setting_field extends plugin_module_object
 
 		/* -------------------------- register the setting -------------------------- */
 		register_setting(
-			$this->module_settings_group_slug, // Group Name
-			$this->field_name,			 // Option Name (plugin slug)
+			$this->module_settings_group_slug,  // Group Name
+			$this->field_name,			 		// Option Name (plugin slug)
 			[
 				'sanitize_callback' => [$this, '__sanitize_callback'],
 			]
@@ -57,15 +57,22 @@ class az_setting_field extends plugin_module_object
 	}
 	public function getValue()
 	{
-		return az_wp_settings::get_plugin_option($this->plugin_name, $this->field_name);
+		switch ($this->type) {
+			case 'text':
+				return $this->get_plugin_option_string($this->field_name);
+			case 'checkbox':
+				return $this->get_plugin_option_boolean($this->field_name);
+		}
+		return  $this->get_plugin_option($this->field_name);
 	}
+
 	public function __sanitize_callback($input)
 	{
 		switch ($this->type) {
 			case 'text':
 				return sanitize_text_field($input ?? '');
 			case 'checkbox':
-				return !empty($input) ? 1 : 0;
+				return empty($input) ?  0 : 1;
 		}
 		return null;
 	}
@@ -82,13 +89,30 @@ class az_setting_field extends plugin_module_object
 				break;
 			case 'checkbox':
 				az_view::esc_attr_printf(
+					'<input type="hidden" name="%s" value="0">',
+					($this->field_name),
+				);
+				az_view::esc_attr_printf(
 					'<label><input type="checkbox" name="%s" data-section="%s" value="1" %s> Enable %s</label>',
 					($this->field_name),
 					($this->section_name),
-					checked($this->getValue(), 1, false),
+					checked($this->getValue(), true, false),
 					($this->label)
 				);
 				break;
 		}
+	}
+
+	public function getInputType($from)
+	{
+		switch ($from) {
+			case 'text':
+			case 'string':
+				return 'text';
+			case 'boolean':
+			case 'checkbox':
+				return 'checkbox';
+		}
+		return $from; // Default to the type defined
 	}
 }
