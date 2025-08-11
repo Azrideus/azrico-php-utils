@@ -17,6 +17,7 @@ trait az_wp_plugin
 	];
 	static $admin_folders = ['admin', 'backend'];
 	static $shared_folders = ['shared'];
+	static $default_js_deps = ['jquery'];
 
 
 	static function get_plugin_version(
@@ -140,6 +141,7 @@ trait az_wp_plugin
 		/* -------------------------------------------------------------------------- */
 		$css_files = az_assets::get_files_in($file_path, '.js');
 		$loaded_files = [];
+		$final_deps = array_merge($deps, static::$default_js_deps);
 		foreach ($css_files as $file) {
 			$file_name = basename($file);
 			$js_name = "$js_prefix-$file_name";
@@ -147,7 +149,7 @@ trait az_wp_plugin
 			wp_enqueue_script(
 				$js_name,
 				az_string::join_url($file_url, $file_name),
-				$deps,
+				$final_deps,
 				$version
 			);
 		}
