@@ -70,8 +70,6 @@ class az_setting_field extends plugin_module_object
 	}
 	public function render_setting_field()
 	{
-		error_log("Value of field: {$this->field_name}: ");
-		error_log(print_r($this->getValue(), true));
 		switch ($this->type) {
 			case 'text':
 				az_view::esc_attr_printf(

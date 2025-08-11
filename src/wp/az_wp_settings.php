@@ -132,24 +132,22 @@ class az_wp_settings
 
 	public static function __sanitize_callback($input)
 	{
-		$all_modules = static::$registred_modules;
-		$all_fields = array_map(function ($module) {
-			return $module->get_setting_fields();
-		}, $all_modules);
-		$all_fields = array_merge(...\array_values($all_fields));
-
 		if (!is_array($input))
 			$input = [];
 
 		$output = [];
-		foreach ($input as $key => $value) {
-			$field = $all_fields[$key] ?? null;
-			if (empty($field) || !($field instanceof az_setting_field)) continue;
-			$output[$key] = $field->sanitize($input[$key] ?? null);
+		$all_modules = static::$registred_modules;
+		foreach ($all_modules as $m) {
+			$fields = $m->get_setting_fields();
+			foreach ($fields as $key => $f) {
+				if (!isset($input[$key])) {
+					/* -------------- Value is not changed, use the existing value -------------- */
+					$output[$key] = $m->get_plugin_option($key);
+				} else {
+					$output[$key] = $f->sanitize($input[$key] ?? null);
+				}
+			}
 		}
-		error_log("input = " . print_r($input, true));
-		error_log("output = " . print_r($output, true));
-
 		return $output;
 	}
 	public static function __module_page_description($args)
