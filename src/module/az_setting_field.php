@@ -22,8 +22,8 @@ class az_setting_field extends plugin_module_object
 		parent::__construct($section->plugin_name, $section->module_name);
 
 		$this->section_name = $section->name;
+		$this->field_name = $this->plugin_name_slug . '__' . ($data['name'] ?? $data['field_name']);
 
-		$this->field_name = $data['name'] ?? $data['field_name'];
 		$this->title = $data['title'] ?? '';
 		$this->label = $data['label'] ?? $this->title  ?? '';
 		$this->type = $data['type'] ?? 'text';
@@ -35,9 +35,17 @@ class az_setting_field extends plugin_module_object
 			throw new \Exception("Field data must be set before registration.");
 		if ($this->registered)
 			throw new \Exception("Field {$this->plugin_name}->{$this->module_name}->{$this->section_name}->{$this->field_name} is already registered.");
-
-
 		$this->registered = true;
+
+		/* -------------------------- register the setting -------------------------- */
+		register_setting(
+			$this->module_settings_group_slug, // Group Name
+			$this->field_name,			 // Option Name (plugin slug)
+			[
+				'sanitize_callback' => [$this, '__sanitize_callback'],
+			]
+		);
+		/* --------------------------- register the field --------------------------- */
 		add_settings_field(
 			$this->field_name,
 			$this->title,
@@ -51,26 +59,33 @@ class az_setting_field extends plugin_module_object
 	{
 		return az_wp_settings::get_plugin_option($this->plugin_name, $this->field_name);
 	}
+	public function __sanitize_callback($input)
+	{
+		switch ($this->type) {
+			case 'text':
+				return sanitize_text_field($input ?? '');
+			case 'checkbox':
+				return !empty($input) ? 1 : 0;
+		}
+		return null;
+	}
 	public function render_setting_field()
 	{
 		switch ($this->type) {
 			case 'text':
 				az_view::esc_attr_printf(
-					'<input type="text" name="%1$s[%2$s]" value="%3$s" data-section="%4$s" class="regular-text">',
-					($this->plugin_name),
+					'<input type="text" name="%s" data-section="%s" value="%s" class="regular-text">',
 					($this->field_name),
-					($this->getValue()),
 					($this->section_name),
-					($this->label)
+					($this->getValue()),
 				);
 				break;
 			case 'checkbox':
 				az_view::esc_attr_printf(
-					'<label><input type="checkbox" name="%1$s[%2$s]" data-section="%4$s" value="1" %3$s> Enable %2$s</label>',
-					($this->plugin_name),
+					'<label><input type="checkbox" name="%s" data-section="%s" value="1" %s> Enable %s</label>',
 					($this->field_name),
-					checked($this->getValue(), 1, false),
 					($this->section_name),
+					checked($this->getValue(), 1, false),
 					($this->label)
 				);
 				break;

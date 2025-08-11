@@ -40,7 +40,7 @@ abstract class az_module extends plugin_module_object
 
 		foreach ($sections as $section) {
 			foreach ($section->get_fields() as $f) {
-				$fields[] = $f;
+				$fields[$f->field_name] = $f;
 			}
 		}
 		return $fields;
