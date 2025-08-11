@@ -90,7 +90,7 @@ class az_wp_settings
 		$main_section->push_field(new az_setting_field(
 			$main_section,
 			[
-				'name' => 'enabled',
+				'name' => $module->module_name_slug . '__enabled',
 				'title' => $module->module_name . ' Enabled',
 				'label' => $module->module_name . ' Enabled',
 				'type' => 'checkbox',
