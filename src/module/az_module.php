@@ -54,7 +54,14 @@ abstract class az_module extends plugin_module_object
 			if ($section->name === $section_name)
 				return $section;
 		}
-		return null; // Section not found
+		return null;
+	}
+	/**
+	 * Check if the module is enabled. 
+	 */
+	public function is_enabled()
+	{
+		return $this->get_plugin_option_boolean($this->module_name_slug . '__enabled', true);
 	}
 
 
