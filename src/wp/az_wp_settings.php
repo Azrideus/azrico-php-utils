@@ -99,25 +99,10 @@ class az_wp_settings
 		$module = static::getModule($module);
 
 
-		/* ------------------------------ MAIN SECTION ------------------------------ */
-		$main_section = new az_setting_section($module, [
-			'name' => 'main_section',
-			'title' => 'Core Settings',
-			'desc' => '',
-			'class' => 'az-settings-main-section',
-		]);
-		$main_section->push_field(new az_setting_field(
-			$main_section,
-			[
-				'name' => $module->module_name_slug . '__enabled',
-				'title' => $module->module_name . ' Enabled',
-				'label' => $module->module_name . ' Enabled',
-				'type' => 'boolean',
-			]
-		));
+
 		/* ---------------------------- Register Sections --------------------------- */
 		$other_sections = $module->get_setting_sections() ?? [];
-		$all_sections = [$main_section, ...$other_sections];
+		$all_sections = [...$other_sections];
 		foreach ($all_sections as $section) {
 			$section->register();
 			/* ----------------------------- Register Fields ---------------------------- */

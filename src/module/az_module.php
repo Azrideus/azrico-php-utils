@@ -11,22 +11,52 @@ abstract class az_module extends plugin_module_object
 	private static $action_registred = false;
 
 	readonly string $settings_title;
-	readonly array $setting_fields;
+	private array $setting_sections;
 
 	public function __construct(string $plugin_name, string $module_name)
 	{
 		parent::__construct($plugin_name, $module_name);
 		$this->settings_title = \ucfirst($plugin_name);
-		$this->setting_fields = [];
+		$this->setting_sections = [];
+
+		/* ------------------------------ MAIN SECTION ------------------------------ */
+		$main_section = new az_setting_section($this, [
+			'name' => 'main_section',
+			'title' => 'Core Settings',
+			'desc' => '',
+			'class' => 'az-settings-main-section',
+		]);
+		$main_section->push_field(new az_setting_field(
+			$main_section,
+			[
+				'name' => $this->module_name_slug . '__enabled',
+				'title' => $this->module_name . ' Enabled',
+				'label' => $this->module_name . ' Enabled',
+				'type' => 'boolean',
+			]
+		));
+		$this->setting_sections[] = $main_section;
 	}
 	/* -------------------------------------------------------------------------- */
 
 	public abstract function init();
+
 	/** 
 	 * @return az_setting_section[]
 	 */
-	public abstract function get_setting_sections();
+	public function add_section(az_setting_section $s)
+	{
+		$this->setting_sections[$s->name] = $s;
+		return $this->get_setting_sections();
+	}
 
+	/** 
+	 * @return az_setting_section[]
+	 */
+	public function get_setting_sections()
+	{
+		return $this->setting_sections;
+	}
 	/** 
 	 * @return az_setting_field[]
 	 */
