@@ -32,17 +32,14 @@ class az_wp_settings
 		return null;
 	}
 
-	public static function init()
-	{
-		add_action('admin_menu', [static::class, '__register_settings_page'], 9);
-	}
+
 	/**
 	 * We create one static settings page for all plugins and modules
 	 */
-	public static function __register_settings_page()
+	private static function register_main_settings_page()
 	{
 		if (static::$page_created)
-			return;
+			return false;
 		static::$page_created = true;
 		add_menu_page(
 			'AZ Setting',
@@ -52,6 +49,7 @@ class az_wp_settings
 			[static::class, '__render_base_settings_page'],
 			'dashicons-admin-generic'
 		);
+		return true;
 	}
 
 	public static function register_plugin_settings(az_module $module)
@@ -78,8 +76,10 @@ class az_wp_settings
 	public static function register_module_settings(az_module $module)
 	{
 		$module = static::getModule($module);
-
+		static::register_main_settings_page();
 		static::register_plugin_settings($module);
+
+
 		/* ---------------------- Add the Module Settings Page ---------------------- */
 		add_submenu_page(
 			static::getSettingPageSlug(),       // Parent slug (must match top-level menu slug)
