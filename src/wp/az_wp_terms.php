@@ -50,6 +50,22 @@ trait az_wp_terms
 		return get_term_by('slug', ($search), $tax);
 	}
 	/**
+	 * Convert a comma-separated list of terms into an array of term objects 
+	 */
+	public static function term_array(
+		mixed $val,
+		$tax = 'product_cat'
+	) {
+		$arr = az_object::comma_array($val);
+		$result = [];
+		foreach ($arr as $k => $v) {
+			$term = static::get_term($v, $tax);
+			if (!empty($term))
+				$result[$k] = $term;
+		}
+		return $arr;
+	}
+	/**
 	 * dynamically get image for given term 
 	 * this can use image from other terms with same name
 	 */
@@ -194,10 +210,10 @@ trait az_wp_terms
 			$sq['parent'] = $search['parent'];
 		}
 		if (!empty($search['exclude'])) {
-			$sq['exclude'] = az_object::comma_array($search['exclude']);
+			$sq['exclude'] = static::term_array($search['exclude'],	$category_taxonomy);
 		}
 		if (!empty($search['include'])) {
-			$sq['include'] = az_object::comma_array($search['include']);
+			$sq['include'] = static::term_array($search['include'],	$category_taxonomy);
 		}
 
 		$sq = array_merge(
