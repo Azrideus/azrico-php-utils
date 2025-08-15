@@ -225,8 +225,18 @@ trait az_wp_terms
 			),
 
 		);
-		if (!empty($search['parent']) && $search['parent'] > 0) {
-			$sq['parent'] = static::get_term_id($search['parent'],	$category_taxonomy);
+		if (!empty($search['parent'])) {
+			if ($search['parent'] > 0) {
+				/**
+				 * parent is an actual term
+				 */
+				$sq['parent'] = static::get_term_id($search['parent'],	$category_taxonomy);
+			} else {
+				/**
+				 * parent is a special case like '0' or '-1'
+				 */
+				$sq['parent'] = $search['parent'];
+			}
 		}
 		if (!empty($search['exclude'])) {
 			$sq['exclude'] = static::term_array($search['exclude'],	$category_taxonomy, 'id');
