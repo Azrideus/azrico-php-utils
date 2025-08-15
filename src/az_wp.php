@@ -7,7 +7,7 @@ use AzUtils\wp\az_wp_external_post;
 use AzUtils\wp\az_wp_post_meta;
 use AzUtils\wp\az_wp_post;
 use AzUtils\wp\az_wp_plugin;
-use AzUtils\wp\az_wp_category;
+use AzUtils\wp\az_wp_terms;
 use AzUtils\wp\az_wp_orders;
 use AzUtils\wp\az_wp_links;
 use AzUtils\wp\az_wp_error;
@@ -21,7 +21,7 @@ class az_wp
 	use az_wp_post;
 	use az_wp_external_post;
 	use az_wp_plugin;
-	use az_wp_category;
+	use az_wp_terms;
 	use az_wp_links;
 	use az_wp_orders;
 	use az_wp_error;

@@ -7,7 +7,7 @@ use AzUtils\az_object;
 use AzUtils\az_wp;
 use WP_Post;
 
-trait az_wp_category
+trait az_wp_terms
 {
 	static $categoryTaxonomies = ['category', 'product_cat', 'project_category', 'project_cat'];
 
