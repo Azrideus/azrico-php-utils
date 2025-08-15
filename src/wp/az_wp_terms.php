@@ -180,7 +180,7 @@ trait az_wp_terms
 				'include' => [],
 				'exclude' => [],
 				'hide_empty' => 1,
-				'parent' => null,
+				'parent' => '0',
 			),
 			$search
 		);
@@ -225,7 +225,7 @@ trait az_wp_terms
 			),
 
 		);
-		if (!empty($search['parent'])) {
+		if (!empty($search['parent']) && $search['parent'] > 0) {
 			$sq['parent'] = static::get_term_id($search['parent'],	$category_taxonomy);
 		}
 		if (!empty($search['exclude'])) {
@@ -235,7 +235,6 @@ trait az_wp_terms
 			$sq['include'] = static::term_array($search['include'],	$category_taxonomy, 'id');
 		}
 
-		echo json_encode($sq);
 		$sq = array_merge(
 			array(
 				'orderby'  => 'slug',
