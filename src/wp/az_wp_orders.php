@@ -80,6 +80,16 @@ trait az_wp_orders
 	}
 
 	/**
+	 * check if WooCommerce is using the High-Performance Order Storage (HPOS) feature
+	 */
+	static function wc_is_using_hpos(): bool
+	{
+		return  class_exists(\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class)
+			&& wc_get_container()
+			->get(\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class)
+			->custom_orders_table_usage_is_enabled();
+	}
+	/**
 	 * add currency of the order to the given number
 	 */
 	static function wc_format_currency(\WC_Order|int $order, mixed $input_number, $precision = 2): string
