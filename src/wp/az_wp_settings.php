@@ -42,8 +42,8 @@ class az_wp_settings
 			return false;
 		static::$page_created = true;
 		add_menu_page(
-			'AZ Setting',
-			'AZ Setting',
+			'GMS Toolkit',
+			'GMS Toolkit',
 			'manage_options',
 			static::getSettingPageSlug(),
 			[static::class, '__render_base_settings_page'],
