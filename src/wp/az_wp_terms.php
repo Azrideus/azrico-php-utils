@@ -9,6 +9,7 @@ use WP_Post;
 
 trait az_wp_category
 {
+	static $categoryTaxonomies = ['category', 'product_cat', 'project_category', 'project_cat'];
 
 	/* -------------------------------------------------------------------------- */
 	/*                                    TERMS                                   */
@@ -21,9 +22,9 @@ trait az_wp_category
 		mixed $search,
 		$tax = 'product_cat'
 	) {
-		if (null == $search || empty($search)) return null;
+		if (empty($search)) return null;
 		if ($search instanceof \WP_Term) {
-			if ($search->taxonomy == $tax) {
+			if ($search->taxonomy == $tax ||  $tax == '' ||  $tax == 'any') {
 				/**
 				 * input is exactly what the user wants.
 				 */
@@ -47,6 +48,73 @@ trait az_wp_category
 		}
 		$search = strval($search);
 		return get_term_by('slug', ($search), $tax);
+	}
+	/**
+	 * dynamically get image for given term 
+	 * this can use image from other terms with same name
+	 */
+	public static function get_term_image(
+		mixed $search,
+		$tax = ''
+	) {
+		$thumbnail_id = static::get_term_image_id($search, $tax);
+		return wp_get_attachment_url($thumbnail_id, 'medium');
+	}
+
+	/**
+	 * dynamically get image id for given term 
+	 * this can use image from other terms with same name
+	 * @param [type] $post
+	 */
+	static function get_term_image_id(mixed $search, $tax = '', bool $parent = false): int
+	{
+		$term = static::get_term($search, $tax);
+		if (empty($term))
+			return -1; // no term found
+
+		$cache_key = 'term_image_' . $term->term_id;
+		return az_cache::get($cache_key, function () use ($term, $parent) {
+			/* ----------------------- get from the term directly ----------------------- */
+			$thumbnail_id = az_wp::get_meta_of($term, 'thumbnail_id', true);
+			if (!empty($thumbnail_id) && intval($thumbnail_id) >= 0) {
+				$result = $thumbnail_id;
+				return $result;
+			}
+			/* ---------------------- get from terms with same slug --------------------- */
+			$termSlug = $term->slug;
+			$slugParts = explode('-', $termSlug);
+			$termSlugFirstPart = reset($slugParts);
+			$searchSlugs = [$termSlug, $termSlugFirstPart];
+
+			foreach ($searchSlugs as $search_slug) {
+				foreach (static::$categoryTaxonomies as $alt_tax) {
+					if ($alt_tax === $term->taxonomy) continue; //ignore current type 
+					$alt_term = get_term_by('slug', $search_slug, $alt_tax);
+
+					if (empty($alt_term)) continue;
+
+					$thumbnail_id = az_wp::get_meta_of($alt_term, 'thumbnail_id');
+
+					if (!empty($thumbnail_id) && intval($thumbnail_id) >= 0) {
+						$result = $thumbnail_id;
+						return $result;
+					}
+				}
+			}
+			/* ----------------------------- get from parent ---------------------------- */
+			if (
+				$term->parent > 0
+				&& true == $parent
+			) {
+				$result = self::get_term_image_id(
+					get_term($term->parent, $term->taxonomy),
+					$parent
+				);
+				return $result;
+			}
+
+			return -1;
+		}, true);
 	}
 	/** 
 	 * get subcategories of a given category 
