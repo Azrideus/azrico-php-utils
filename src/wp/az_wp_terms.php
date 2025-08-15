@@ -50,18 +50,37 @@ trait az_wp_terms
 		return get_term_by('slug', ($search), $tax);
 	}
 	/**
+	 * use `get_term` to get the term id 
+	 */
+	public static function get_term_id(
+		mixed $search,
+		$tax = 'product_cat',
+		$default = -1
+	) {
+		$term = static::get_term($search, $tax);
+		if ($term instanceof \WP_Term)
+			return $term->term_id;
+		return $default;
+	}
+	/**
 	 * Convert a comma-separated list of terms into an array of term objects 
 	 */
 	public static function term_array(
 		mixed $val,
-		$tax = 'product_cat'
-	) {
+		$tax = 'product_cat',
+		$output = 'object'
+	): array {
 		$arr = az_object::comma_array($val);
 		$result = [];
 		foreach ($arr as $k => $v) {
 			$term = static::get_term($v, $tax);
-			if (!empty($term))
-				$result[$k] = $term;
+			if (!empty($term)) {
+				if ($output == 'object') {
+					$result[$k] = $term;
+				} else if ($output == 'id') {
+					$result[$k] = $term->term_id;
+				}
+			}
 		}
 		return $arr;
 	}
@@ -207,13 +226,13 @@ trait az_wp_terms
 
 		);
 		if (isset($search['parent']) && $search['parent'] >= 0) {
-			$sq['parent'] = $search['parent'];
+			$sq['parent'] = static::get_term_id($search['parent'],	$category_taxonomy);
 		}
 		if (!empty($search['exclude'])) {
-			$sq['exclude'] = static::term_array($search['exclude'],	$category_taxonomy);
+			$sq['exclude'] = static::term_array($search['exclude'],	$category_taxonomy, 'id');
 		}
 		if (!empty($search['include'])) {
-			$sq['include'] = static::term_array($search['include'],	$category_taxonomy);
+			$sq['include'] = static::term_array($search['include'],	$category_taxonomy, 'id');
 		}
 
 		$sq = array_merge(
