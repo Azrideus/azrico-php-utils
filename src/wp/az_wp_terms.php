@@ -9,6 +9,45 @@ use WP_Post;
 
 trait az_wp_category
 {
+
+	/* -------------------------------------------------------------------------- */
+	/*                                    TERMS                                   */
+	/* -------------------------------------------------------------------------- */
+	/**  
+	 * get a single category of a given taxonomy
+	 * @return \WP_Term
+	 */
+	public static function get_term(
+		mixed $search,
+		$tax = 'product_cat'
+	) {
+		if (null == $search || empty($search)) return null;
+		if ($search instanceof \WP_Term) {
+			if ($search->taxonomy == $tax) {
+				/**
+				 * input is exactly what the user wants.
+				 */
+				return $search;
+			} else {
+				/**
+				 * get category of other taxonomy from the given category
+				 * ex: get `product category` from a `post category`
+				 */
+				$res = static::get_term($search->slug, $tax);
+				if (!empty($res)) return $res;
+				$res = static::get_term($search->name, $tax);
+				if (!empty($res)) return $res;
+				return null;
+			}
+		}
+
+		if (\is_numeric($search)) {
+			$search = intval($search);
+			return get_term_by('term_id', $search, $tax);
+		}
+		$search = strval($search);
+		return get_term_by('slug', ($search), $tax);
+	}
 	/** 
 	 * get subcategories of a given category 
 	 */
@@ -137,32 +176,7 @@ trait az_wp_category
 		mixed $search,
 		$tax = 'product_cat'
 	) {
-		if (null == $search || empty($search)) return null;
-		if ($search instanceof \WP_Term) {
-			if ($search->taxonomy == $tax) {
-				/**
-				 * input is exactly what the user wants.
-				 */
-				return $search;
-			} else {
-				/**
-				 * get category of other taxonomy from the given category
-				 * ex: get `product category` from a `post category`
-				 */
-				$res = static::get_category($search->slug, $tax);
-				if (!empty($res)) return $res;
-				$res = static::get_category($search->name, $tax);
-				if (!empty($res)) return $res;
-				return null;
-			}
-		}
-
-		if (\is_numeric($search)) {
-			$search = intval($search);
-			return get_term_by('term_id', $search, $tax);
-		}
-		$search = strval($search);
-		return get_term_by('slug', ($search), $tax);
+		return static::get_term($search, $tax);
 	}
 	/**  
 	 * get all categories of a given post
