@@ -225,7 +225,7 @@ trait az_wp_terms
 			),
 
 		);
-		if (!empty($search['parent'])) {
+		if (isset($search['parent'])) {
 			if ($search['parent'] > 0) {
 				/**
 				 * parent is an actual term
