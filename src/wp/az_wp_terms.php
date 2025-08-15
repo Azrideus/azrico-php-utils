@@ -82,7 +82,7 @@ trait az_wp_terms
 				}
 			}
 		}
-		return $arr;
+		return $result;
 	}
 	/**
 	 * dynamically get image for given term 
