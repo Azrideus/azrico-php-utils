@@ -155,7 +155,6 @@ class az_object
 	 */
 	static function get_search_of(array|object $obj, mixed $default = \null, ...$keys): mixed
 	{
-		if (empty($obj)) return null;
 		if (empty($keys)) {
 			$keys = [
 				's',
@@ -171,11 +170,13 @@ class az_object
 				'f',
 			];
 		}
-		$v = self::get_from($obj, ...$keys);
-		if ($v === null && $default != null) {
+		if (!empty($obj)) {
+			$v = self::get_from($obj, ...$keys);
+		}
+		if (empty($v) && $default != null) {
 			$v = static::eval($default);
 		}
-		if ($v === null) {
+		if (empty($v)) {
 			return null;
 		}
 		return $v;
