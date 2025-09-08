@@ -116,10 +116,24 @@ class az_object
 	 * get one of 's', 'search', 'id', 'name', 'cat', 'category', 'f' from given obj
 	 * 
 	 * will use $default if loaded value is not found or its null
+	 * 
+	 * usefull for getting search parameters from $_GET,$_REQUEST or $atts
 	 */
 	static function get_search_of(array|object $obj, mixed $default = \null, ...$keys): string|null
 	{
-		if (empty($keys)) $keys = ['s', 'search', 'id', 'name', 'cat', 'category', 'f'];
+		if (empty($keys)) $keys = [
+			's',
+			'search',
+			'id',
+			'name',
+			'cat',
+			'category',
+			'categories',
+			'p',
+			'product',
+			'products',
+			'f',
+		];
 		$v = self::get_from($obj, $keys);
 		if ($v === null && $default != null) {
 			$v = static::eval($default);
