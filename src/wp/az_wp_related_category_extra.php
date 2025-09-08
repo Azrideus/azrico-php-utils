@@ -32,7 +32,7 @@ trait az_wp_related_category_extra
 			 * website/ecg <- prefer this
 			 * website/medical/ecg <- then prefer this
 			 */
-			$cat_page = az_wp::get_post_in_parent([
+			$cat_page = az_wp::get_post_not_in_parent([
 				'name' => $search_name,
 			], 'page', 'blog');
 		}

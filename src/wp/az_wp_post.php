@@ -140,6 +140,27 @@ trait az_wp_post
 		if (empty($parent)) return null;
 		return az_wp::get_post(array_merge($search, ['post_parent' => $parent->ID]), $allowedTypes);
 	}
+	/**
+	 * search for a post that does not have the given parent
+	 * `post_parent != $parent`
+	 * @return WP_Post|null
+	 */
+	public static function get_post_not_in_parent(
+		array $search,
+		array|string $allowedTypes = 'post',
+		string $parent = 'blog'
+	) {
+		$parent = az_wp::get_post($parent, 'page');
+		if (empty($parent)) return az_wp::get_post($search, $allowedTypes);
+		unset($search['post_parent']);
+		$postlist = az_wp::get_post_list($search, $allowedTypes, 100);
+		foreach ($postlist as $post) {
+			if ($post->post_parent != $parent->ID) {
+				return $post;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * get a post of given type , uses `get_post_list`
