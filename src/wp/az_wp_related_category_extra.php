@@ -2,11 +2,7 @@
 
 namespace AzUtils\wp;
 
-use AzUtils\az_cache;
-use AzUtils\az_object;
-use AzUtils\az_string;
 use AzUtils\az_wp;
-use WP_Post;
 
 
 

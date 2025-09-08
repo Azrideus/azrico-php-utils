@@ -124,7 +124,7 @@ class az_object
 	 * 
 	 * usefull for getting search parameters from $_GET,$_REQUEST or $atts
 	 */
-	static function get_search_of(array|object $obj, mixed $default = \null, ...$keys): string|null
+	static function get_search_of(array|object $obj, mixed $default = \null, ...$keys): mixed
 	{
 		if (empty($obj)) return null;
 		if (empty($keys)) {
@@ -149,6 +149,6 @@ class az_object
 		if ($v === null) {
 			return null;
 		}
-		return strval($v);
+		return $v;
 	}
 }
