@@ -68,8 +68,12 @@ class az_object
 		if (empty($data)) return [];
 		return [$data];
 	}
+	/**
+	 * get one of the $keys from given object or array
+	 */
 	static function get_from(object|array $arr, ...$keys)
 	{
+		if (empty($arr) || empty($keys)) return null;
 		if (is_object($arr)) $arr = (array)$arr;
 		foreach ($keys as $key) {
 			if (isset($arr[$key])) return $arr[$key];
