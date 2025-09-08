@@ -23,7 +23,7 @@ class az_object
 	 */
 	static function sq_auto_null(mixed $v)
 	{
-		if (empty($v) || $v === 'auto' || $v === 'any' || $v === '') return null;
+		if (empty($v) || $v === 'auto' || $v === 'any' || $v === 'all' || $v === '') return null;
 		return $v;
 	}
 	/**
