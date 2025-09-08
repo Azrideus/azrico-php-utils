@@ -115,10 +115,13 @@ class az_object
 	/**
 	 * get one of 's', 'search', 'id', 'name', 'cat', 'category', 'f'
 	 */
-	static function get_search_of(array|object $name, $default = \null)
+	static function get_search_of(array|object $name, $default = \null): string|null
 	{
 		$v = self::get_from($name, 's', 'search', 'id', 'name', 'cat', 'category', 'f');
-		if ($v === null && $default != null) return static::eval($default);
-		return $v;
+		if ($v === null && $default != null) {
+			$v = static::eval($default);
+		}
+		if ($v === null) return null;
+		return strval($v);
 	}
 }
