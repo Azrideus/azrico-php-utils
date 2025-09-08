@@ -110,4 +110,15 @@ class az_object
 		}
 		return $a;
 	}
+
+	/* ------------------------------- Get Search ------------------------------- */
+	/**
+	 * get one of 's', 'search', 'id', 'name', 'cat', 'category', 'f'
+	 */
+	static function get_search_of(array|object $name, $default = \null)
+	{
+		$v = self::get_from($name, 's', 'search', 'id', 'name', 'cat', 'category', 'f');
+		if ($v === null && $default != null) return static::eval($default);
+		return $v;
+	}
 }

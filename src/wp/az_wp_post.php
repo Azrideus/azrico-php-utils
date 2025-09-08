@@ -24,6 +24,24 @@ trait az_wp_post
 	}
 
 	/**
+	 * get slug of current post or given post
+	 */
+	static function get_slug(mixed $s = null): string|null
+	{
+		if (!empty($s)) {
+			$s = az_wp::get_post($s);
+			if ($s instanceof WP_Post) {
+				return $s->post_name;
+			}
+		} else {
+			global $post;
+			if (!empty($post) && $post instanceof WP_Post) {
+				return $post->post_name;
+			}
+		}
+		return null;
+	}
+	/**
 	 * check if we are in a blog based page 
 	 */
 	static function is_blog(): bool
