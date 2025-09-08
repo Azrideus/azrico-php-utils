@@ -125,6 +125,22 @@ trait az_wp_post
 		if (empty($pr_id)) return null;
 		return wc_get_product($pr_id);
 	}
+
+	/**
+	 * search for a post that has the given parent
+	 * `post_parent == $parent`
+	 * @return WP_Post|null
+	 */
+	public static function get_post_in_parent(
+		array $search,
+		array|string $allowedTypes = 'post',
+		string $parent = 'blog'
+	) {
+		$parent = az_wp::get_post($parent, 'page');
+		if (empty($parent)) return null;
+		return az_wp::get_post(array_merge($search, ['post_parent' => $parent->ID]), $allowedTypes);
+	}
+
 	/**
 	 * get a post of given type , uses `get_post_list`
 	 */
