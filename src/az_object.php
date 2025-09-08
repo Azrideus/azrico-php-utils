@@ -76,6 +76,7 @@ class az_object
 		if (empty($arr) || empty($keys)) return null;
 		if (is_object($arr)) $arr = (array)$arr;
 		foreach ($keys as $key) {
+			if (empty($key)) continue;
 			if (isset($arr[$key])) return $arr[$key];
 		}
 		return null;
@@ -126,20 +127,22 @@ class az_object
 	static function get_search_of(array|object $obj, mixed $default = \null, ...$keys): string|null
 	{
 		if (empty($obj)) return null;
-		if (empty($keys)) $keys = [
-			's',
-			'search',
-			'id',
-			'name',
-			'cat',
-			'category',
-			'categories',
-			'p',
-			'product',
-			'products',
-			'f',
-		];
-		$v = self::get_from($obj, $keys);
+		if (empty($keys)) {
+			$keys = [
+				's',
+				'search',
+				'id',
+				'name',
+				'cat',
+				'category',
+				'categories',
+				'p',
+				'product',
+				'products',
+				'f',
+			];
+		}
+		$v = self::get_from($obj, ...$keys);
 		if ($v === null && $default != null) {
 			$v = static::eval($default);
 		}
