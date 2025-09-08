@@ -16,6 +16,9 @@ trait az_wp_terms
 	/* -------------------------------------------------------------------------- */
 	/**  
 	 * get a single category of a given taxonomy
+	 * 
+	 * Supports search array with keys: 'cat', 'category', 'term', 'term_id', 'cat_id', 'category_id'
+	 * 
 	 * @return \WP_Term
 	 */
 	public static function get_term(
@@ -41,13 +44,19 @@ trait az_wp_terms
 				return null;
 			}
 		}
-
 		if (\is_numeric($search)) {
 			$search = intval($search);
 			return get_term_by('term_id', $search, $tax);
 		}
-		$search = strval($search);
-		return get_term_by('slug', ($search), $tax);
+		if (\is_string($search)) {
+			$search = strval($search);
+			return get_term_by('slug', ($search), $tax);
+		}
+		if (is_array($search) || is_object($search)) {
+			$sp = az_object::get_from($search, 'cat', 'category', 'term', 'term_id', 'cat_id', 'category_id');
+			return static::get_term($sp, $tax);
+		}
+		return null;
 	}
 	/**
 	 * use `get_term` to get the term id 
