@@ -26,7 +26,7 @@ trait az_wp_related_category_extra
 			 * website/ecg
 			 * website/medical/ecg
 			 */
-			return az_wp::get_post_in_parent([
+			$cat_page = az_wp::get_post_in_parent([
 				'name' => $search_name,
 			], 'page', 'blog');
 		} else {
@@ -36,10 +36,12 @@ trait az_wp_related_category_extra
 			 * website/ecg <- prefer this
 			 * website/medical/ecg <- then prefer this
 			 */
-			return az_wp::get_post_in_parent([
+			$cat_page = az_wp::get_post_in_parent([
 				'name' => $search_name,
 			], 'page', 'blog');
 		}
-		return null;
+
+		if (!empty($cat_page)) return get_page_link($cat_page->ID);
+		else return get_term_link($cat);
 	}
 }
