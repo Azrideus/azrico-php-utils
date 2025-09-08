@@ -27,7 +27,7 @@ trait az_wp_terms
 	) {
 		if (empty($search)) return null;
 		if ($search instanceof \WP_Term) {
-			if ($search->taxonomy == $tax ||  $tax == '' ||  $tax == 'any') {
+			if ($search->taxonomy == $tax || az_object::sq_auto_null($tax) === null) {
 				/**
 				 * input is exactly what the user wants.
 				 */
@@ -37,6 +37,7 @@ trait az_wp_terms
 				 * get category of other taxonomy from the given category
 				 * ex: get `product category` from a `post category`
 				 */
+				$tax = az_object::sq_auto_default($tax, 'product_cat');
 				$res = static::get_term($search->slug, $tax);
 				if (!empty($res)) return $res;
 				$res = static::get_term($search->name, $tax);
@@ -45,17 +46,15 @@ trait az_wp_terms
 			}
 		}
 		if (\is_numeric($search)) {
-			$search = intval($search);
-			return get_term_by('term_id', $search, $tax);
+			return get_term_by('term_id', \intval($search), az_object::sq_auto_default($tax, 'product_cat'));
 		}
 		if (\is_string($search)) {
-			$search = strval($search);
-			return get_term_by('slug', ($search), $tax);
+			return get_term_by('slug', \strval($search), az_object::sq_auto_default($tax, 'product_cat'));
 		}
 		if (is_array($search) || is_object($search)) {
 			$sp = az_object::get_from($search, 'cat', 'category', 'term', 'term_id', 'cat_id', 'category_id');
 			$post_type = az_object::get_from($search, 'post_type', 'ptype', 'type');
-			$tax = az_object::autonull($tax)
+			$tax = az_object::sq_auto_null($tax)
 				?? az_object::get_from($search, 'taxonomy', 'tax')
 				?? az_wp::get_category_taxonomy_of_post_type($post_type)
 				?? 'product_cat';

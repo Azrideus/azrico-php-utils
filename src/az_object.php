@@ -21,10 +21,17 @@ class az_object
 	 * 
 	 * usefull for search queries where 'auto' or 'any' means no filter
 	 */
-	static function autonull(mixed $v)
+	static function sq_auto_null(mixed $v)
 	{
-		if ($v === 'auto' || $v === 'any') return null;
+		if (empty($v) || $v === 'auto' || $v === 'any' || $v === '') return null;
 		return $v;
+	}
+	/**
+	 * if given value is 'auto' or 'any' return $default otherwise return the value itself  
+	 */
+	static function sq_auto_default(mixed $v, $default)
+	{
+		return static::sq_auto_null($v) ?? $default;
 	}
 
 
