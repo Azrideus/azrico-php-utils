@@ -125,6 +125,7 @@ class az_object
 	 */
 	static function get_search_of(array|object $obj, mixed $default = \null, ...$keys): string|null
 	{
+		if (empty($obj)) return null;
 		if (empty($keys)) $keys = [
 			's',
 			'search',
