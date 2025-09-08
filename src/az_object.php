@@ -16,6 +16,17 @@ class az_object
 		return $fn;
 	}
 
+	/**
+	 * if given value is 'auto' or 'any' return null otherwise return the value itself 
+	 * 
+	 * usefull for search queries where 'auto' or 'any' means no filter
+	 */
+	static function autonull(mixed $v)
+	{
+		if ($v === 'auto' || $v === 'any') return null;
+		return $v;
+	}
+
 
 	/**
 	 * @deprecated use get_request_data

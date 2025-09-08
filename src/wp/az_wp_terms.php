@@ -54,6 +54,11 @@ trait az_wp_terms
 		}
 		if (is_array($search) || is_object($search)) {
 			$sp = az_object::get_from($search, 'cat', 'category', 'term', 'term_id', 'cat_id', 'category_id');
+			$post_type = az_object::get_from($search, 'post_type', 'ptype', 'type');
+			$tax = az_object::autonull($tax)
+				?? az_object::get_from($search, 'taxonomy', 'tax')
+				?? az_wp::get_category_taxonomy_of_post_type($post_type)
+				?? 'product_cat';
 			return static::get_term($sp, $tax);
 		}
 		return null;
