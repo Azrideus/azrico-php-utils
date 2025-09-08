@@ -14,7 +14,7 @@ trait az_wp_related_category_extra
 	 */
 	public static function get_category_or_page_link($current_post_type, $cat, $forced_search = null)
 	{
-		$search_name = empty($$forced_search) ? $cat->slug : $forced_search;
+		$search_name = empty($forced_search) ? $cat->slug : $forced_search;
 		if ($current_post_type === 'post') {
 			/**
 			 * if we are in the blog, show a page that has BLOG as parent
