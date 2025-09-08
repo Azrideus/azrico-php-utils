@@ -27,7 +27,18 @@ class az_object
 		return $v;
 	}
 	/**
+	 * if given value is 'auto' or 'any' return true otherwise return false
+	 * 
+	 * see `sq_auto_null()`
+	 */
+	static function sq_is_auto(mixed $v)
+	{
+		return  static::sq_auto_null($v) === null;
+	}
+	/**
 	 * if given value is 'auto' or 'any' return $default otherwise return the value itself  
+	 * 
+	 * 	see `sq_auto_null()`
 	 */
 	static function sq_auto_default(mixed $v, $default)
 	{
