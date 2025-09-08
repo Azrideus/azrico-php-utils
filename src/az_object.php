@@ -10,7 +10,7 @@ class az_object
 	/**
 	 * Evaluate given function or return the value 
 	 */
-	static function eval($fn)
+	static function eval(mixed $fn)
 	{
 		if (\is_callable($fn)) return $fn();
 		return $fn;
@@ -113,16 +113,20 @@ class az_object
 
 	/* ------------------------------- Get Search ------------------------------- */
 	/**
-	 * get one of 's', 'search', 'id', 'name', 'cat', 'category', 'f'
+	 * get one of 's', 'search', 'id', 'name', 'cat', 'category', 'f' from given obj
+	 * 
+	 * will use $default if loaded value is not found or its null
 	 */
-	static function get_search_of(array|object $name, $default = \null, ...$keys): string|null
+	static function get_search_of(array|object $obj, mixed $default = \null, ...$keys): string|null
 	{
 		if (empty($keys)) $keys = ['s', 'search', 'id', 'name', 'cat', 'category', 'f'];
-		$v = self::get_from($name, $keys);
+		$v = self::get_from($obj, $keys);
 		if ($v === null && $default != null) {
 			$v = static::eval($default);
 		}
-		if ($v === null) return null;
+		if ($v === null) {
+			return null;
+		}
 		return strval($v);
 	}
 }
