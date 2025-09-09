@@ -115,7 +115,7 @@ trait az_wp_orders
 		$position      = get_option('woocommerce_currency_pos', 'left');
 
 		// Normalize and format number
-		$amount = wc_format_decimal($amount, $decimals);
+		$amount = wc_format_decimal($input_number, $decimals);
 		$is_negative = ((float) $amount) < 0;
 		$abs_amount  = abs((float) $amount);
 		$num         = number_format($abs_amount, $decimals, $decimal_sep, $thousand_sep);
