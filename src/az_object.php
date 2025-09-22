@@ -16,6 +16,14 @@ class az_object
 		return $fn;
 	}
 
+	static function is_truthy(mixed $val): bool
+	{
+		if (is_bool($val)) return $val;
+		if (is_string($val))
+			$val = strtolower(trim($val));
+		return (bool)(filter_var($val, FILTER_VALIDATE_BOOLEAN) ?? false);
+	}
+
 	/**
 	 * if given value is 'auto' or 'any' return null otherwise return the value itself 
 	 * 

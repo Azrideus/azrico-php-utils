@@ -232,9 +232,8 @@ trait az_wp_terms
 
 
 		$sq =  array(
-			'hide_empty' => filter_var(
+			'hide_empty' => az_object::is_truthy(
 				$search['hide_empty'],
-				FILTER_VALIDATE_BOOLEAN
 			),
 
 		);

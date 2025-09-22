@@ -2,6 +2,7 @@
 
 namespace AzUtils\wp;
 
+use AzUtils\az_object;
 use AzUtils\az_string;
 use AzUtils\module\az_module;
 use AzUtils\module\az_setting_section;
@@ -192,6 +193,6 @@ class az_wp_settings
 	}
 	public static function get_plugin_option_boolean(string $plugin_name, string $key)
 	{
-		return \filter_var(static::get_plugin_option($plugin_name, $key), FILTER_VALIDATE_BOOLEAN);
+		return az_object::is_truthy(static::get_plugin_option($plugin_name, $key));
 	}
 }

@@ -64,9 +64,8 @@ trait az_wp_post_meta
 			$key
 		);
 		if (empty($meta_value)) return false;
-		return filter_var(
+		return az_object::is_truthy(
 			$meta_value,
-			FILTER_VALIDATE_BOOL
 		);
 	}
 	static function get_meta_numeric_of($search, string $key, int $default = -1): int|float

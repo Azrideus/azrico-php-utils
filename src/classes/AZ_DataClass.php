@@ -2,6 +2,7 @@
 
 namespace AzUtils\classes;
 
+use AzUtils\az_object;
 use AzUtils\az_wp;
 
 class AZ_DataClass
@@ -62,16 +63,14 @@ class AZ_DataClass
 
 	function getBool($key): bool
 	{
-		return filter_var(
+		return az_object::is_truthy(
 			$this->get($key),
-			FILTER_VALIDATE_BOOL
 		);
 	}
 	function getOptionBool($key): bool
 	{
-		return filter_var(
+		return az_object::is_truthy(
 			$this->getOption($key),
-			FILTER_VALIDATE_BOOL
 		);
 	}
 	function getOption(string $key)
