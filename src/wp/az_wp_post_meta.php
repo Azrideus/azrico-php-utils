@@ -2,6 +2,7 @@
 
 namespace AzUtils\wp;
 
+use AzUtils\az_object;
 use AzUtils\az_wp;
 
 trait az_wp_post_meta
