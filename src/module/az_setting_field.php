@@ -87,7 +87,7 @@ class az_setting_field extends plugin_module_object
 				 * you can add a hidden input with the same name to simulate a default value.
 				 */
 				az_view::esc_attr_printf(
-					'<input style="display:none" hidden type="checkbox" name="%s[%s]" value="0">',
+					'<input type="hidden" name="%s[%s]" value="0">',
 					($this->plugin_settings_slug),
 					($this->field_name),
 				);
