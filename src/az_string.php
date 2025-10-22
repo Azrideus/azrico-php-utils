@@ -11,6 +11,7 @@ class az_string
 	use az_string_path;
 	use az_string_serialize;
 	use az_string_traits;
+	use az_string_shorten;
 	/**
 	 * check if two string are not empty and equal ignorecase 
 	 */
@@ -111,41 +112,7 @@ class az_string
 		return false;
 	}
 
-	/**
-	 * get the short name of a post by comparing its title and slug 
-	 * 
-	 * it also removes some predefined prefixes from the title
-	 */
-	public static function get_post_shortname(array|object $input): string
-	{
 
-		if (is_a($input, 'WC_Product')) {
-			$title = $input->get_title();
-			$slug = $input->get_slug();
-		} else if (is_object($input)) {
-			$title = $input->post_title;
-			$slug = $input->post_name;
-		} else if (is_array($input)) {
-			$title = $input['post_title'];
-			$slug = $input['post_name'];
-		}
-		if (!empty($title) && !empty($slug)) {
-			$title = self::find_upto($title, $slug);;
-		}
-
-		$extra_prefixes = ['بررسی اجمالی ماژول', 'بررسی اجمالی', "Overview of"];
-		foreach ($extra_prefixes as $prefix) {
-			if (\str_contains($title, $prefix)) {
-				$title_parts = explode($prefix, $title);
-				$title = $title_parts[1] ?? $title;
-			}
-		}
-		return self::trim_post_name($title);
-	}
-	public static function trim_post_name(string $title): string
-	{
-		return trim(trim($title, '*_- '));
-	}
 	/**
 	 * Trim the number index prefix from given string 
 	 */
