@@ -145,7 +145,7 @@ trait az_wp_related
 		/* -------------------------------------------------------------------------- */
 		/*                            Populate Search List                            */
 		/* -------------------------------------------------------------------------- */
-		$sl = static::get_related_keys_of($search, $allowedTypes, $relationLevel);
+		$sl = static::get_related_keys_of($search, $relationLevel);
 		$search_array = $sl['search_array'];
 		$cache_key = $sl['cache_key'];
 
@@ -271,9 +271,9 @@ trait az_wp_related
 	 */
 	private static function get_related_keys_of(
 		mixed $search,
-		array|string|null $allowedTypes = null,
 		$relationLevel = self::REL_SAME_SLUG | self::REL_PAGEID,
 	): array {
+
 		/* -------------------------------------------------------------------------- */
 		/*                            get related of string                           */
 		/* -------------------------------------------------------------------------- */
@@ -296,7 +296,7 @@ trait az_wp_related
 			];
 		}
 		$postid = az_wp::get_id($currentPost);
-		$cache_key = 'rk_' . $postid . "_" . strval($relationLevel) . '_' . join(',', $allowedTypes);
+		$cache_key = 'rk_' . $postid . "_" . strval($relationLevel);
 		return  az_cache::get('rk_list_' . $cache_key, function () use ($postid, $currentPost, $cache_key, $relationLevel) {
 			/**
 			 * id of current post and its slug is added to the search list
