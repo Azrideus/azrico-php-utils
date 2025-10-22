@@ -81,6 +81,16 @@ class az_setting_field extends plugin_module_object
 				);
 				break;
 			case 'checkbox':
+				/**
+				 * Unchecked checkboxes are omitted from POST, 
+				 * but because later names override earlier names,
+				 * you can add a hidden input with the same name to simulate a default value.
+				 */
+				az_view::esc_attr_printf(
+					'<input hidden type="checkbox" name="%s[%s]" value="0">',
+					($this->plugin_settings_slug),
+					($this->field_name),
+				);
 				az_view::esc_attr_printf(
 					'<label><input type="checkbox" name="%s[%s]" data-section="%s" value="1" %s> Enable %s</label>',
 					($this->plugin_settings_slug),

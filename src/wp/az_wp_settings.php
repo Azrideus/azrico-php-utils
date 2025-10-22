@@ -5,8 +5,6 @@ namespace AzUtils\wp;
 use AzUtils\az_object;
 use AzUtils\az_string;
 use AzUtils\module\az_module;
-use AzUtils\module\az_setting_section;
-use AzUtils\module\az_setting_field;
 
 /**
  * Extend this class to create a settings page for your plugin.
