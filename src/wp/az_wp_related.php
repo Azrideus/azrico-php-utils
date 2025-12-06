@@ -20,20 +20,6 @@ trait az_wp_related
 	const ALL         = self::REL_SAME_SLUG | self::REL_SIMILAR_SLUG | self::REL_PAGEID | self::REL_CATEGORY;
 
 
-	static $validRelatedTypes = array(
-		'product',
-		'post',
-		'project',
-		"product_doc",
-		'page',
-		'handbook',
-		'atlas',
-		'news',
-		'faq',
-		'attachment',
-		'external'
-	);
-
 	/**
 	 * Replace tokens/placeholders like `product_link,post_link,...` with their permalink
 	 * uses `get_related_family`
@@ -141,7 +127,7 @@ trait az_wp_related
 		$relationLevel = self::REL_SAME_SLUG | self::REL_PAGEID,
 	): array {
 		if (empty($search)) return [];
-		if (empty($allowedTypes)) $allowedTypes = self::$validRelatedTypes;
+		if (empty($allowedTypes)) $allowedTypes = get_post_types();
 		$allowedTypes = az_object::comma_array($allowedTypes);
 		$currentPost = az_wp::get_post($search, 'any');
 
