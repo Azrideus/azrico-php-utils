@@ -26,6 +26,10 @@ trait az_wp_related
 		'project',
 		"product_doc",
 		'page',
+		'handbook',
+		'atlas',
+		'news',
+		'faq',
 		'attachment',
 		'external'
 	);
