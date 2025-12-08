@@ -181,8 +181,7 @@ trait az_wp_post
 	static function get_post_list(
 		object|string|int|array $input,
 		array|string $allowedTypes = 'any',
-		int $limit = 100,
-		bool $debug = false
+		int $limit = 100
 	): array {
 
 		/* -------------------------------------------------------------------------- */
@@ -232,7 +231,7 @@ trait az_wp_post
 		 * https://wordpress.stackexchange.com/questions/13029/getting-only-a-specific-post-type-with-get-post
 		 */
 		if (empty($allowedTypes)) {
-			if (true === $debug) {
+			if (true === az_wp::$DEBUG) {
 				error_log("[az_wp_post] no allowedTypes given, using all post types");
 			}
 			$allowedTypes =  get_post_types();
@@ -244,7 +243,7 @@ trait az_wp_post
 		 */
 		if (in_array('attachment', $allowedTypes) && sizeof($allowedTypes) > 1) {
 			$allowedTypesExclAttachment = array_diff($allowedTypes, ['attachment']);
-			if (true === $debug) {
+			if (true === az_wp::$DEBUG) {
 				error_log("[az_wp_post] seperate search of attachment and posts");
 			}
 			return array_merge(
@@ -262,7 +261,7 @@ trait az_wp_post
 		if (is_numeric($input)) {
 			$foundPost = get_post($input);
 			$foundPostTypeMatch = static::filter_post_array_by_type($foundPost, $allowedTypes);
-			if (true === $debug) {
+			if (true === az_wp::$DEBUG) {
 				error_log("[az_wp_post] search by post_id: " . strval($input));
 				error_log("[az_wp_post] result: " . count($foundPostTypeMatch));
 			}
@@ -299,7 +298,7 @@ trait az_wp_post
 				$allowedTypes,
 				$limit
 			);
-			if (true === $debug) {
+			if (true === az_wp::$DEBUG) {
 				error_log("[az_wp_post] search by pageid: " . print_r($final_search, true));
 				error_log("[az_wp_post] result: " . count($result));
 			}
@@ -317,7 +316,7 @@ trait az_wp_post
 		$result = get_posts(
 			$final_search
 		);
-		if (true === $debug) {
+		if (true === az_wp::$DEBUG) {
 			error_log("[az_wp_post] final_search: " . print_r($final_search, true));
 			error_log("[az_wp_post] result: " . count($result));
 		}

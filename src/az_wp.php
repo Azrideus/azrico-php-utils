@@ -30,6 +30,7 @@ class az_wp
 	use az_wp_related_category_extra;
 
 	private static $cached_dirs = [];
+	public static $DEBUG = false;
 
 
 
