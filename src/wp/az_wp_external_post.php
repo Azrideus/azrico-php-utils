@@ -49,7 +49,7 @@ trait az_wp_external_post
 	 * works for internal posts and external links such as youtube videos 
 	 * @param [type] $post
 	 */
-	static function get_post_image_link(object $post): string|false
+	static function get_post_image_link(object $post, $plugin_rootdir = __FILE__): string|false
 	{
 		$itemid = $post->ID;
 		if ($itemid >= 0)
@@ -60,7 +60,7 @@ trait az_wp_external_post
 			if (str_contains($post->post_name, 'external-post-youtube'))
 				return 'https://img.youtube.com/vi/' . $post->post_excerpt . '/1.jpg';
 			if (str_contains($post->post_name, 'external-post-aparat'))
-				return  az_assets::get_svg_url(__FILE__, 'aparat');
+				return  az_assets::get_svg_url($plugin_rootdir, 'aparat');
 		}
 		return false;
 	}
