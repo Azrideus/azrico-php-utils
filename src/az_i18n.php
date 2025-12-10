@@ -89,7 +89,14 @@ abstract class az_i18n
 	 */
 	public static function get_actual_post_type(object|string $item)
 	{
-		if (is_a($item, 'WP_Post')) {
+		if (
+			is_a($item, 'WP_Post')
+			|| (is_object($item)
+				&& property_exists($item, 'post_type')
+				&& property_exists($item, 'post_title')
+				&& property_exists($item, 'post_name')
+			)
+		) {
 			$ptype = $item->post_type;
 			$ptitle = strtolower($item->post_title);
 			$pname = strtolower($item->post_name);
@@ -101,7 +108,6 @@ abstract class az_i18n
 			$ptitle = strtolower($ptype);
 			$pname = strtolower($ptype);
 		}
-
 		if (
 			$ptype === 'project' ||
 			($ptype === 'post'
@@ -116,20 +122,6 @@ abstract class az_i18n
 				return 'Arduino Project';
 			return 'Project';
 		}
-
-		if ($ptype === 'external')
-			return 'External';
-		if ($ptype === 'product')
-			return 'Shop';
-		if ($ptype === 'blog')
-			return 'Blog';
-		if ($ptype === 'product_doc')
-			return 'Product Wiki';
-		if ($ptype === 'atlas')
-			return 'Atlas';
-		if ($ptype === 'handbook')
-			return 'Handbook';
-
 		if ($ptype === 'attachment') {
 			if (str_contains($ptitle, 'video'))
 				return 'Video';
@@ -151,6 +143,20 @@ abstract class az_i18n
 
 			return 'Attachment';
 		}
+
+		if ($ptype === 'external')
+			return 'External';
+		if ($ptype === 'product')
+			return 'Shop';
+		if ($ptype === 'blog')
+			return 'Blog';
+		if ($ptype === 'product_doc')
+			return 'Product Wiki';
+		if ($ptype === 'atlas')
+			return 'Atlas';
+		if ($ptype === 'handbook')
+			return 'Handbook';
+
 		return $ptype;
 	}
 	public static function translate_post_type(object $item): string
