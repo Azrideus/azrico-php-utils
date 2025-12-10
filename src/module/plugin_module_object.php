@@ -2,7 +2,7 @@
 
 namespace AzUtils\module;
 
-use AzUtils\wp\az_wp_settings;
+
 use AzUtils\az_string;
 
 /**

@@ -94,6 +94,9 @@ abstract class az_i18n
 			$ptitle = strtolower($item->post_title);
 			$pname = strtolower($item->post_name);
 		} else {
+			if (is_object($item) && property_exists($item, 'post_type')) {
+				$item = $item->post_type;
+			}
 			$ptype = strval($item);
 			$ptitle = strtolower($ptype);
 			$pname = strtolower($ptype);
