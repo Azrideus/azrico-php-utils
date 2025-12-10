@@ -5,6 +5,7 @@ namespace AzUtils;
 use AzUtils\string\az_string_path;
 use AzUtils\string\az_string_serialize;
 use AzUtils\string\az_string_traits;
+use AzUtils\string\az_string_shorten;
 
 class az_string
 {
