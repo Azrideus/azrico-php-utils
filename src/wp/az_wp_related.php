@@ -138,13 +138,13 @@ trait az_wp_related
 		/* -------------------------------------------------------------------------- */
 		/*                            Populate Search List                            */
 		/* -------------------------------------------------------------------------- */
-		$sl = static::get_related_keys_of($search, $relationLevel);
+		$sl = static::get_related_keys_of($search, $allowedTypes, $relationLevel);
 		$search_array = $sl['search_array'];
 		$cache_key = $sl['cache_key'];
 
 
-
 		$cached_ids = az_cache::get($cache_key, null, true);
+
 		$foundPosts = [];
 		if (is_array($cached_ids) && !empty($cached_ids)) {
 			/* ----------------------------- Found in Cache ----------------------------- */
@@ -212,12 +212,11 @@ trait az_wp_related
 		$uniqItems = [];
 		$resultIDList = [];
 		foreach ($foundPosts as $post) {
-			$postId = az_wp::get_id(($post));
+			$postId = az_wp::get_id($post);
 			if (in_array($postId, $resultIDList)) continue;
 			$uniqItems[] = $post;
 			$resultIDList[] = $postId;
 		}
-
 
 		az_cache::set($cache_key, $resultIDList,  true);
 
@@ -264,6 +263,7 @@ trait az_wp_related
 	 */
 	private static function get_related_keys_of(
 		mixed $search,
+		array|string|null $allowedTypes = null,
 		$relationLevel = self::REL_SAME_SLUG | self::REL_PAGEID,
 	): array {
 
@@ -272,7 +272,7 @@ trait az_wp_related
 		/* -------------------------------------------------------------------------- */
 		if (is_string(($search))) {
 			$searchList = [$search];
-			$cache_key = 'rp_' . $search;
+			$cache_key = 'r_srch_' . $search;
 			return [
 				'search_array' => $searchList,
 				'cache_key' => $cache_key
@@ -288,8 +288,12 @@ trait az_wp_related
 				'cache_key' => 'rp_empty_post'
 			];
 		}
+
 		$postid = az_wp::get_id($currentPost);
-		$cache_key = 'rk_' . $postid . "_" . strval($relationLevel);
+
+
+		$types_str = join(',', az_object::comma_array($allowedTypes));
+		$cache_key = 'rk_' . md5($postid . "_" . strval($relationLevel) . "_" . $types_str);
 		return  az_cache::get('rk_list_' . $cache_key, function () use ($postid, $currentPost, $cache_key, $relationLevel) {
 			/**
 			 * id of current post and its slug is added to the search list
