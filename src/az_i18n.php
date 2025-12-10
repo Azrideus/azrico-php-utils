@@ -83,13 +83,21 @@ abstract class az_i18n
 	}
 
 
-	public static function get_post_type(object $item)
+	/**
+	 * A post can be a project or blog or product etc. 
+	 * This function tries to determine the actual type of the post
+	 */
+	public static function get_actual_post_type(object|string $item)
 	{
-		assert(is_a($item, 'WP_Post'), 'Invalid post object');
-		$ptype = $item->post_type;
-		$ptitle = strtolower($item->post_title);
-		$pname = strtolower($item->post_name);
-
+		if (is_a($item, 'WP_Post')) {
+			$ptype = $item->post_type;
+			$ptitle = strtolower($item->post_title);
+			$pname = strtolower($item->post_name);
+		} else {
+			$ptype = strval($item);
+			$ptitle = strtolower($ptype);
+			$pname = strtolower($ptype);
+		}
 
 		if (
 			$ptype === 'project' ||
@@ -106,17 +114,19 @@ abstract class az_i18n
 			return 'Project';
 		}
 
-		if ($ptype === 'product') {
+		if ($ptype === 'external')
+			return 'External';
+		if ($ptype === 'product')
 			return 'Shop';
-		}
-
-		if ($ptype === 'blog') {
+		if ($ptype === 'blog')
 			return 'Blog';
-		}
-
-		if ($ptype === 'product_doc') {
+		if ($ptype === 'product_doc')
 			return 'Product Wiki';
-		}
+		if ($ptype === 'atlas')
+			return 'Atlas';
+		if ($ptype === 'handbook')
+			return 'Handbook';
+
 		if ($ptype === 'attachment') {
 			if (str_contains($ptitle, 'video'))
 				return 'Video';
@@ -142,6 +152,6 @@ abstract class az_i18n
 	}
 	public static function translate_post_type(object $item): string
 	{
-		return static::translate(static::get_post_type($item));
+		return static::translate(static::get_actual_post_type($item));
 	}
 }
