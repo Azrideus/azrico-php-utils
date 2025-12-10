@@ -2,9 +2,9 @@
 
 namespace AzUtils\wp;
 
+use AzUtils\az_assets;
 use AzUtils\az_wp;
 
-use function Avifinfo\read;
 
 trait az_wp_external_post
 {
@@ -59,8 +59,8 @@ trait az_wp_external_post
 		{
 			if (str_contains($post->post_name, 'external-post-youtube'))
 				return 'https://img.youtube.com/vi/' . $post->post_excerpt . '/1.jpg';
-			//// if (str_contains($post->post_name, 'external-post-aparat'))
-			//// 	return 'https://img.youtube.com/vi/' . $post->post_excerpt . '/1.jpg';
+			if (str_contains($post->post_name, 'external-post-aparat'))
+				return  az_assets::get_svg_url(__FILE__, 'aparat');
 		}
 		return false;
 	}
