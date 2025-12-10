@@ -148,7 +148,7 @@ abstract class az_i18n
 
 			return 'Attachment';
 		}
-		return $item->post_type;
+		return $ptype;
 	}
 	public static function translate_post_type(object $item): string
 	{
