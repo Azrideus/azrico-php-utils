@@ -108,6 +108,7 @@ abstract class az_i18n
 			$ptitle = strtolower($ptype);
 			$pname = strtolower($ptype);
 		}
+
 		if (
 			$ptype === 'project' ||
 			($ptype === 'post'
@@ -122,7 +123,7 @@ abstract class az_i18n
 				return 'Arduino Project';
 			return 'Project';
 		}
-		if ($ptype === 'attachment') {
+		if ($ptype === 'attachment' || $ptype === 'external') {
 			if (str_contains($ptitle, 'video'))
 				return 'Video';
 
@@ -144,8 +145,6 @@ abstract class az_i18n
 			return 'Attachment';
 		}
 
-		if ($ptype === 'external')
-			return 'External';
 		if ($ptype === 'product')
 			return 'Shop';
 		if ($ptype === 'blog')
@@ -157,7 +156,7 @@ abstract class az_i18n
 		if ($ptype === 'handbook')
 			return 'Handbook';
 
-		return $ptype;
+		return \ucfirst($ptype);
 	}
 	public static function translate_post_type(object $item): string
 	{
