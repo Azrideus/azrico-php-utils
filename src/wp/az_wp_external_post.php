@@ -29,7 +29,7 @@ trait az_wp_external_post
 		) {
 			$type = $post->post_type;
 			if (
-				in_array($type, ['external', 'youtube', 'github', 'external_post', 'external_link'])
+				in_array($type, ['external', 'aparat', 'youtube', 'github', 'external_post', 'external_link'])
 				&& property_exists($post, 'post_content')
 			) {
 				/**
@@ -57,8 +57,10 @@ trait az_wp_external_post
 
 		if ($itemid < -2) //external post
 		{
-			if (str_contains($post->post_name, 'youtube'))
+			if (str_contains($post->post_name, 'external-post-youtube'))
 				return 'https://img.youtube.com/vi/' . $post->post_excerpt . '/1.jpg';
+			//// if (str_contains($post->post_name, 'external-post-aparat'))
+			//// 	return 'https://img.youtube.com/vi/' . $post->post_excerpt . '/1.jpg';
 		}
 		return false;
 	}

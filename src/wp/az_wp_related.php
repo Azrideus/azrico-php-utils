@@ -83,8 +83,11 @@ trait az_wp_related
 	 * 
 	 * uses `get_related_list_of` and returns the first item of the list
 	 */
-	public static function get_related_main_of(int|string|object $search, string $target_type, $relationLevel = self::REL_SAME_SLUG): object|null
-	{
+	public static function get_related_main_of(
+		int|string|object $search,
+		string $target_type,
+		$relationLevel = self::REL_SAME_SLUG
+	): object|null {
 		$current_post = az_wp::get_post($search, 'any');
 		if (empty($current_post)) return null;
 		$found_related_posts = static::get_related_list_of($current_post, $target_type, $relationLevel);
