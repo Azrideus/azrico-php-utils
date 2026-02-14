@@ -8,21 +8,14 @@ class az_parser
 	static $all_headers = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
 	/**
-	 * find the first header in the post content
-	 * and return all content of the those headers
-	 *
-	 * @param WP_Post $post
-	 * @return array
+	 * Find the first header in the given string or DOMDocument and return the header tag name
 	 */
-	static function getHeaders(\WP_Post $post): array
+	static function findMainHeader(\DOMDocument|string $doc): string
 	{
-
-		$doc = new \DOMDocument();
-		$html = '<meta charset="utf8">' . $post->post_content; // ;
-
-		if (empty($html)) return [];
-
-		$doc->loadHTML($html);
+		if (is_string($doc)) {
+			$doc = new \DOMDocument();
+			$doc->loadHTML(strval($doc));
+		}
 		$main_header = '';
 		foreach (self::$all_headers as $h) {
 			$elements = $doc->getElementsByTagName($h);
@@ -32,15 +25,41 @@ class az_parser
 				break;
 			}
 		}
+		return $main_header;
+	}
+	/**
+	 * find the first header in the post content
+	 * and return all content of the those headers
+	 *
+	 * @param WP_Post $post
+	 * @return array
+	 */
+	static function getHeaders(\WP_Post|string $post): array
+	{
+
+		$doc = new \DOMDocument();
+		$is_post_object = !is_string($post);
+		if ($is_post_object) {
+			$html = '<meta charset="utf8">' . $post->post_content;
+		} else {
+			$html = '<meta charset="utf8">' . $post;
+		}
+
+		if (empty($html)) return [];
+		$doc->loadHTML($html);
+		$main_header = self::findMainHeader($doc);
 		/* -------------------------------------------------------------------------- */
 		$result = [];
 		foreach ($doc->getElementsByTagName($main_header) as $element) {
 			$text = $element->textContent;
-			array_push($result, [
+			$res = [
 				'title' => $text,
-				'link' => get_permalink($post) . '#' . $element->getAttribute('id'),
 				'id' => $element->getAttribute('id')
-			]);
+			];
+			if ($is_post_object) {
+				$res['link'] = get_permalink($post) . '#' . $element->getAttribute('id');
+			}
+			array_push($result, $res);
 		}
 
 		return $result;
