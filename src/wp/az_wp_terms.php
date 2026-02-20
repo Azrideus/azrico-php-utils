@@ -265,7 +265,7 @@ trait az_wp_terms
 			$sq,
 			array(
 				'taxonomy' => $category_taxonomy,
-				'number'  => 100,
+				'number'  => 0, //return all
 			)
 		);
 		return get_terms($sq);
