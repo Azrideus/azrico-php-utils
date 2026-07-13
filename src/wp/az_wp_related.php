@@ -2,6 +2,7 @@
 
 namespace AzUtils\wp;
 
+use az_wp_related_sorting;
 use AzUtils\az_cache;
 use AzUtils\az_object;
 use AzUtils\az_string;
@@ -139,6 +140,7 @@ trait az_wp_related
 		int|string|object $search,
 		array|string|null $allowedTypes = null,
 		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
+		bool $sorted = false,
 	): array {
 		if (empty($search)) return [];
 		if (empty($allowedTypes)) $allowedTypes = get_post_types();
@@ -239,6 +241,10 @@ trait az_wp_related
 			$currentPost,
 			$allowedTypes,
 		);
+
+		if ($sorted)
+			$uniqItems = az_wp_related_sorting::sort_related_posts($uniqItems);
+
 		return $uniqItems;
 	}
 
