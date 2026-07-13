@@ -2,7 +2,7 @@
 
 namespace AzUtils\wp;
 
-use az_wp_related_sorting;
+use AzUtils\wp\az_wp_related_sorting;
 use AzUtils\az_cache;
 use AzUtils\az_object;
 use AzUtils\az_string;
