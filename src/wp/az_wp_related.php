@@ -139,8 +139,8 @@ trait az_wp_related
 	public static function get_related_list_of(
 		int|string|object $search,
 		array|string|null $allowedTypes = null,
-		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
 		bool $sorted = false,
+		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
 	): array {
 		if (empty($search)) return [];
 		if (empty($allowedTypes)) $allowedTypes = get_post_types();
