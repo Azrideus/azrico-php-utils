@@ -8,7 +8,6 @@ use AzUtils\az_wp;
 
 trait az_wp_related_category_extra
 {
-
 	/**
 	 * if category has a page we link to that page otherwise link to the category page 
 	 */

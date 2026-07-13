@@ -1,12 +1,13 @@
 <?php
 
+namespace AzUtils\wp;
+
 use AzUtils\az_cache;
 use AzUtils\az_i18n;
 use AzUtils\az_wp;
 
 trait az_wp_related_sorting
 {
-
 	static $board_keywords = array('arduino', 'stm32');
 
 	/**
