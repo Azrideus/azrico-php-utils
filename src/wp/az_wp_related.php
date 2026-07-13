@@ -14,8 +14,6 @@ const REL_PAGEID         = 1 << 2;
 const REL_CATEGORY 		 = 1 << 3;
 const REL_ALL         = REL_SAME_SLUG | REL_SIMILAR_SLUG | REL_PAGEID | REL_CATEGORY;
 
-
-
 trait az_wp_related
 {
 	/* ---------------------- Bit Flags for Relation Levels --------------------- */
