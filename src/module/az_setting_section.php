@@ -5,13 +5,13 @@ namespace AzUtils\module;
 
 class az_setting_section extends plugin_module_object
 {
-	readonly string $name;
+	 string $name;
 
-	readonly string $title;
-	readonly string $desc;
-	readonly string $class;
-	readonly string $before_section;
-	readonly string $after_section;
+	 string $title;
+	 string $desc;
+	 string $class;
+	 string $before_section;
+	 string $after_section;
 	private array $fields;
 	private bool $registered = false;
 

@@ -8,12 +8,12 @@ use AzUtils\wp\az_wp_settings;
 
 class az_setting_field extends plugin_module_object
 {
-	readonly string $section_name;
+	 string $section_name;
 
-	readonly string $field_name;
-	readonly string $title;
-	readonly string $label;
-	readonly string $type;
+	 string $field_name;
+	 string $title;
+	 string $label;
+	 string $type;
 	private bool $registered = false;
 
 	public function __construct(

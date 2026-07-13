@@ -10,9 +10,9 @@ use AzUtils\az_string;
  */
 class plugin_module_object extends plugin_object
 {
-	readonly string $module_name;
-	readonly string $module_name_slug;
-	readonly string $module_settings_page_slug;
+	 string $module_name;
+	 string $module_name_slug;
+	 string $module_settings_page_slug;
 
 	public function __construct(string $plugin_name, string $module_name)
 	{
