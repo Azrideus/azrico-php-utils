@@ -77,10 +77,13 @@ trait az_wp_related
 	/**
 	 * get next and previous post of given post.
 	 */
-	public static function get_related_prev_next($post)
-	{
+	public static function get_related_prev_next(
+		$post,
+		array|string|null $allowedTypes = null,
+		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
+	) {
 		$postid = az_wp::get_id($post);
-		$post_list = az_wp_related::get_related_list_of($post);
+		$post_list = az_wp_related::get_related_list_of($post, $allowedTypes, true, $relationLevel);
 		$current_index = null;
 
 		foreach ($post_list as $i => $p) {
