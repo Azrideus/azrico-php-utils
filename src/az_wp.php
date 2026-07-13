@@ -13,6 +13,7 @@ use AzUtils\wp\az_wp_links;
 use AzUtils\wp\az_wp_error;
 use AzUtils\wp\az_wp_searchquery;
 use AzUtils\wp\az_wp_related;
+use AzUtils\wp\az_wp_related_sorting;
 use AzUtils\wp\az_wp_related_category_extra;
 
 class az_wp
@@ -27,6 +28,7 @@ class az_wp
 	use az_wp_orders;
 	use az_wp_error;
 	use az_wp_related;
+	use az_wp_related_sorting;
 	use az_wp_related_category_extra;
 
 	private static $cached_dirs = [];
