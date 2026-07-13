@@ -69,7 +69,43 @@ trait az_wp_related
 				);
 			}
 		}
-		return \apply_filters('az_blog_siblings', $siblings, $post);
+
+		return  az_wp_related_sorting::sort_related_posts($siblings);
+		// return \apply_filters('az_blog_siblings', $siblings, $post);
+	}
+
+	/**
+	 * get next and previous post of given post.
+	 */
+	public static function get_related_prev_next($post)
+	{
+		$postid = az_wp::get_id($post);
+		$post_list = az_wp_related::get_related_list_of($post);
+		$current_index = null;
+
+		foreach ($post_list as $i => $p) {
+			if ($p->ID == $postid) {
+				$current_index = $i;
+				break;
+			}
+		}
+
+		if ($current_index !== null) {
+			$prev_post = $current_index > 0
+				? $post_list[$current_index - 1]
+				: null;
+			$next_post = isset($post_list[$current_index + 1])
+				? $post_list[$current_index + 1]
+				: null;
+			return [
+				'prev' => $prev_post,
+				'next' => $next_post
+			];
+		}
+		return [
+			'prev' => null,
+			'next' => null
+		];
 	}
 
 
