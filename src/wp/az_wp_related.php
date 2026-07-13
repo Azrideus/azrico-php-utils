@@ -114,6 +114,19 @@ trait az_wp_related
 		return $family;
 	}
 
+
+	public static function get_next_post_of(
+		int|string|object $search,
+		array|string|null $allowedTypes = null,
+		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
+	) {
+		$rlp = static::get_related_list_of(
+			$search,
+			$allowedTypes,
+			$relationLevel
+		);
+	}
+
 	/**
 	 * get all related posts/products for the given post/product
 	 * (products, posts, projects, videos)
