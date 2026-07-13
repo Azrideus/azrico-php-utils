@@ -82,8 +82,26 @@ trait az_wp_related
 		array|string|null $allowedTypes = null,
 		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
 	) {
+
+		/* ----------------------------- get from cache ----------------------------- */
+		$cache_key = 'related_prev_next_' . az_wp::get_id($post)
+			. '_' . md5(join(',', az_object::comma_array($allowedTypes)))
+			. '_' . strval($relationLevel);
+		$cached = az_cache::get($cache_key, null, false);
+		if (!empty($cached)) return $cached;
+
+		$result = [
+			'prev' => null,
+			'next' => null
+		];
+
 		$postid = az_wp::get_id($post);
-		$post_list = az_wp_related::get_related_list_of($post, $allowedTypes, true, $relationLevel);
+		$post_list = az_wp_related::get_related_list_of(
+			$post,
+			$allowedTypes,
+			true,
+			$relationLevel
+		);
 		$current_index = null;
 
 		foreach ($post_list as $i => $p) {
@@ -100,15 +118,14 @@ trait az_wp_related
 			$next_post = isset($post_list[$current_index + 1])
 				? $post_list[$current_index + 1]
 				: null;
-			return [
+
+			$result = [
 				'prev' => $prev_post,
 				'next' => $next_post
 			];
 		}
-		return [
-			'prev' => null,
-			'next' => null
-		];
+		az_cache::set($cache_key, $result, false);
+		return $result;
 	}
 
 
