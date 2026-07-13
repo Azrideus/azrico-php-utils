@@ -124,7 +124,7 @@ trait az_wp_related_sorting
 			 * if no sorting value is set, use the default sorting method 
 			 * similar types are sorted based on translate_post_type
 			 */
-			$postindex = strlen(az_i18n::translate_post_type($post));
+			$postindex = strlen(az_i18n::get_actual_post_type($post));
 		}
 		return $postindex;
 	}
