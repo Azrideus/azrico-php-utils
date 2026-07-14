@@ -38,41 +38,41 @@ trait az_wp_related
 	}
 
 
-	/**
-	 * Find a list of blog posts for the given post 
-	 */
-	public static function get_related_blog_siblings($post)
-	{
-		$post = az_wp::get_post($post);
-		if (empty($post)) return [];
-		$siblings = [];
+	// /**
+	//  * Find a list of blog posts for the given post 
+	//  */
+	// public static function get_related_blog_siblings($post)
+	// {
+	// 	$post = az_wp::get_post($post);
+	// 	if (empty($post)) return [];
+	// 	$siblings = [];
 
-		if ($post->post_parent > 0) {
-			/**
-			 * if post is a child of another post, related items are its siblings
-			 */
-			$siblings = az_wp::get_post_list(['post_parent' => $post->post_parent]);
-		} else {
-			/**
-			 * Related posts are posts in same parent category
-			 */
-			$self_category =
-				az_wp::get_primary_category_of($post, true);
-			if (!empty($self_category)) {
-				$sub_cats = az_wp::get_sub_categories($self_category, 'ids');
+	// 	if ($post->post_parent > 0) {
+	// 		/**
+	// 		 * if post is a child of another post, related items are its siblings
+	// 		 */
+	// 		$siblings = az_wp::get_post_list(['post_parent' => $post->post_parent]);
+	// 	} else {
+	// 		/**
+	// 		 * Related posts are posts in same parent category
+	// 		 */
+	// 		$self_category =
+	// 			az_wp::get_primary_category_of($post, true);
+	// 		if (!empty($self_category)) {
+	// 			$sub_cats = az_wp::get_sub_categories($self_category, 'ids');
 
-				$siblings = az_wp::get_post_list(
-					[
-						'category__in' => [$self_category->term_id],
-						'category__not_in' => $sub_cats
-					]
-				);
-			}
-		}
+	// 			$siblings = az_wp::get_post_list(
+	// 				[
+	// 					'category__in' => [$self_category->term_id],
+	// 					'category__not_in' => $sub_cats
+	// 				]
+	// 			);
+	// 		}
+	// 	}
 
-		return  az_wp_related_sorting::sort_related_posts($siblings);
-		// return \apply_filters('az_blog_siblings', $siblings, $post);
-	}
+	// 	return  az_wp_related_sorting::sort_related_posts($siblings);
+	// 	// return \apply_filters('az_blog_siblings', $siblings, $post);
+	// }
 
 	/**
 	 * get next and previous post of given post.
@@ -84,7 +84,8 @@ trait az_wp_related
 	) {
 
 		/* ----------------------------- get from cache ----------------------------- */
-		$cache_key = 'related_prev_next_' . az_wp::get_id($post)
+		$postid = az_wp::get_id($post, true);
+		$cache_key = 'related_prev_next_' . $postid
 			. '_' . md5(join(',', az_object::comma_array($allowedTypes)))
 			. '_' . strval($relationLevel);
 		$cached = az_cache::get($cache_key, null, false);
@@ -95,7 +96,6 @@ trait az_wp_related
 			'next' => null
 		];
 
-		$postid = az_wp::get_id($post);
 		$post_list = az_wp_related::get_related_list_of(
 			$post,
 			$allowedTypes,
@@ -171,18 +171,6 @@ trait az_wp_related
 		return $family;
 	}
 
-
-	public static function get_next_post_of(
-		int|string|object $search,
-		array|string|null $allowedTypes = null,
-		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
-	) {
-		$rlp = static::get_related_list_of(
-			$search,
-			$allowedTypes,
-			$relationLevel
-		);
-	}
 
 	/**
 	 * get all related posts/products for the given post/product
