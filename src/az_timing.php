@@ -17,12 +17,18 @@ abstract class az_timing
 	 */
 	public static function az_timing_run(callable $fnc)
 	{
-		$start = microtime(true);
+		$start = getrusage();
 		$result = $fnc();
-		$end = microtime(true);
-		self::$last_run = $end - $start;
+		$end = getrusage();
+		self::$last_run = az_timing::runTime($end, $start, "utime");
 		return $result;
 	}
+	private static function runTime($ru, $rus, $index)
+	{
+		return ($ru["ru_$index.tv_sec"] * 1000 + intval($ru["ru_$index.tv_usec"] / 1000))
+			-  ($rus["ru_$index.tv_sec"] * 1000 + intval($rus["ru_$index.tv_usec"] / 1000));
+	}
+
 	public static function az_echo_timing_hidden_div()
 	{
 		echo '<div style="display:none;">';
