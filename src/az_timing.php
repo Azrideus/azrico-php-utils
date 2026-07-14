@@ -13,12 +13,13 @@ abstract class az_timing
 	 * and return the callable's result.
 	 *
 	 * @param callable $fnc
+	 * @param mixed    ...$args  Any number of arguments to pass to the callable
 	 * @return mixed
 	 */
-	public static function az_timing_run(callable $fnc)
+	public static function az_timing_run(callable $fnc, ...$args)
 	{
 		$start = getrusage();
-		$result = $fnc();
+		$result = $fnc(...$args);
 		$end = getrusage();
 		self::$last_run = az_timing::runTime($end, $start, "utime");
 		return $result;
