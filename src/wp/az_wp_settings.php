@@ -100,8 +100,8 @@ class az_wp_settings
 
 
 		/* ---------------------------- Register Sections --------------------------- */
-		$other_sections = $module->get_setting_sections() ?? [];
-		$all_sections = [...$other_sections];
+		$all_sections = $module->get_setting_sections() ?? [];
+
 		foreach ($all_sections as $section) {
 			$section->register();
 			/* ----------------------------- Register Fields ---------------------------- */

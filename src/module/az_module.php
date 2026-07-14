@@ -10,7 +10,7 @@ abstract class az_module extends plugin_module_object
 	private static $all_modules = [];
 	private static $action_registred = false;
 
-	readonly string $settings_title;
+	public  string $settings_title;
 	private array $setting_sections;
 
 	public function __construct(string $plugin_name, string $module_name)

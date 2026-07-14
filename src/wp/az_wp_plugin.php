@@ -229,6 +229,12 @@ trait az_wp_plugin
 	 */
 	private static function is_cart_checkout()
 	{
+		if (
+			!function_exists('is_cart')
+			|| !function_exists('is_checkout')
+		) {
+			return false;
+		}
 		return is_cart() || is_checkout();
 	}
 }

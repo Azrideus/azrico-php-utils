@@ -2,23 +2,22 @@
 
 namespace AzUtils\wp;
 
+use AzUtils\wp\az_wp_related_sorting;
 use AzUtils\az_cache;
 use AzUtils\az_object;
 use AzUtils\az_string;
 use AzUtils\az_wp;
 use WP_Post;
 
-
+const REL_SAME_SLUG      = 1 << 0;
+const REL_SIMILAR_SLUG   = 1 << 1;
+const REL_PAGEID         = 1 << 2;
+const REL_CATEGORY 		 = 1 << 3;
+const REL_ALL         = REL_SAME_SLUG | REL_SIMILAR_SLUG | REL_PAGEID | REL_CATEGORY;
 
 trait az_wp_related
 {
 	/* ---------------------- Bit Flags for Relation Levels --------------------- */
-	const REL_SAME_SLUG      = 1 << 0;
-	const REL_SIMILAR_SLUG   = 1 << 1;
-	const REL_PAGEID         = 1 << 2;
-	const REL_CATEGORY 		 = 1 << 3;
-	const ALL         = self::REL_SAME_SLUG | self::REL_SIMILAR_SLUG | self::REL_PAGEID | self::REL_CATEGORY;
-
 
 	/**
 	 * Replace tokens/placeholders like `product_link,post_link,...` with their permalink
@@ -70,7 +69,63 @@ trait az_wp_related
 				);
 			}
 		}
-		return \apply_filters('az_blog_siblings', $siblings, $post);
+
+		return  az_wp_related_sorting::sort_related_posts($siblings);
+		// return \apply_filters('az_blog_siblings', $siblings, $post);
+	}
+
+	/**
+	 * get next and previous post of given post.
+	 */
+	public static function get_related_prev_next(
+		$post,
+		array|string|null $allowedTypes = null,
+		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
+	) {
+
+		/* ----------------------------- get from cache ----------------------------- */
+		$cache_key = 'related_prev_next_' . az_wp::get_id($post)
+			. '_' . md5(join(',', az_object::comma_array($allowedTypes)))
+			. '_' . strval($relationLevel);
+		$cached = az_cache::get($cache_key, null, false);
+		if (!empty($cached)) return $cached;
+
+		$result = [
+			'prev' => null,
+			'next' => null
+		];
+
+		$postid = az_wp::get_id($post);
+		$post_list = az_wp_related::get_related_list_of(
+			$post,
+			$allowedTypes,
+			true,
+			$relationLevel
+		);
+		$current_index = null;
+
+		foreach ($post_list as $i => $p) {
+			if ($p->ID == $postid) {
+				$current_index = $i;
+				break;
+			}
+		}
+
+		if ($current_index !== null) {
+			$prev_post = $current_index > 0
+				? $post_list[$current_index - 1]
+				: null;
+			$next_post = isset($post_list[$current_index + 1])
+				? $post_list[$current_index + 1]
+				: null;
+
+			$result = [
+				'prev' => $prev_post,
+				'next' => $next_post
+			];
+		}
+		az_cache::set($cache_key, $result, false);
+		return $result;
 	}
 
 
@@ -86,7 +141,7 @@ trait az_wp_related
 	public static function get_related_main_of(
 		int|string|object $search,
 		string $target_type,
-		$relationLevel = self::REL_SAME_SLUG
+		$relationLevel = REL_SAME_SLUG
 	): object|null {
 		$current_post = az_wp::get_post($search, 'any');
 		if (empty($current_post)) return null;
@@ -99,7 +154,7 @@ trait az_wp_related
 	 * for the given post returns the related posts of each type (see `get_related_list_of`) 
 	 * @return WP_Post[]
 	 */
-	public static function get_related_family(int|string|object $search, $relationLevel = self::REL_SAME_SLUG)
+	public static function get_related_family(int|string|object $search, $relationLevel = REL_SAME_SLUG)
 	{
 		$members = ['product', 'post', 'project', 'product_doc', 'page'];
 		$current_post = az_wp::get_post($search, 'any');
@@ -116,6 +171,19 @@ trait az_wp_related
 		return $family;
 	}
 
+
+	public static function get_next_post_of(
+		int|string|object $search,
+		array|string|null $allowedTypes = null,
+		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
+	) {
+		$rlp = static::get_related_list_of(
+			$search,
+			$allowedTypes,
+			$relationLevel
+		);
+	}
+
 	/**
 	 * get all related posts/products for the given post/product
 	 * (products, posts, projects, videos)
@@ -127,7 +195,8 @@ trait az_wp_related
 	public static function get_related_list_of(
 		int|string|object $search,
 		array|string|null $allowedTypes = null,
-		$relationLevel = self::REL_SAME_SLUG | self::REL_PAGEID,
+		bool $sorted = false,
+		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
 	): array {
 		if (empty($search)) return [];
 		if (empty($allowedTypes)) $allowedTypes = get_post_types();
@@ -228,6 +297,10 @@ trait az_wp_related
 			$currentPost,
 			$allowedTypes,
 		);
+
+		if ($sorted)
+			$uniqItems = az_wp_related_sorting::sort_related_posts($uniqItems);
+
 		return $uniqItems;
 	}
 
@@ -264,9 +337,8 @@ trait az_wp_related
 	private static function get_related_keys_of(
 		mixed $search,
 		array|string|null $allowedTypes = null,
-		$relationLevel = self::REL_SAME_SLUG | self::REL_PAGEID,
+		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
 	): array {
-
 		/* -------------------------------------------------------------------------- */
 		/*                            get related of string                           */
 		/* -------------------------------------------------------------------------- */
@@ -299,11 +371,11 @@ trait az_wp_related
 			 * id of current post and its slug is added to the search list
 			 */
 			$searchList = [];
-			if ($relationLevel & self::REL_SAME_SLUG || $relationLevel & self::REL_SIMILAR_SLUG) {
+			if ($relationLevel & REL_SAME_SLUG || $relationLevel & REL_SIMILAR_SLUG) {
 				$searchList[] = $postid;
 				$searchList[] = $currentPost->post_name;
 			}
-			if ($relationLevel & self::REL_SIMILAR_SLUG) {
+			if ($relationLevel & REL_SIMILAR_SLUG) {
 				/**
 				 * if post name is `sht35-arduino`
 				 * it should also provide `sht35` as a search key
@@ -315,7 +387,7 @@ trait az_wp_related
 				$slug_parts = explode('-', $currentPost->post_name);
 				$searchList[] = $slug_parts[0]; //add first part of slug as well 
 			}
-			if ($relationLevel & self::REL_PAGEID) {
+			if ($relationLevel & REL_PAGEID) {
 				/**
 				 * add related pageids
 				 * find all posts and products that share some of their related ids
@@ -333,7 +405,7 @@ trait az_wp_related
 				}
 				array_push($searchList, ...$metaPageids);
 			}
-			if ($relationLevel & self::REL_CATEGORY) {
+			if ($relationLevel & REL_CATEGORY) {
 				if (az_wp::get_meta_bool_of($postid, 'paginator_autolinkcategory')) {
 					$primaryCategory = az_wp::get_primary_category_of($currentPost, true);
 					$sub_cats = az_wp::get_sub_categories($primaryCategory);
