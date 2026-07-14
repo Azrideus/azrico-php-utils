@@ -187,9 +187,12 @@ trait az_wp_related
 		$relationLevel = REL_SAME_SLUG | REL_PAGEID,
 	): array {
 		if (empty($search)) return [];
+
+
 		if (empty($allowedTypes)) $allowedTypes = get_post_types();
 		$allowedTypes = az_object::comma_array($allowedTypes);
 		$currentPost = az_wp::get_post($search, 'any');
+
 
 
 		/* -------------------------------------------------------------------------- */
@@ -199,30 +202,52 @@ trait az_wp_related
 		$search_array = $sl['search_array'];
 		$cache_key = $sl['cache_key'];
 
-
 		$cached_ids = az_cache::get($cache_key, null, true);
 
 		$foundPosts = [];
 		if (is_array($cached_ids) && !empty($cached_ids)) {
 			/* ----------------------------- Found in Cache ----------------------------- */
+
 			$foundPosts = az_wp::get_post_list(
 				['post__in' => $cached_ids],
 				$allowedTypes,
 				100
 			);
 		} else {
+
 			/* ------------------------ link by primary category ------------------------ */
 			if (
 				!empty($currentPost)
 				&& az_wp::get_meta_bool_of($currentPost, 'paginator_autolinkcategory')
 			) {
-				$primaryCategory = az_wp::get_primary_category_of($currentPost, true);
+				$post = az_wp::get_post($currentPost);
+				$primaryCategory = az_wp::get_primary_category_of($post, true);
+				$category_type =
+					az_wp::get_category_taxonomy_of_post_type($post->post_type);
+				$sub_cats = az_wp::get_sub_categories($primaryCategory);
+
 				if (!empty($primaryCategory)) {
-					$sub_cats = az_wp::get_sub_categories($primaryCategory);
+					echo "<!-- azwp_link main_cat: $category_type =" . ($primaryCategory ? $primaryCategory->name : 'none') . " -->";
 					$posts_by_cat = az_wp::get_post_list(
 						[
-							'category__in' => $primaryCategory->term_id,
-							'category__not_in' => $sub_cats,
+							/**
+							 * ctegory__in will not work for CPT
+							 * we must use tax_query
+							 */
+							'tax_query' => array(
+								array(
+									'taxonomy' => $category_type,
+									'field' => 'id',
+									'terms' => $primaryCategory->term_id,
+									'operator' => 'IN',
+								),
+								array(
+									'taxonomy' => $category_type,
+									'field' => 'id',
+									'terms' => $sub_cats,
+									'operator' => 'NOT IN',
+								)
+							),
 							'meta_query'     => array(
 								'relation' => 'AND',
 								[
