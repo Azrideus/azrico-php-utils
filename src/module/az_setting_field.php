@@ -51,6 +51,8 @@ class az_setting_field extends plugin_module_object
 		switch ($this->type) {
 			case 'text':
 				return $this->get_plugin_option_string($this->field_name);
+			case 'number':
+				return (int) $this->get_plugin_option($this->field_name);
 			case 'checkbox':
 				return $this->get_plugin_option_boolean($this->field_name);
 		}
@@ -62,6 +64,8 @@ class az_setting_field extends plugin_module_object
 		switch ($this->type) {
 			case 'text':
 				return sanitize_text_field($input ?? '');
+			case 'number':
+				return intval($input ?? 0);
 			case 'checkbox':
 				return empty($input) ?  0 : 1;
 		}
@@ -73,6 +77,15 @@ class az_setting_field extends plugin_module_object
 			case 'text':
 				az_view::esc_attr_printf(
 					'<input type="text" name="%s[%s]" data-section="%s" value="%s" class="regular-text">',
+					($this->plugin_settings_slug),
+					($this->field_name),
+					($this->section_name),
+					($this->getValue())
+				);
+				break;
+			case 'number':
+				az_view::esc_attr_printf(
+					'<input type="number" min="0" step="1" name="%s[%s]" data-section="%s" value="%s" class="small-text">',
 					($this->plugin_settings_slug),
 					($this->field_name),
 					($this->section_name),
