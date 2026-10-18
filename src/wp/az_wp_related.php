@@ -312,7 +312,7 @@ trait az_wp_related
 		);
 
 		if ($sorted)
-			$uniqItems = az_wp_related_sorting::sort_related_posts($uniqItems);
+			$uniqItems = az_wp::sort_related_posts($uniqItems);
 
 		return $uniqItems;
 	}
