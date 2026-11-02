@@ -6,19 +6,35 @@ use AzUtils\az_wp;
 
 class az_assets
 {
+	/**
+	 * Minifies css text.
+	 *
+	 * Removes comments, collapses whitespace and drops the spaces around braces,
+	 * semicolons, colons and `!`. Spaces inside values (calc, font lists) are kept.
+	 *
+	 * @param string $input The css text to minify.
+	 * @return string The minified css.
+	 */
 	static function compress_css($input)
 	{
-		// Remove space after colons
-		$input = str_replace(': ', ':', $input);
-
-
-		$input = str_replace(["\r", "\n", "\t"], ' ', $input);
-		// input whitespace
+		// Remove comments
+		$input = preg_replace('#/\*.*?\*/#s', '', $input);
+		// Collapse all whitespace runs (newlines, tabs, multiple spaces) to one space
+		$input = trim(preg_replace('/\s+/', ' ', $input));
 		$input = str_replace(
 			array(
-				'  ', // double spaces 
+				' {',
+				'{ ',
 			),
-			' ',
+			'{',
+			$input
+		);
+		$input = str_replace(
+			array(
+				' }',
+				'} ',
+			),
+			'}',
 			$input
 		);
 		$input = str_replace(
@@ -29,6 +45,8 @@ class az_assets
 			';',
 			$input
 		);
+		// Last semicolon of a block is optional
+		$input = str_replace(';}', '}', $input);
 		$input = str_replace(
 			array(
 				': ',
