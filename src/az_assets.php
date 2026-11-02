@@ -47,14 +47,10 @@ class az_assets
 		);
 		// Last semicolon of a block is optional
 		$input = str_replace(';}', '}', $input);
-		$input = str_replace(
-			array(
-				': ',
-				' :',
-			),
-			':',
-			$input
-		);
+		$input = str_replace(': ', ':', $input);
+		// Space before a colon only inside declarations (next brace is a closing one),
+		// in selectors ".a :hover" means a descendant and differs from ".a:hover"
+		$input = preg_replace('/\s+:(?=[^{}]*\})/', ':', $input);
 		$input = str_replace(
 			array(
 				'! ',

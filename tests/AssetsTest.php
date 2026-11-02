@@ -15,4 +15,13 @@ final class AssetsTest extends TestCase
 			az_assets::compress_css($css)
 		);
 	}
+
+	public function testCompressCssKeepsDescendantPseudoSelector(): void
+	{
+		$css = ".a :hover { color : red; }\n@media (min-width: 600px) { .b :is(.c) { margin : 0; } }";
+		$this->assertSame(
+			".a :hover{color:red}@media (min-width:600px){.b :is(.c){margin:0}}",
+			az_assets::compress_css($css)
+		);
+	}
 }
