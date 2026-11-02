@@ -205,14 +205,16 @@ trait az_wp_related
 		$cached_ids = az_cache::get($cache_key, null, true);
 
 		$foundPosts = [];
-		if (is_array($cached_ids) && !empty($cached_ids)) {
+		if (is_array($cached_ids)) {
 			/* ----------------------------- Found in Cache ----------------------------- */
 
-			$foundPosts = az_wp::get_post_list(
-				['post__in' => $cached_ids],
-				$allowedTypes,
-				100
-			);
+			// a cached empty list means no related posts, an empty post__in would match all posts
+			if (!empty($cached_ids))
+				$foundPosts = az_wp::get_post_list(
+					['post__in' => $cached_ids],
+					$allowedTypes,
+					100
+				);
 		} else {
 
 			/* ------------------------ link by primary category ------------------------ */

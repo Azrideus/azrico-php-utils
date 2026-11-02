@@ -134,10 +134,11 @@ trait az_wp_terms
 			$termSlugFirstPart = reset($slugParts);
 			$searchSlugs = [$termSlug, $termSlugFirstPart];
 
+			$terms_by_slug = static::get_category_terms_by_slug();
 			foreach ($searchSlugs as $search_slug) {
 				foreach (static::$categoryTaxonomies as $alt_tax) {
-					if ($alt_tax === $term->taxonomy) continue; //ignore current type 
-					$alt_term = get_term_by('slug', $search_slug, $alt_tax);
+					if ($alt_tax === $term->taxonomy) continue; //ignore current type
+					$alt_term = $terms_by_slug[$alt_tax][$search_slug] ?? null;
 
 					if (empty($alt_term)) continue;
 
@@ -156,6 +157,7 @@ trait az_wp_terms
 			) {
 				$result = self::get_term_image_id(
 					get_term($term->parent, $term->taxonomy),
+					'',
 					$parent
 				);
 				return $result;
@@ -163,6 +165,31 @@ trait az_wp_terms
 
 			return -1;
 		}, true);
+	}
+	/**
+	 * Loads all terms of the category taxonomies once per request, keyed by taxonomy and slug.
+	 *
+	 * Replaces a get_term_by('slug') per taxonomy and slug, which ran an uncached query each
+	 * time for every term without an image.
+	 *
+	 * @return array<string, array<string, \WP_Term>> Terms keyed by taxonomy then slug.
+	 */
+	static function get_category_terms_by_slug(): array
+	{
+		static $map = null;
+		if ($map !== null) return $map;
+
+		$map = [];
+		$terms = get_terms([
+			'taxonomy'               => array_values(array_filter(static::$categoryTaxonomies, 'taxonomy_exists')),
+			'hide_empty'             => false,
+			'update_term_meta_cache' => false,
+		]);
+		if (is_wp_error($terms)) return $map;
+		foreach ($terms as $term) {
+			$map[$term->taxonomy][$term->slug] = $term;
+		}
+		return $map;
 	}
 	/** 
 	 * get subcategories of a given category 

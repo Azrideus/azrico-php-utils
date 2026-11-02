@@ -33,13 +33,25 @@ class az_cache
 		}
 		return $value;
 	}
+	/**
+	 * Gets a cached value, or computes and caches it with the callback.
+	 *
+	 * Stored empty values (`[]`, `0`, `-1`, `''`) count as hits, so a lookup that found
+	 * nothing is not recomputed.
+	 *
+	 * @param string $key The cache key.
+	 * @param callable|null $callback Computes the value on a miss.
+	 * @param int|bool $wpcache Also use the WP object cache, an int is the expiry in seconds.
+	 * @return mixed The cached or computed value, null on a miss without callback.
+	 */
 	static function get($key, $callback = null,  int|bool $wpcache = false)
 	{
-		if (isset(static::$cache[$key])) return static::$cache[$key];
+		if (array_key_exists($key, static::$cache)) return static::$cache[$key];
 
 		if ($wpcache && function_exists('wp_cache_get')) {
-			$cached_val = wp_cache_get($key, static::getCacheGroup(), true);
-			if (!empty($cached_val)) return $cached_val;
+			$found = false;
+			$cached_val = wp_cache_get($key, static::getCacheGroup(), true, $found);
+			if ($found) return static::$cache[$key] = $cached_val;
 		}
 		if (null != $callback && is_callable($callback)) {
 			return static::set($key,  $callback(), $wpcache);
